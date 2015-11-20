@@ -18,6 +18,10 @@ import android.view.MenuItem;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.fragments.BuscarFragment;
+import com.alex.tictacpark.fragments.ParkingFragment;
+import com.alex.tictacpark.fragments.CocheFragment;
+import com.alex.tictacpark.fragments.AlarmaFragment;
+import com.alex.tictacpark.fragments.HistorialFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -81,22 +85,22 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_parking:
                 Log.e("MAINACTIVITY", "Mi Parking");
-                mFragment= BuscarFragment.newInstance(1);//Creamos el fragment
+                mFragment= ParkingFragment.newInstance(1);//Creamos el fragment
                 inflate(mFragment,PARKING);//Inflamos el fragment PARKING
                 break;
             case R.id.nav_coche:
                 Log.e("MAINACTIVITY", "Volver al coche");
-                mFragment= BuscarFragment.newInstance(2);//Creamos el fragment
+                mFragment= CocheFragment.newInstance(2);//Creamos el fragment
                 inflate(mFragment,COCHE);//Inflamos el fragment COCHE
                 break;
             case R.id.nav_alarma:
                 Log.e("MAINACTIVITY", "Alarma y gasto");
-                mFragment= BuscarFragment.newInstance(3);//Creamos el fragment
+                mFragment= AlarmaFragment.newInstance(3);//Creamos el fragment
                 inflate(mFragment,ALARMA);//Inflamos el fragment ALARMA
                 break;
             case R.id.nav_historial:
                 Log.e("MAINACTIVITY", "Historial");
-                mFragment= BuscarFragment.newInstance(4);//Creamos el fragment
+                mFragment= HistorialFragment.newInstance(4);//Creamos el fragment
                 inflate(mFragment,HISTORIAL);//Inflamos el fragment HISTORIAL
                 break;
         }
