@@ -5,9 +5,13 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="buscar">Buscar</string>
-    <string name="mapa">Mapa</string>
-    <string name="aparcamiento">Aparcamiento</string>
-
+    <string name="parking">Mi Parking</string>
+    <string name="coche">Volver al coche</string>
+    <string name="alarma">Alarma y gasto</string>
+    <string name="historial">Historial</string>
 
     <string name="action_settings">Settings</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
