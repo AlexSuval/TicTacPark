@@ -17,19 +17,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.alex.tictacpark.R;
+import com.alex.tictacpark.fragments.EstadoFragment;
 import com.alex.tictacpark.fragments.BuscarFragment;
 import com.alex.tictacpark.fragments.ParkingFragment;
-import com.alex.tictacpark.fragments.CocheFragment;
 import com.alex.tictacpark.fragments.AlarmaFragment;
+import com.alex.tictacpark.fragments.CocheFragment;
 import com.alex.tictacpark.fragments.HistorialFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String ESTADO = "ESTADO";
     private static final String BUSCAR = "BUSCAR";
     private static final String PARKING = "PARKING";
-    private static final String COCHE = "COCHE";
     private static final String ALARMA = "ALARMA";
+    private static final String COCHE = "COCHE";
     private static final String HISTORIAL = "HISTORIAL";
 
     @Override
@@ -78,29 +80,34 @@ public class MainActivity extends AppCompatActivity
         Fragment mFragment;
 
         switch (id){
+            case R.id.nav_estado:
+                Log.e("MAINACTIVITY", "Estado");
+                mFragment= EstadoFragment.newInstance(0);//Creamos el fragment
+                inflate(mFragment,ESTADO);//Inflamos el fragment ESTADO
+                break;
             case R.id.nav_buscar:
                 Log.e("MAINACTIVITY", "Buscar");
-                mFragment= BuscarFragment.newInstance(0);//Creamos el fragment
+                mFragment= BuscarFragment.newInstance(1);//Creamos el fragment
                 inflate(mFragment,BUSCAR);//Inflamos el fragment BUSCAR
                 break;
             case R.id.nav_parking:
                 Log.e("MAINACTIVITY", "Mi Parking");
-                mFragment= ParkingFragment.newInstance(1);//Creamos el fragment
+                mFragment= ParkingFragment.newInstance(2);//Creamos el fragment
                 inflate(mFragment,PARKING);//Inflamos el fragment PARKING
-                break;
-            case R.id.nav_coche:
-                Log.e("MAINACTIVITY", "Volver al coche");
-                mFragment= CocheFragment.newInstance(2);//Creamos el fragment
-                inflate(mFragment,COCHE);//Inflamos el fragment COCHE
                 break;
             case R.id.nav_alarma:
                 Log.e("MAINACTIVITY", "Alarma y gasto");
                 mFragment= AlarmaFragment.newInstance(3);//Creamos el fragment
                 inflate(mFragment,ALARMA);//Inflamos el fragment ALARMA
                 break;
+            case R.id.nav_coche:
+                Log.e("MAINACTIVITY", "Volver al coche");
+                mFragment= CocheFragment.newInstance(4);//Creamos el fragment
+                inflate(mFragment,COCHE);//Inflamos el fragment COCHE
+                break;
             case R.id.nav_historial:
                 Log.e("MAINACTIVITY", "Historial");
-                mFragment= HistorialFragment.newInstance(4);//Creamos el fragment
+                mFragment= HistorialFragment.newInstance(5);//Creamos el fragment
                 inflate(mFragment,HISTORIAL);//Inflamos el fragment HISTORIAL
                 break;
         }

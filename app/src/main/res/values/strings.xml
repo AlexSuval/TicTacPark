@@ -4,10 +4,11 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="estado">Estado</string>
     <string name="buscar">Buscar</string>
     <string name="parking">Mi Parking</string>
-    <string name="coche">Volver al coche</string>
     <string name="alarma">Alarma y gasto</string>
+    <string name="coche">Volver al coche</string>
     <string name="historial">Historial</string>
 
     <string name="action_settings">Settings</string>

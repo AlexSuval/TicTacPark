@@ -2,14 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_estado" android:icon="@android:drawable/ic_menu_camera"
+            android:title="@string/estado" />
         <item android:id="@+id/nav_buscar" android:icon="@android:drawable/ic_menu_camera"
             android:title="@string/buscar" />
         <item android:id="@+id/nav_parking" android:icon="@android:drawable/ic_menu_gallery"
             android:title="@string/parking" />
-        <item android:id="@+id/nav_coche" android:icon="@android:drawable/ic_menu_slideshow"
-            android:title="@string/coche" />
         <item android:id="@+id/nav_alarma" android:icon="@android:drawable/ic_menu_camera"
             android:title="@string/alarma" />
+        <item android:id="@+id/nav_coche" android:icon="@android:drawable/ic_menu_slideshow"
+            android:title="@string/coche" />
         <item android:id="@+id/nav_historial" android:icon="@android:drawable/ic_menu_gallery"
             android:title="@string/historial" />
     </group>
