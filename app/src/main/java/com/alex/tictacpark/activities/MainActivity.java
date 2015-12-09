@@ -2,6 +2,7 @@ package com.alex.tictacpark.activities;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,6 +24,7 @@ import com.alex.tictacpark.fragments.ParkingFragment;
 import com.alex.tictacpark.fragments.AlarmaFragment;
 import com.alex.tictacpark.fragments.CocheFragment;
 import com.alex.tictacpark.fragments.HistorialFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -116,4 +118,5 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }

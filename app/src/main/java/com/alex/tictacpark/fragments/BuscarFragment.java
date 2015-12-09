@@ -1,10 +1,12 @@
 package com.alex.tictacpark.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
@@ -30,6 +32,8 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
@@ -45,6 +49,7 @@ public class BuscarFragment extends Fragment
     private String TAG = "BUSCAR";
     //private GoogleApiClient mGoogleApiClient;
     private LocationManager mLocationManager;
+    private addMarkers addMarkers;
 
     //Configuración del mapa
     //Establece mi posición
@@ -145,6 +150,8 @@ public class BuscarFragment extends Fragment
         LatLng latLng=new LatLng(43.52,-5.67);
         CameraUpdate cameraUpdate= CameraUpdateFactory.newLatLngZoom(latLng,14); //zoom=14
         mMap.animateCamera(cameraUpdate);
+        addMarkers=new addMarkers(); //Inicializamos addMarkers
+        addMarkers.execute(""); //Lanzamos addMarkers pasándole la url
     }
 
     @Override
@@ -216,4 +223,44 @@ public class BuscarFragment extends Fragment
         Toast.makeText(getActivity(),"Click",Toast.LENGTH_SHORT).show();
         return false;
     }*/
+
+    //Función que añade el marker al mapa
+    private void showMarker(LatLng coordenadas, String nombre)
+    {
+        mMap.addMarker(new MarkerOptions().position(coordenadas).title(nombre));
+    }
+
+    //Tarea asíncrona que añade los markers
+    private class addMarkers extends AsyncTask<String, Void, Void>
+    {
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid)
+        {
+            super.onPostExecute(aVoid);
+            LatLng Molinon = new LatLng(43.535667, -5.635787);
+            LatLng Europa = new LatLng(43.5385763,-5.664812);
+            LatLng Begona = new LatLng(43.5374459,-5.6623837);
+            LatLng Nautico = new LatLng(43.5420452,-5.6614269);
+            LatLng Fomento = new LatLng(43.5420643,-5.667993);
+
+            showMarker(Molinon,"Parking El Molinón");
+            showMarker(Europa,"Parking Plaza Europa");
+            showMarker(Begona,"Parking Begoña");
+            showMarker(Nautico,"Parking El Náutico");
+            showMarker(Fomento, "Parking Fomento");
+        }
+
+        @Override
+        protected Void doInBackground(String... params)
+        {
+
+            return null;
+        }
+    }
 }
