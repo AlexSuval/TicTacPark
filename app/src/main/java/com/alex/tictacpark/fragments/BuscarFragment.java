@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.alex.tictacpark.R;
+import com.alex.tictacpark.activities.ParkingDetalle;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -224,6 +225,12 @@ public class BuscarFragment extends Fragment
         return false;
     }*/
 
+    private Intent clickMarker(Marker marker)
+    {
+        Intent intent=new Intent(getActivity(),ParkingDetalle.class);
+        return intent;
+    }
+
     //Función que añade el marker al mapa
     private void showMarker(LatLng coordenadas, String nombre)
     {
@@ -254,6 +261,18 @@ public class BuscarFragment extends Fragment
             showMarker(Begona,"Parking Begoña");
             showMarker(Nautico,"Parking El Náutico");
             showMarker(Fomento, "Parking Fomento");
+
+            //Escucha a que le demos click a algún marker
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
+            {
+                //Se identifica qué marker se está pulsando
+                public void onInfoWindowClick(Marker marker)
+                {
+                    //Genera el intent y empieza la actividad a través del intent
+                    Intent intent=clickMarker(marker);
+                    startActivity(intent);
+                }
+            });
         }
 
         @Override

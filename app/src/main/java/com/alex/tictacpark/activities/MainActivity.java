@@ -2,6 +2,8 @@ package com.alex.tictacpark.activities;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -104,8 +106,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_coche:
                 Log.e("MAINACTIVITY", "Volver al coche");
-                mFragment= CocheFragment.newInstance(4);//Creamos el fragment
-                inflate(mFragment,COCHE);//Inflamos el fragment COCHE
+                //Se crea el Intent
+                Intent intent=new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("http://maps.google.com/maps")); //?saddr=ORIGEN&daddr=DESTINO
+                startActivity(intent);
                 break;
             case R.id.nav_historial:
                 Log.e("MAINACTIVITY", "Historial");

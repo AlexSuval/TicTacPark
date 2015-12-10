@@ -33,10 +33,9 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Direccion"
         android:id="@+id/tv_direccion_parking"
-        android:layout_marginRight="10dp"
-        android:layout_below="@+id/tv_nombre_parking"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_below="@+id/tv_tipo_parking"
+        android:layout_alignRight="@+id/tv_tipo_parking"
+        android:layout_alignEnd="@+id/tv_tipo_parking" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,8 +43,81 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Telefono"
         android:id="@+id/tv_telefono_parking"
-        android:layout_marginRight="10dp"
         android:layout_below="@+id/tv_direccion_parking"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/tv_direccion_parking"
+        android:layout_alignEnd="@+id/tv_direccion_parking" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/aparcar"
+        android:id="@+id/b_aparcar"
+        android:layout_below="@+id/iv_foto_parking"
+        android:layout_alignLeft="@+id/iv_foto_parking"
+        android:layout_alignStart="@+id/iv_foto_parking"
+        android:layout_alignRight="@+id/b_estado_parking"
+        android:layout_alignEnd="@+id/b_estado_parking" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ESTADO"
+        android:id="@+id/b_estado_parking"
+        android:layout_alignBottom="@+id/iv_foto_parking"
+        android:layout_alignRight="@+id/tv_telefono_parking"
+        android:layout_alignEnd="@+id/tv_telefono_parking"
+        android:layout_toRightOf="@+id/iv_foto_parking"
+        android:layout_toEndOf="@+id/iv_foto_parking" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Tipo"
+        android:id="@+id/tv_tipo_parking"
+        android:layout_below="@+id/tv_nombre_parking"
+        android:layout_alignRight="@+id/tv_nombre_parking"
+        android:layout_alignEnd="@+id/tv_nombre_parking" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_marginRight="10dp"
+        android:text="@string/precios"
+        android:id="@+id/tv_precios"
+        android:layout_below="@+id/b_aparcar"
+        android:layout_alignLeft="@+id/b_aparcar"
+        android:layout_alignStart="@+id/b_aparcar" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Listado de precios"
+        android:id="@+id/tv_listado_precios"
+        android:layout_below="@+id/tv_precios"
+        android:layout_alignLeft="@+id/tv_precios"
+        android:layout_alignStart="@+id/tv_precios" />
+
+    <TextView
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/descripcion"
+        android:id="@+id/tv_descripcion"
+        android:layout_below="@+id/tv_listado_precios"
+        android:layout_alignLeft="@+id/tv_listado_precios"
+        android:layout_alignStart="@+id/tv_listado_precios" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Texto descripción"
+        android:id="@+id/tv_texto_descripcion"
+        android:layout_below="@+id/tv_descripcion"
+        android:layout_alignLeft="@+id/tv_descripcion"
+        android:layout_alignStart="@+id/tv_descripcion" />
 </RelativeLayout>
