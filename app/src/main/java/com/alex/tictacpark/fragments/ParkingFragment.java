@@ -72,7 +72,7 @@ public class ParkingFragment extends Fragment {
                 //Se crea el Intent
                 Intent intent=new Intent();
                 intent.setAction("android.intent.action.DIAL");
-                intent.setData(Uri.parse("tel:"+"620528563"));
+                intent.setData(Uri.parse("tel:"+"987654321"));
                 startActivity(intent);
             }
         });
