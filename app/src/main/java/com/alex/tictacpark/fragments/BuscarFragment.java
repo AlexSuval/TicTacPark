@@ -225,9 +225,12 @@ public class BuscarFragment extends Fragment
         return false;
     }*/
 
+    //Los markers se ponen a la escucha de click
     private Intent clickMarker(Marker marker)
     {
         Intent intent=new Intent(getActivity(),ParkingDetalle.class);
+        //Le pasamos datos (el nombre del parking) a la actividad
+        intent.putExtra(ParkingDetalle.NOMBRE,marker.getTitle());
         return intent;
     }
 
