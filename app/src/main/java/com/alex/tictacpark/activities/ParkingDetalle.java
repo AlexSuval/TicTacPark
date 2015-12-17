@@ -1,12 +1,19 @@
 package com.alex.tictacpark.activities;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.fragments.ParkingFragment;
@@ -23,8 +30,13 @@ public class ParkingDetalle extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //Infla el fragment ParkingFragment en la actividad ParkingDetalle
-        getFragmentManager().beginTransaction()
-                .replace(R.id.container, new ParkingFragment()).commit();
+        /*getFragmentManager().beginTransaction()
+                .add(R.id.container, new ParkingFragment()).commit();*/
+        if(savedInstanceState==null){
+            Fragment newFragment = new ParkingFragment();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.add(R.id.container,newFragment).commit();
+        }
 
         //Coge el Intent y pone el nombre del parking en la barra
         Intent intent = getIntent();
@@ -33,5 +45,18 @@ public class ParkingDetalle extends AppCompatActivity {
 
         //Infla el icono de vuelta atrás
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    //Al darle al botón de vuelta atrás va hacia atrás
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case android.R.id.home:
+                onBackPressed();
+                //Toast.makeText(this, "Volver atrás", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

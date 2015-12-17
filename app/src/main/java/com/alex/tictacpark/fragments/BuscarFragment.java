@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.ParkingDetalle;
+import com.alex.tictacpark.activities.PruebaActividad;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;

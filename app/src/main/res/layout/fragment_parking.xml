@@ -80,36 +80,14 @@
         android:layout_alignEnd="@+id/tv_nombre_parking" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="?android:attr/listSeparatorTextViewStyle"
-        android:layout_marginRight="10dp"
-        android:text="@string/precios"
-        android:id="@+id/tv_precios"
-        android:layout_below="@+id/b_aparcar"
-        android:layout_alignLeft="@+id/b_aparcar"
-        android:layout_alignStart="@+id/b_aparcar" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Listado de precios"
-        android:id="@+id/tv_listado_precios"
-        android:layout_below="@+id/tv_precios"
-        android:layout_alignLeft="@+id/tv_precios"
-        android:layout_alignStart="@+id/tv_precios" />
-
-    <TextView
         style="?android:attr/listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:text="@string/descripcion"
         android:id="@+id/tv_descripcion"
-        android:layout_below="@+id/tv_listado_precios"
-        android:layout_alignLeft="@+id/tv_listado_precios"
-        android:layout_alignStart="@+id/tv_listado_precios" />
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignLeft="@+id/linearLayout"
+        android:layout_alignStart="@+id/linearLayout" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -118,6 +96,15 @@
         android:text="Texto descripción"
         android:id="@+id/tv_texto_descripcion"
         android:layout_below="@+id/tv_descripcion"
-        android:layout_alignLeft="@+id/tv_descripcion"
-        android:layout_alignStart="@+id/tv_descripcion" />
+        android:layout_alignRight="@+id/iv_foto_parking" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_below="@+id/b_aparcar"
+        android:layout_alignLeft="@+id/tv_texto_descripcion"
+        android:layout_alignStart="@+id/tv_texto_descripcion"
+        android:id="@+id/linearLayout"></LinearLayout>
+
 </RelativeLayout>

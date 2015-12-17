@@ -6,8 +6,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.alex.tictacpark.R;
@@ -77,8 +79,18 @@ public class ParkingFragment extends Fragment {
             }
         });
 
+        view.setOnTouchListener(new View.OnTouchListener(){
+            public boolean onTouch(View v,MotionEvent event){
+                return true;
+            }
+        });
+
         return view;
     }
+
+    /*public void clickAparcar(View v){
+        Button boton=(Button)
+    }*/
 
     /**
      * This interface must be implemented by activities that contain this
