@@ -2,15 +2,18 @@ package com.alex.tictacpark.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +25,7 @@ import com.alex.tictacpark.activities.ParkingDetalle;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
+import android.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -148,7 +151,89 @@ public class BuscarFragment extends Fragment
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL); //Mapa básico con carreteras
         mMap.setMyLocationEnabled(true); //Mi localización
         // Configuramos la posición inicial
-        LatLng latLng=new LatLng(43.52,-5.67);
+        comenzarLocalizacion();
+    }
+
+    private void comenzarLocalizacion() {
+        LocationManager locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        //Checkear los permisos
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        try {
+            //Se obtiene la última localización GPS
+            //final Location loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER); --> Puede devolver null
+
+            //LocationManager mLocationManager;
+            final Location loc = getLastKnownLocation(locManager);
+
+            //Muestra la última posición
+            mostrarPosicion(loc);
+
+            //Nos registramos para recibir actualizaciones de la posición
+            LocationListener locListener=new LocationListener(){
+                public void onLocationChanged(Location location){
+                    mostrarPosicion(loc); //Va actualizando posición
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                    //Muestra mensaje al usuario de fallo con el GPS
+                    Toast.makeText(getActivity(),"El GPS se ha activado",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                    //Muestra mensaje al usuario de fallo con el GPS
+                    Toast.makeText(getActivity(),"El GPS se ha desactivado",
+                            Toast.LENGTH_SHORT).show();
+                }
+            };
+
+            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,20000, locListener); //Se actualiza la posición cada 20km
+
+        }catch(Exception ex){
+            Log.e("Error: ", ex.getMessage());
+        }
+    }
+
+    private Location getLastKnownLocation(LocationManager mLocationManager) {
+
+        //Checkear los permisos
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+        mLocationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
+    }
+
+    private void mostrarPosicion(Location loc){
+
+        // Configuramos la posición inicial
+        LatLng latLng=new LatLng(loc.getLatitude(),loc.getLongitude());
         CameraUpdate cameraUpdate= CameraUpdateFactory.newLatLngZoom(latLng,14); //zoom=14
         mMap.animateCamera(cameraUpdate);
         addMarkers=new addMarkers(); //Inicializamos addMarkers
