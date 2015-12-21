@@ -7,8 +7,13 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.alex.tictacpark.R;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,7 +51,11 @@ public class AlarmaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_alarma, container, false);
+        View v = inflater.inflate(R.layout.fragment_alarma, container, false);
+        TimePicker tp =(TimePicker)v.findViewById(R.id.timePicker);
+        tp.setIs24HourView(true);
+        RellenarTextView(v);
+        return v;
     }
 
     /**
@@ -62,6 +71,19 @@ public class AlarmaFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    private void RellenarTextView(View v)
+    {
+        TextView tiempo = (TextView)v.findViewById(R.id.tv_respuesta_tiempo);
+        TextView gasto = (TextView)v.findViewById(R.id.tv_respuesta_gasto);
+        TextView restante = (TextView)v.findViewById(R.id.tv_respuesta_restante);
+        TextView actualizacion = (TextView)v.findViewById(R.id.tv_respuesta_actualizacion);
+
+        // Obtener hora actual para completar el TextView actualización
+        Calendar cal= Calendar.getInstance();
+        SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
+        actualizacion.setText(sdf.format(cal.getTime()));
     }
 
 }
