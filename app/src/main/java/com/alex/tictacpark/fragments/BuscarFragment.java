@@ -1,6 +1,7 @@
 package com.alex.tictacpark.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -14,6 +15,7 @@ import android.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.alex.tictacpark.R;
+import com.alex.tictacpark.activities.MainActivity;
 import com.alex.tictacpark.activities.ParkingDetalle;
 import com.alex.tictacpark.activities.PruebaActividad;
 import com.google.android.gms.common.ConnectionResult;
@@ -85,25 +88,6 @@ public class BuscarFragment extends Fragment
     public BuscarFragment() {
         // Required empty public constructor
     }
-    /*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //Asignamos un layout
-        setContentView(R.layout.fragment_buscar);
-        //Decimos dónde se va a inflar el fragment
-        SupportMapFragment mapFragment=(SupportMapFragment)getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        //Inicializamos el objeto GoogleApiClient con las propiedades que va a tener
-        mGoogleApiClient=new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-        //Inicializamos el mLocationManager
-        mLocationManager=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        }
-*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -167,12 +151,9 @@ public class BuscarFragment extends Fragment
 
         try {
             //Se obtiene la última localización GPS
-            //final Location loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER); --> Puede devolver null
+           final Location loc = getLastKnownLocation(locManager);
 
-            //LocationManager mLocationManager;
-            final Location loc = getLastKnownLocation(locManager);
-
-            //Muestra la última posición
+            //Muestra la última posición o si no la encuentra, una por defecto
             mostrarPosicion(loc);
 
             //Nos registramos para recibir actualizaciones de la posición
@@ -216,30 +197,77 @@ public class BuscarFragment extends Fragment
                 ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
         mLocationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
-        List<String> providers = mLocationManager.getProviders(true);
-        Location bestLocation = null;
-        for (String provider : providers) {
-            Location l = mLocationManager.getLastKnownLocation(provider);
-            if (l == null) {
-                continue;
+
+        if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            List<String> providers = mLocationManager.getProviders(true);
+            Location bestLocation = null;
+            for (String provider : providers) {
+                Location l = mLocationManager.getLastKnownLocation(provider);
+                if (l == null) {
+                    continue;
+                }
+                if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                    // Found best last known location: %s", l);
+                    bestLocation = l;
+                }
             }
-            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                // Found best last known location: %s", l);
-                bestLocation = l;
-            }
+            return bestLocation;
         }
-        return bestLocation;
+        else{
+            showGPSDisabledAlertToUser();
+            return null;
+        }
     }
 
     private void mostrarPosicion(Location loc){
 
         // Configuramos la posición inicial
-        LatLng latLng=new LatLng(loc.getLatitude(),loc.getLongitude());
-        CameraUpdate cameraUpdate= CameraUpdateFactory.newLatLngZoom(latLng,14); //zoom=14
+        LatLng latLng;
+        int zoom;
+
+        if(loc==null)
+        {
+            latLng=new LatLng(40.43,-3.683); // Coordenadas Madrid
+            zoom=5;
+        }
+        else
+        {
+            latLng = new LatLng(loc.getLatitude(),loc.getLongitude());
+            zoom=14;
+        }
+        CameraUpdate cameraUpdate= CameraUpdateFactory.newLatLngZoom(latLng,zoom);
         mMap.animateCamera(cameraUpdate);
         addMarkers=new addMarkers(); //Inicializamos addMarkers
         addMarkers.execute(""); //Lanzamos addMarkers pasándole la url
     }
+
+    //Muestra cuadro de diálogo en caso de que el GPS esté desactivado
+    private void showGPSDisabledAlertToUser()
+    {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder
+                .setMessage(R.string.activacion_gps)
+                .setCancelable(false)
+                .setPositiveButton(R.string.activar_gps,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent callGPSSettingIntent = new Intent(
+                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(callGPSSettingIntent);
+
+                            }
+                        });
+
+        alertDialogBuilder.setNegativeButton(R.string.cancelar_gps,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }// ;
 
     @Override
     // Estado al que se vuelve tras cerrar la aplicación y ésta queda en segundo plano
@@ -269,47 +297,6 @@ public class BuscarFragment extends Fragment
         super.onLowMemory();
         mMapView.onLowMemory();
     }
-
-    /*@Override
-    // Estado tras la conexión
-    public void onConnected(Bundle bundle) {
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient,
-                REQUEST,
-                this);
-    }
-
-    @Override
-    // Estado cuando se cambia el foco de la localización
-    public void onLocationChanged(Location location) {
-        LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
-        CameraUpdate cameraUpdate= CameraUpdateFactory.newLatLngZoom(latLng,10); //zoom=10
-        mMap.animateCamera(cameraUpdate);
-    }
-
-    @Override
-    // Manipula el mapa una vez que esté disponible
-    // Si Google Play Services no está instalado en el dispositivo del usuario le advierte de que lo instale
-    public void onMapReady(GoogleMap googleMap) {
-        mMap=googleMap;
-        mMap.setMyLocationEnabled(true);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        // No hacer nada
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        // No hacer nada
-    }
-
-    @Override
-    public boolean onMyLocationButtonClick(){
-        Toast.makeText(getActivity(),"Click",Toast.LENGTH_SHORT).show();
-        return false;
-    }*/
 
     //Los markers se ponen a la escucha de click
     private Intent clickMarker(Marker marker)

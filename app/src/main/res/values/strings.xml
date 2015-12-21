@@ -17,6 +17,11 @@
     <string name="precios">Precios</string>
     <string name="descripcion">Descripción</string>
 
+    <!-- Strings para Diálogo de alerta GPS -->
+    <string name="activacion_gps">El GPS está desactivado en su dispositivo. ¿Desea activarlo?</string>
+    <string name="activar_gps">Activar GPS</string>
+    <string name="cancelar_gps">Cancelar</string>
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_parking_detalle">Titulo</string>
