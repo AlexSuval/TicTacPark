@@ -3,6 +3,7 @@ package com.alex.tictacpark.activities;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,6 +39,11 @@ public class MainActivity extends AppCompatActivity
     private static final String COCHE = "COCHE";
     private static final String HISTORIAL = "HISTORIAL";
 
+    //Se usará para el fichero de preferencias
+    private static final String PREFS_NAME = "PREFS";
+
+    NavigationView navigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,11 +57,43 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         Fragment mFragment=BuscarFragment.newInstance(0);
         inflate(mFragment,BUSCAR);
+
+        //Se oculta/activa el menú en función del estado correspondiente
+        ocultarMenu(navigationView);
+    }
+
+    public void ocultarMenu(NavigationView navigationView){
+        //Carga las preferencias de usuario
+        SharedPreferences sp = getSharedPreferences(PREFS_NAME,0);
+        boolean aparcado = sp.getBoolean("aparcado",false); //Recupera si está aparcado o no
+
+        if(aparcado==false)
+        {
+            //Desactiva las pestañas de Mi parking, alarma y gasto y volver al coche, del menú
+            navigationView.getMenu().findItem(R.id.nav_parking).setEnabled(false);
+            navigationView.getMenu().findItem(R.id.nav_alarma).setEnabled(false);
+            navigationView.getMenu().findItem(R.id.nav_coche).setEnabled(false);
+        }
+        else if (aparcado==true)
+        {
+            navigationView.getMenu().findItem(R.id.nav_parking).setEnabled(true);
+            navigationView.getMenu().findItem(R.id.nav_alarma).setEnabled(true);
+            navigationView.getMenu().findItem(R.id.nav_coche).setEnabled(true);
+        }
+    }
+
+    @Override
+    // Se ejecuta al volver de otra actividad, ejecutándose desde el principio
+    protected void onResume(){
+        super.onResume();
+        Log.e("Estado","onResume");
+        //Se oculta/activa el menú en función del estado correspondiente
+        ocultarMenu(navigationView);
     }
 
     @Override
@@ -74,7 +112,7 @@ public class MainActivity extends AppCompatActivity
         final FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.container,fragment,tag);
         transaction.commit();
-    }
+    }+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

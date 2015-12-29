@@ -2,9 +2,11 @@ package com.alex.tictacpark.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,6 +15,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.alex.tictacpark.R;
+import com.alex.tictacpark.activities.MainActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,6 +58,46 @@ public class ParkingFragment extends Fragment {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_parking, container, false);
 
+        //Comprobar actividad
+        //Si es MainActivity --> cargar preferencias de mi parking
+        //Si es ParkingDetalle
+            //Cargar SharedPreferences general
+            //Comprobar si hay un coche aparcado
+                //Si lo hay, comprobar nombre
+                    //Si es el mismo, se pone botón desaparcar
+                    //Sino, inhabilitar botón aparcar (no se podría aparcar hasta desaparcar antes)
+
+
+
+
+
+
+
+
+
+
+
+
+        //TODO: Cambiar valores de la base de datos (nombre, tipo...). Cambiar y subrayar TextView Dirección y Teléfono
+
+        // Si entramos a través de la actividad ParkingDetalle (es decir, clickando un Marker)
+        // Recuperamos las coordenadas del fichero de preferencias general
+        SharedPreferences sp_general=getActivity().getSharedPreferences("PREFS_GENERAL", 0);
+        final String longitud=sp_general.getString("longitud", ""); //Segundo parámetro=Valor por defecto
+        final String latitud=sp_general.getString("latitud", "");
+
+        final String url_map="http://maps.google.com/maps?q=loc:"+latitud+","+longitud;
+
+        //Asignar a variable el Botón Aparcar y asignar evento OnClick para realizar las
+        //acciones correspondientes
+        Button bt_aparcar=(Button)view.findViewById(R.id.b_aparcar);
+        bt_aparcar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickAparcar(v,longitud,latitud);
+            }
+        });
+
         //Asignar a variable el TextView dirección y asignar evento OnClick para abrir
         //GoogleMaps al clickar en dirección
         TextView tv_direccion=(TextView)view.findViewById(R.id.tv_direccion_parking);
@@ -60,7 +106,7 @@ public class ParkingFragment extends Fragment {
             public void onClick(View v) {
                 //Se crea el Intent
                 Intent intent=new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("http://maps.google.com/maps"));
+                        Uri.parse(url_map));
                 startActivity(intent);
             }
         });
@@ -88,9 +134,48 @@ public class ParkingFragment extends Fragment {
         return view;
     }
 
-    /*public void clickAparcar(View v){
-        Button boton=(Button)
-    }*/
+    // Ponemos la variable a true al dar click a APARCAR
+    public void clickAparcar(View v, String longitud, String latitud){
+        Button b = (Button) v.findViewById(R.id.b_aparcar);
+
+        SharedPreferences sp_general=getActivity().getSharedPreferences("PREFS_GENERAL", 0);
+        SharedPreferences.Editor editor_general = sp_general.edit();
+
+        SharedPreferences sp_mi_parking=getActivity().getSharedPreferences("PREFS_MI_PARKING", 0);
+        SharedPreferences.Editor editor_mi_parking = sp_mi_parking.edit();
+
+        boolean aparcado = sp_general.getBoolean("aparcado",false); //Recupera si está aparcado o no
+
+        if (!aparcado) {
+            //Guardamos la hora actual en la que se ha aparcado
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            editor_mi_parking.putString("hora", sdf.format(cal.getTime()));
+
+            //Cambiamos el estado a aparcado
+            editor_general.putBoolean("aparcado", true);
+
+            //Guardamos la longitud y latitud en el fichero de preferencias del parking aparcado
+            editor_mi_parking.putString("longitud",longitud);
+            editor_mi_parking.putString("latitud",longitud);
+
+            // Se cambia la apariencia del botón de Aparcar a Desaparcar
+            b.setText(R.string.desaparcar);
+
+            // Se muestran todas las pestañas del menú
+        }
+        else{
+            // Cambiamos el estado a desaparcado
+            editor_general.putBoolean("aparcado", false);
+
+            // Se cambia la apariencia del botón de Desaparcar a Aparcar
+            b.setText(R.string.aparcar);
+
+            //TODO: Añadir histórico al historial
+        }
+        editor_general.commit(); //Se guardan los cambios en el fichero
+        editor_mi_parking.commit();
+    }
 
     /**
      * This interface must be implemented by activities that contain this

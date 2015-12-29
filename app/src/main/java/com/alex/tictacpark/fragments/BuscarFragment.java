@@ -3,6 +3,7 @@ package com.alex.tictacpark.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -26,6 +27,7 @@ import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
 import com.alex.tictacpark.activities.ParkingDetalle;
 import com.alex.tictacpark.activities.PruebaActividad;
+import com.alex.tictacpark.models.Parking;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -43,6 +45,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BuscarFragment extends Fragment
@@ -58,6 +61,9 @@ public class BuscarFragment extends Fragment
     //private GoogleApiClient mGoogleApiClient;
     private LocationManager mLocationManager;
     private addMarkers addMarkers;
+
+    //Inicializamos el ArrayList, que contendrá todos los objetos Parking
+    private ArrayList<Parking> list_parking=new ArrayList<Parking>();
 
     //Configuración del mapa
     //Establece mi posición
@@ -299,11 +305,23 @@ public class BuscarFragment extends Fragment
     }
 
     //Los markers se ponen a la escucha de click
-    private Intent clickMarker(Marker marker)
+    private Intent clickMarker(Parking parking)
     {
         Intent intent=new Intent(getActivity(),ParkingDetalle.class);
         //Le pasamos datos (el nombre del parking) a la actividad
-        intent.putExtra(ParkingDetalle.NOMBRE,marker.getTitle());
+        intent.putExtra(ParkingDetalle.NOMBRE,parking.getNombre());
+        //Sobreescribe las coordenadas (Longitud y latitud) en el fichero de preferencias general
+        SharedPreferences sp_general=getActivity().getSharedPreferences("PREFS_GENERAL", 0);
+        //boolean aparcado=sp_general.getBoolean("aparcado",false);//Segundo parámetro=Valor por defecto
+        //if(!aparcado) {
+            SharedPreferences.Editor editor = sp_general.edit();
+            String longitud=Double.toString(parking.getLongitud());
+            String latitud=Double.toString(parking.getLatitud());
+            editor.putString("longitud", longitud);
+            editor.putString("latitud", latitud);
+            editor.commit(); //Se guardan los cambios en el fichero
+        //}
+        intent.put
         return intent;
     }
 
@@ -320,32 +338,43 @@ public class BuscarFragment extends Fragment
         protected void onPreExecute()
         {
             super.onPreExecute();
+
+            // Creamos los objetos Parking
+            Parking Molinon = new Parking("Parking El Molinón", 43.535667, -5.635787);
+            Parking Europa = new Parking("Parking Plaza Europa", 43.5385763,-5.664812);
+            Parking Begona = new Parking("Parking Begoña", 43.5374459,-5.6623837);
+            Parking Nautico = new Parking("Parking El Náutico", 43.5420452,-5.6614269);
+            Parking Fomento = new Parking("Parking Fomento", 43.5420643,-5.667993);
+
+            // Los metemos en el ArrayList de Parkings
+            list_parking.add(Molinon);
+            list_parking.add(Europa);
+            list_parking.add(Begona);
+            list_parking.add(Nautico);
+            list_parking.add(Fomento);
         }
 
         @Override
         protected void onPostExecute(Void aVoid)
         {
             super.onPostExecute(aVoid);
-            LatLng Molinon = new LatLng(43.535667, -5.635787);
-            LatLng Europa = new LatLng(43.5385763,-5.664812);
-            LatLng Begona = new LatLng(43.5374459,-5.6623837);
-            LatLng Nautico = new LatLng(43.5420452,-5.6614269);
-            LatLng Fomento = new LatLng(43.5420643,-5.667993);
 
-            showMarker(Molinon,"Parking El Molinón");
-            showMarker(Europa,"Parking Plaza Europa");
-            showMarker(Begona,"Parking Begoña");
-            showMarker(Nautico,"Parking El Náutico");
-            showMarker(Fomento, "Parking Fomento");
+            //for que recorre la lista de parkings y crea los markers
+            for(int i=0; i<list_parking.size(); i++)
+            {
+                Parking parking = list_parking.get(i);
+                // Creamos coordenadas
+                LatLng Coordenadas = new LatLng(parking.getLatitud(), parking.getLongitud());
+                // Mostramos los markers
+                showMarker(Coordenadas, parking.getNombre());
+            }
 
             //Escucha a que le demos click a algún marker
-            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener()
-            {
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 //Se identifica qué marker se está pulsando
-                public void onInfoWindowClick(Marker marker)
-                {
+                public void onInfoWindowClick(Marker marker) {
                     //Genera el intent y empieza la actividad a través del intent
-                    Intent intent=clickMarker(marker);
+                    Intent intent = clickMarker(marker);
                     startActivity(intent);
                 }
             });

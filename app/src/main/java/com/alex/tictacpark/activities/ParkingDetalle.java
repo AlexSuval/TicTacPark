@@ -21,6 +21,8 @@ import com.alex.tictacpark.fragments.ParkingFragment;
 public class ParkingDetalle extends AppCompatActivity {
 
     public static final String NOMBRE = "com.alex.tictacpark.NOMBRE";
+    public static final String LONGITUD = "com.alex.tictacpark.LONGITUDE";
+    public static final String LATITUD = "com.alex.tictacpark.LATITUDE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
