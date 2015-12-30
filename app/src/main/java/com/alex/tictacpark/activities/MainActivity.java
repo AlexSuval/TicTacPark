@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
     private static final String HISTORIAL = "HISTORIAL";
 
     //Se usará para el fichero de preferencias
-    private static final String PREFS_NAME = "PREFS";
+    private static final String PREFS_MI_PARKING = "PREFS_MI_PARKING";
 
     NavigationView navigationView;
 
@@ -69,18 +69,19 @@ public class MainActivity extends AppCompatActivity
 
     public void ocultarMenu(NavigationView navigationView){
         //Carga las preferencias de usuario
-        SharedPreferences sp = getSharedPreferences(PREFS_NAME,0);
-        boolean aparcado = sp.getBoolean("aparcado",false); //Recupera si está aparcado o no
+        SharedPreferences sp = getSharedPreferences(PREFS_MI_PARKING,0);
+        int id = sp.getInt("id", -1); //Recupera si está aparcado o no
 
-        if(aparcado==false)
+        if(id==-1)
         {
             //Desactiva las pestañas de Mi parking, alarma y gasto y volver al coche, del menú
             navigationView.getMenu().findItem(R.id.nav_parking).setEnabled(false);
             navigationView.getMenu().findItem(R.id.nav_alarma).setEnabled(false);
             navigationView.getMenu().findItem(R.id.nav_coche).setEnabled(false);
         }
-        else if (aparcado==true)
+        else
         {
+            //Activa las pestañas de Mi parking, alarma y gasto y volver al coche, del menú
             navigationView.getMenu().findItem(R.id.nav_parking).setEnabled(true);
             navigationView.getMenu().findItem(R.id.nav_alarma).setEnabled(true);
             navigationView.getMenu().findItem(R.id.nav_coche).setEnabled(true);
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity
         final FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.container,fragment,tag);
         transaction.commit();
-    }+
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

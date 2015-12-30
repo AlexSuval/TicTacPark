@@ -32,6 +32,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import android.location.LocationListener;
+
+import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -305,9 +307,36 @@ public class BuscarFragment extends Fragment
     }
 
     //Los markers se ponen a la escucha de click
-    private Intent clickMarker(Parking parking)
+    private Intent clickMarker(Marker marker, Parking parking)
     {
+        // Coger latitud del marker
+        double latitud=marker.getPosition().latitude;
+        // Coger longitud del marker
+        double longitud=marker.getPosition().longitude;
+        // Buscar en el ArrayList el id del objeto con esas coordenadas
+        int index=-1;
+        for(Parking p:list_parking){
+            if (p.getLatitud()==latitud && p.getLongitud()==longitud)
+            {
+                index=p.getId();
+            }
+        }
+
+            Parking parking_clickado = list_parking.get(index);
+
         Intent intent=new Intent(getActivity(),ParkingDetalle.class);
+
+        // Metemos el parking clickado en un ArrayList, para no tener que pasarle a la actividad
+        // el ArrayList con todos los objetos parking
+        ArrayList<Parking> parking_clickado_list = new ArrayList<Parking>();
+        parking_clickado_list.add(parking_clickado);
+
+        // Pasamos el parking_clickado a la actividad
+        intent.putParcelableArrayListExtra("parking_clickado", parking_clickado_list);
+
+
+
+/*
         //Le pasamos datos (el nombre del parking) a la actividad
         intent.putExtra(ParkingDetalle.NOMBRE,parking.getNombre());
         //Sobreescribe las coordenadas (Longitud y latitud) en el fichero de preferencias general
@@ -320,8 +349,7 @@ public class BuscarFragment extends Fragment
             editor.putString("longitud", longitud);
             editor.putString("latitud", latitud);
             editor.commit(); //Se guardan los cambios en el fichero
-        //}
-        intent.put
+        //}´*/
         return intent;
     }
 
@@ -373,8 +401,9 @@ public class BuscarFragment extends Fragment
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 //Se identifica qué marker se está pulsando
                 public void onInfoWindowClick(Marker marker) {
+                    Parking prueba=new Parking("Parking Prueba", 45, -3);
                     //Genera el intent y empieza la actividad a través del intent
-                    Intent intent = clickMarker(marker);
+                    Intent intent = clickMarker(marker,prueba);
                     startActivity(intent);
                 }
             });

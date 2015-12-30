@@ -9,6 +9,7 @@ import java.io.Serializable;
  * Created by Alex on 29/12/2015.
  */
 public class Parking implements Parcelable {
+    private int Id;
     private String Nombre;
     private String Direccion;
     private String Localidad;
@@ -45,6 +46,14 @@ public class Parking implements Parcelable {
         this.Nombre = Nombre;
         this.Latitud = Latitud;
         this.Longitud = Longitud;
+    }
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
     }
 
     public double getLatitud() {
@@ -260,10 +269,10 @@ public class Parking implements Parcelable {
         return hashCode();
     }
 
-    
     // Este método nos permitirá pasar el objeto de un fragment a otro con un Intent
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(Id);
         dest.writeString (Nombre);
         dest.writeString (Direccion);
         dest.writeString (Localidad);
@@ -298,14 +307,15 @@ public class Parking implements Parcelable {
     /**
      * It will be required during un-marshaling data stored in a Parcel
      */
-    public class MyCreator implements Parcelable.Creator<Parking> {
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Parking createFromParcel(Parcel source) {
             return new Parking(source);
         }
+
         public Parking[] newArray(int size) {
             return new Parking[size];
         }
-    }
+    };
 
     /**
      * This will be used only by the MyCreator
@@ -315,6 +325,7 @@ public class Parking implements Parcelable {
             /*
              * Reconstruct from the Parcel
              */
+        Id=source.readInt();
         Nombre=source.readString();
         Direccion=source.readString();
         Localidad=source.readString();
@@ -342,5 +353,4 @@ public class Parking implements Parcelable {
         Servicio_24h=source.readByte();
         Descripcion=source.readString();
     }
-
 }
