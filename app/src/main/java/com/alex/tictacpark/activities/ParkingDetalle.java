@@ -40,11 +40,6 @@ public class ParkingDetalle extends AppCompatActivity {
             ft.add(R.id.container,newFragment).commit();
         }
 
-        //Coge el Intent y pone el nombre del parking en la barra
-        Intent intent = getIntent();
-        String nombre=intent.getStringExtra(NOMBRE);
-        getSupportActionBar().setTitle(nombre);
-
         //Infla el icono de vuelta atrás
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -60,5 +55,10 @@ public class ParkingDetalle extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    // Método para poner el nombre del Parking en la barra
+    public void setActionBarTitle(String title){
+        getSupportActionBar().setTitle(title);
     }
 }

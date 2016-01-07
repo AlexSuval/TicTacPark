@@ -307,7 +307,7 @@ public class BuscarFragment extends Fragment
     }
 
     //Los markers se ponen a la escucha de click
-    private Intent clickMarker(Marker marker, Parking parking)
+    private Intent clickMarker(Marker marker)
     {
         // Coger latitud del marker
         double latitud=marker.getPosition().latitude;
@@ -322,7 +322,7 @@ public class BuscarFragment extends Fragment
             }
         }
 
-            Parking parking_clickado = list_parking.get(index);
+        Parking parking_clickado = list_parking.get(index);
 
         Intent intent=new Intent(getActivity(),ParkingDetalle.class);
 
@@ -368,11 +368,11 @@ public class BuscarFragment extends Fragment
             super.onPreExecute();
 
             // Creamos los objetos Parking
-            Parking Molinon = new Parking("Parking El Molinón", 43.535667, -5.635787);
-            Parking Europa = new Parking("Parking Plaza Europa", 43.5385763,-5.664812);
-            Parking Begona = new Parking("Parking Begoña", 43.5374459,-5.6623837);
-            Parking Nautico = new Parking("Parking El Náutico", 43.5420452,-5.6614269);
-            Parking Fomento = new Parking("Parking Fomento", 43.5420643,-5.667993);
+            Parking Molinon = new Parking(0, "Parking El Molinón", 43.535667, -5.635787, "987654321");
+            Parking Europa = new Parking(1, "Parking Plaza Europa", 43.5385763,-5.664812, "987654322");
+            Parking Begona = new Parking(2, "Parking Begoña", 43.5374459,-5.6623837, "987654323");
+            Parking Nautico = new Parking(3, "Parking El Náutico", 43.5420452,-5.6614269, "987654324");
+            Parking Fomento = new Parking(4, "Parking Fomento", 43.5420643,-5.667993, "987654325");
 
             // Los metemos en el ArrayList de Parkings
             list_parking.add(Molinon);
@@ -401,9 +401,8 @@ public class BuscarFragment extends Fragment
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 //Se identifica qué marker se está pulsando
                 public void onInfoWindowClick(Marker marker) {
-                    Parking prueba=new Parking("Parking Prueba", 45, -3);
                     //Genera el intent y empieza la actividad a través del intent
-                    Intent intent = clickMarker(marker,prueba);
+                    Intent intent = clickMarker(marker);
                     startActivity(intent);
                 }
             });

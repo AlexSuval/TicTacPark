@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
+import com.alex.tictacpark.activities.ParkingDetalle;
 import com.alex.tictacpark.models.Parking;
 
 import java.text.SimpleDateFormat;
@@ -72,43 +73,48 @@ public class ParkingFragment extends Fragment {
 
         Bundle b=getActivity().getIntent().getExtras();
         Parking parking_aparcado = new Parking();
+        String longitud;
+        String latitud;
+        final String telefono;
+        final String url_map;
 
         // Si este bundle está vacío es que se entró desde el menú (no se creó Intent)
         if(b==null)
         {
             Log.e("Activity","Menú");
+            // Abrimos el fichero de preferencias
+            SharedPreferences sp_mi_parking=getActivity().getSharedPreferences("PREFS_MI_PARKING", 0);
+            SharedPreferences.Editor editor_mi_parking = sp_mi_parking.edit();
+
+            // Recuperamos el nombre del fichero de preferencias mi parking
+            parking_aparcado.setNombre(sp_mi_parking.getString("nombre", ""));//Segundo parámetro=Valor por defecto
+            parking_aparcado.setLongitud(sp_mi_parking.getFloat("longitud", 0));
+            parking_aparcado.setLatitud(sp_mi_parking.getFloat("latitud", 0));
+
+            // Ponemos el nombre del parking en la barra
+            ((MainActivity) getActivity()).setActionBarTitle(parking_aparcado.getNombre());
+
+
         }
         // Sino se entró pulsando un marker
         else
         {
             Log.e("Activity","Marker");
+            // Reseteamos el ArrayList
+            ArrayList<Parking> parking_clickado = new ArrayList<Parking>();
             // Recuperamos el ArrayList con la info del objeto Parking que hemos clickado
             Intent intent=getActivity().getIntent();
-            ArrayList<Parking> parking_clickado=intent.getParcelableArrayListExtra("parking_clickado");
+            parking_clickado=intent.getParcelableArrayListExtra("parking_clickado");
             parking_aparcado = parking_clickado.get(0);
-            Log.e("Parking_clickado",parking_aparcado.getNombre());
+            Log.e("Parking_clickado", parking_aparcado.getNombre());
+            // Ponemos el nombre del parking en la barra
+            ((ParkingDetalle) getActivity()).setActionBarTitle(parking_aparcado.getNombre());
         }
 
         final Parking p = parking_aparcado;
 
-
-
-
-
-
-
-
-
         //TODO: Cambiar valores de la base de datos (nombre, tipo...). Cambiar y subrayar TextView Dirección y Teléfono
 
-        // Si entramos a través de la actividad ParkingDetalle (es decir, clickando un Marker)
-        // Recuperamos las coordenadas del fichero de preferencias general
-        /*SharedPreferences sp_general=getActivity().getSharedPreferences("PREFS_GENERAL", 0);
-        final String longitud=sp_general.getString("longitud", ""); //Segundo parámetro=Valor por defecto
-        final String latitud=sp_general.getString("latitud", "");
-
-        final String url_map="http://maps.google.com/maps?q=loc:"+latitud+","+longitud;
-*/
         //Asignar a variable el Botón Aparcar y asignar evento OnClick para realizar las
         //acciones correspondientes
         Button bt_aparcar=(Button)view.findViewById(R.id.b_aparcar);
@@ -118,9 +124,13 @@ public class ParkingFragment extends Fragment {
                 clickAparcar(v, p);
             }
         });
-/*
+
+        // Recuperamos las coordenadas
+        longitud=Double.toString(parking_aparcado.getLongitud());
+        latitud=Double.toString(parking_aparcado.getLatitud());
         //Asignar a variable el TextView dirección y asignar evento OnClick para abrir
         //GoogleMaps al clickar en dirección
+        url_map="http://maps.google.com/maps?q=loc:"+latitud+","+longitud;
         TextView tv_direccion=(TextView)view.findViewById(R.id.tv_direccion_parking);
         tv_direccion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +142,8 @@ public class ParkingFragment extends Fragment {
             }
         });
 
+        // Recuperamos el teléfono
+        telefono=parking_aparcado.getTelefono();
         //Asignar a variable el TextView teléfono y asignar evento OnClick para abrir
         //la aplicación para llamar al clickar en teléfono
         TextView tv_telefono=(TextView)view.findViewById(R.id.tv_telefono_parking);
@@ -141,7 +153,7 @@ public class ParkingFragment extends Fragment {
                 //Se crea el Intent
                 Intent intent=new Intent();
                 intent.setAction("android.intent.action.DIAL");
-                intent.setData(Uri.parse("tel:"+"987654321"));
+                intent.setData(Uri.parse("tel:"+telefono));
                 startActivity(intent);
             }
         });
@@ -151,7 +163,7 @@ public class ParkingFragment extends Fragment {
                 return true;
             }
         });
-*/
+
         return view;
     }
 

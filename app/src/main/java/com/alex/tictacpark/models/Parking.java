@@ -42,10 +42,12 @@ public class Parking implements Parcelable {
     }
 
     // Constructor con coordenadas
-    public Parking(String Nombre, double Latitud, double Longitud){
+    public Parking(int Id, String Nombre, double Latitud, double Longitud, String Telefono){
+        this.Id = Id;
         this.Nombre = Nombre;
         this.Latitud = Latitud;
         this.Longitud = Longitud;
+        this.Telefono = Telefono;
     }
 
     public int getId() {

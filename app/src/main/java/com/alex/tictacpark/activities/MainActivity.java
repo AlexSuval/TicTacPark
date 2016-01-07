@@ -162,4 +162,8 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    // Método para poner el nombre del Parking en la barra
+    public void setActionBarTitle(String title){
+        getSupportActionBar().setTitle(title);
+    }
 }
