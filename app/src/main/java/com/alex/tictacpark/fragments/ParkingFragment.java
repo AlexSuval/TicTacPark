@@ -151,18 +151,25 @@ public class ParkingFragment extends Fragment {
             Intent intent=getActivity().getIntent();
             parking_clickado=intent.getParcelableArrayListExtra("parking_clickado");
             parking_aparcado = parking_clickado.get(0);
-            Log.e("Parking_clickado", parking_aparcado.getNombre());
             // Ponemos el nombre del parking en la barra
             ((ParkingDetalle) getActivity()).setActionBarTitle(parking_aparcado.getNombre());
         }
 
         final Parking p = parking_aparcado;
 
+        Button bt_aparcar=(Button)view.findViewById(R.id.b_aparcar);
+
+        SharedPreferences sp_mi_parking=getActivity().getSharedPreferences("PREFS_MI_PARKING", 0);
+        int id=sp_mi_parking.getInt("id", -1);
+        //String Nombre=sp_mi_parking.getString("nombre","");
+        if(parking_aparcado.getId()==id)
+            bt_aparcar.setText("DESAPARCAR");
+
         //TODO: Cambiar valores de la base de datos (nombre, tipo...). Cambiar y subrayar TextView Dirección y Teléfono
 
         //Asignar a variable el Botón Aparcar y asignar evento OnClick para realizar las
         //acciones correspondientes
-        Button bt_aparcar=(Button)view.findViewById(R.id.b_aparcar);
+
         bt_aparcar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -263,23 +270,27 @@ public class ParkingFragment extends Fragment {
 
                 //Se cambia la apariencia del botón de APARCAR (activo) a DESAPARCAR (activo).
                 b.setText(R.string.desaparcar);
+
             }
             else
             {
-                // TODO Comprobar que funciona
-                // Diálogo que avisa al usuario de que ya está aparcado
-                AlertDialog alertDialog=new AlertDialog.Builder(getActivity())
-                        .setIcon(android.R.drawable.alert_light_frame)
-                        .setTitle("Ya aparcado")
-                        .setMessage("Su coche se encuentra estacionado en otro parking, +" +
-                                "desaparque en la pestaña Mi parking antes de aparcar +" +
-                                "en este estacionamiento")
-                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                if(id!=parking.getId()) {
+                    // TODO Comprobar que funciona
+                    // Diálogo que avisa al usuario de que ya está aparcado
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle("Ya aparcado")
+                            .setMessage("Su coche se encuentra estacionado en otro parking," +
+                                    "desaparque en la pestaña Mi parking antes de aparcar" +
+                                    "en este estacionamiento")
+                            .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
 
-                            }
-                        }).create();
+                                }
+                            }).create();
+                    alertDialog.show();
+                }
             }
         }
         else // DESAPARCAR
@@ -297,6 +308,9 @@ public class ParkingFragment extends Fragment {
             // Se guarda la hora actual en el fichero de preferencias mi parking  hora_final.
             // Se añade fichero al historial generado a partir de los datos almacenados en el fichero de preferencias mi parking y las operaciones correspondientes.
         }
+
+        //Se guardan los cambios en el fichero
+        editor_mi_parking.commit();
 
         //TODO Comprobar que manda mensaje a MainActivity para Activar/Ocultar las pestañas del menú
         Log.e("sender", "Broadcasting message");

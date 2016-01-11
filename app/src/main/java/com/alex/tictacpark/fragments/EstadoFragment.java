@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.alex.tictacpark.R;
+import com.alex.tictacpark.activities.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,8 +45,14 @@ public class EstadoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_estado, container, false);
+        View rootView;
+        //Asignamos un layout
+        rootView=inflater.inflate(R.layout.fragment_estado, container, false); //layout
+
+        // Ponemos el nombre "Estado" en la barra
+        ((MainActivity) getActivity()).setActionBarTitle("Estado");
+
+        return rootView;
     }
 
      /**

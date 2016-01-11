@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.alex.tictacpark.R;
+import com.alex.tictacpark.activities.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -55,6 +56,9 @@ public class AlarmaFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.fragment_alarma, container, false);
+
+        // Ponemos el nombre "Alarma y gasto" en la barra
+        ((MainActivity) getActivity()).setActionBarTitle("Alarma y gasto");
 
         //Se configura el TimePicker en formato 24h
         TimePicker tp =(TimePicker)v.findViewById(R.id.timePicker);

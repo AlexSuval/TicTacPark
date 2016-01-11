@@ -105,6 +105,9 @@ public class BuscarFragment extends Fragment
         mMapView=(MapView) rootView.findViewById(R.id.map); //mapa en sí
         mMapView.onCreate(savedInstanceState);
 
+        // Ponemos el nombre "Buscar" en la barra
+        ((MainActivity) getActivity()).setActionBarTitle("Buscar");
+
         /*
         //Inicializamos el objeto GoogleApiClient con las propiedades que va a tener
         mGoogleApiClient=new GoogleApiClient.Builder(getActivity()) //getActivity para sacar el contexto de la actividad
