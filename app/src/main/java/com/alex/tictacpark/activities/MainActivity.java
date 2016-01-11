@@ -2,13 +2,17 @@ package com.alex.tictacpark.activities;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -64,9 +68,39 @@ public class MainActivity extends AppCompatActivity
         inflate(mFragment,BUSCAR);
 
         //Se oculta/activa el menú en función del estado correspondiente
-        ocultarMenu(navigationView);
+        //ocultarMenu(navigationView);
+//TODO TRADUCIR
+        // Registrar para recibir mensajes.
+        // We are registering an observer (mMessageReceiver) to receive Intents
+        // with actions named "custom-event-name".
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("custom-event-name"));
     }
 
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "custom-event-name" is broadcasted.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("MOSTRAR_OCULTAR");
+            boolean ocultar;
+            if(message=="OCULTAR")
+                ocultar=true;
+            else
+                ocultar=false;
+            mostrar_ocultarMenu(ocultar);
+            Log.e("receiver", "Got message: " + message);
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
+    }
+/*
     public void ocultarMenu(NavigationView navigationView){
         //Carga las preferencias de usuario
         SharedPreferences sp = getSharedPreferences(PREFS_MI_PARKING,0);
@@ -87,6 +121,15 @@ public class MainActivity extends AppCompatActivity
             navigationView.getMenu().findItem(R.id.nav_coche).setEnabled(true);
         }
     }
+*/
+
+    public void mostrar_ocultarMenu(boolean ocultar)
+    {
+        //Desactiva/Activa las pestañas de Mi parking, alarma y gasto y volver al coche, del menú
+        navigationView.getMenu().findItem(R.id.nav_parking).setEnabled(!ocultar);
+        navigationView.getMenu().findItem(R.id.nav_alarma).setEnabled(!ocultar);
+        navigationView.getMenu().findItem(R.id.nav_coche).setEnabled(!ocultar);
+    }
 
     @Override
     // Se ejecuta al volver de otra actividad, ejecutándose desde el principio
@@ -94,7 +137,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         Log.e("Estado","onResume");
         //Se oculta/activa el menú en función del estado correspondiente
-        ocultarMenu(navigationView);
+        //ocultarMenu(navigationView);
     }
 
     @Override

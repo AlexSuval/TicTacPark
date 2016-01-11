@@ -1,11 +1,14 @@
 package com.alex.tictacpark.fragments;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -86,15 +89,57 @@ public class ParkingFragment extends Fragment {
             SharedPreferences sp_mi_parking=getActivity().getSharedPreferences("PREFS_MI_PARKING", 0);
             SharedPreferences.Editor editor_mi_parking = sp_mi_parking.edit();
 
-            // Recuperamos el nombre del fichero de preferencias mi parking
-            parking_aparcado.setNombre(sp_mi_parking.getString("nombre", ""));//Segundo parámetro=Valor por defecto
-            parking_aparcado.setLongitud(sp_mi_parking.getFloat("longitud", 0));
+            // Recuperamos los campos del fichero de preferencias mi parking y los metemos en el
+            // objeto parking_aparcado
+            parking_aparcado.setId(sp_mi_parking.getInt("id", -1));//Segundo parámetro=Valor por defecto
+            parking_aparcado.setNombre(sp_mi_parking.getString("nombre", ""));
+            parking_aparcado.setDireccion(sp_mi_parking.getString("direccion", ""));
+            parking_aparcado.setLocalidad(sp_mi_parking.getString("localidad", ""));
+            parking_aparcado.setProvincia(sp_mi_parking.getString("provincia", ""));
             parking_aparcado.setLatitud(sp_mi_parking.getFloat("latitud", 0));
+            parking_aparcado.setLongitud(sp_mi_parking.getFloat("longitud", 0));
+            parking_aparcado.setTelefono(sp_mi_parking.getString("telefono", ""));
+            parking_aparcado.setImagen(sp_mi_parking.getString("imagen", ""));
+            parking_aparcado.setTipo(sp_mi_parking.getString("tipo", ""));
+            parking_aparcado.setEstado(sp_mi_parking.getString("estado", ""));
+            parking_aparcado.setPrecio(sp_mi_parking.getFloat("precio", 0));
+            parking_aparcado.setHorario_Apertura(sp_mi_parking.getString("horario_apertura", ""));
+            parking_aparcado.setHorario_Cierre(sp_mi_parking.getString("horario_cierre", ""));
+            parking_aparcado.setTiempo_Maximo(sp_mi_parking.getFloat("tiempo_maximo", 0));
+            parking_aparcado.setPlazas(sp_mi_parking.getInt("plazas", -1));
+            parking_aparcado.setAltura_Minima(sp_mi_parking.getFloat("altura_minima", 0));
+
+            boolean adaptado_discapacidad=sp_mi_parking.getBoolean("adaptado_discapacidad", false);
+            parking_aparcado.setAdaptado_Discapacidad((byte) (adaptado_discapacidad ? 1 : 0)); //Convertimos de bool a byte para meterlo en el objeto
+
+            boolean plazas_discapacidad=sp_mi_parking.getBoolean("plazas_discapacidad", false);
+            parking_aparcado.setPlazas_Discapacidad((byte) (plazas_discapacidad ? 1 : 0));
+
+            boolean motos=sp_mi_parking.getBoolean("motos", false);
+            parking_aparcado.setMotos((byte) (motos ? 1 : 0));
+
+            boolean aseos=sp_mi_parking.getBoolean("aseos", false);
+            parking_aparcado.setAseos((byte) (aseos ? 1 : 0));
+
+            boolean tarjeta=sp_mi_parking.getBoolean("tarjeta", false);
+            parking_aparcado.setTarjeta((byte) (tarjeta ? 1 : 0));
+
+            boolean seguridad=sp_mi_parking.getBoolean("seguridad", false);
+            parking_aparcado.setSeguridad((byte) (seguridad ? 1 : 0));
+
+            boolean coches_electricos=sp_mi_parking.getBoolean("coches_electricos", false);
+            parking_aparcado.setCoches_Electricos((byte) (coches_electricos ? 1 : 0));
+
+            boolean lavado=sp_mi_parking.getBoolean("lavado", false);
+            parking_aparcado.setLavado((byte) (lavado ? 1 : 0));
+
+            boolean servicio_24h=sp_mi_parking.getBoolean("servicio_24h", false);
+            parking_aparcado.setServicio_24h((byte) (servicio_24h ? 1 : 0));
+
+            parking_aparcado.setDescripcion(sp_mi_parking.getString("descripcion", ""));
 
             // Ponemos el nombre del parking en la barra
             ((MainActivity) getActivity()).setActionBarTitle(parking_aparcado.getNombre());
-
-
         }
         // Sino se entró pulsando un marker
         else
@@ -170,53 +215,76 @@ public class ParkingFragment extends Fragment {
     // Ponemos la variable a true al dar click a APARCAR
     public void clickAparcar(View v, Parking parking){
         Button b = (Button) v.findViewById(R.id.b_aparcar);
+        String Mensaje;
 
         SharedPreferences sp_mi_parking=getActivity().getSharedPreferences("PREFS_MI_PARKING", 0);
         SharedPreferences.Editor editor_mi_parking = sp_mi_parking.edit();
 
         if(b.getText().equals("APARCAR")){ // APARCAR
-            // Rellenamos todos los campos del fichero de preferencias mi_parking con su id correspondiente
-            // (que al ser distinto de -1 ya especifica que se ha aparcado)
-            editor_mi_parking.putInt("id", parking.getId());
-            editor_mi_parking.putString("nombre", parking.getNombre());
-            editor_mi_parking.putString("direccion", parking.getDireccion());
-            editor_mi_parking.putString("localidad", parking.getLocalidad());
-            editor_mi_parking.putString("provincia", parking.getProvincia());
-            editor_mi_parking.putFloat("latitud", (float) parking.getLatitud());
-            editor_mi_parking.putFloat("longitud", (float) parking.getLongitud());
-            editor_mi_parking.putString("telefono", parking.getTelefono());
-            editor_mi_parking.putString("imagen", parking.getImagen());
-            editor_mi_parking.putString("tipo", parking.getTipo());
-            editor_mi_parking.putString("estado", parking.getEstado());
-            editor_mi_parking.putFloat("precio", (float) parking.getPrecio());
-            editor_mi_parking.putString("horario_apertura", parking.getHorario_Apertura());
-            editor_mi_parking.putString("horario_cierre", parking.getHorario_Cierre());
-            editor_mi_parking.putFloat("tiempo_maximo", (float) parking.getTiempo_Maximo());
-            editor_mi_parking.putInt("plazas", parking.getPlazas());
-            editor_mi_parking.putFloat("altura_minima", (float) parking.getAltura_Minima());
-            editor_mi_parking.putBoolean("adaptado_discapacidad", parking.isAdaptado_Discapacidad()!=0); // Convierto de Byte a Boolean
-            editor_mi_parking.putBoolean("plazas_discapacidad", parking.isPlazas_Discapacidad()!=0);
-            editor_mi_parking.putBoolean("motos", parking.isMotos()!=0);
-            editor_mi_parking.putBoolean("aseos", parking.isAseos()!=0);
-            editor_mi_parking.putBoolean("tarjeta", parking.isTarjeta()!=0);
-            editor_mi_parking.putBoolean("seguridad", parking.isSeguridad() != 0);
-            editor_mi_parking.putBoolean("coches_electricos", parking.isCoches_Electricos() != 0);
-            editor_mi_parking.putBoolean("lavado", parking.isLavado() != 0);
-            editor_mi_parking.putBoolean("servicio_24h", parking.isServicio_24h() != 0);
-            editor_mi_parking.putString("descripcion", parking.getDescripcion());
+            Mensaje="MOSTRAR";
+            int id=sp_mi_parking.getInt("id", -1);
+            if(id==-1)  // No estamos aparcados en ningún sitio --> Podemos aparcar
+            {
+                // TODO Comprobar funcionamiento de float y byte
+                // Rellenamos todos los campos del fichero de preferencias mi_parking con su id correspondiente
+                // (que al ser distinto de -1 ya especifica que se ha aparcado)
+                editor_mi_parking.putInt("id", parking.getId());
+                editor_mi_parking.putString("nombre", parking.getNombre());
+                editor_mi_parking.putString("direccion", parking.getDireccion());
+                editor_mi_parking.putString("localidad", parking.getLocalidad());
+                editor_mi_parking.putString("provincia", parking.getProvincia());
+                editor_mi_parking.putFloat("latitud", (float) parking.getLatitud());
+                editor_mi_parking.putFloat("longitud", (float) parking.getLongitud());
+                editor_mi_parking.putString("telefono", parking.getTelefono());
+                editor_mi_parking.putString("imagen", parking.getImagen());
+                editor_mi_parking.putString("tipo", parking.getTipo());
+                editor_mi_parking.putString("estado", parking.getEstado());
+                editor_mi_parking.putFloat("precio", (float) parking.getPrecio());
+                editor_mi_parking.putString("horario_apertura", parking.getHorario_Apertura());
+                editor_mi_parking.putString("horario_cierre", parking.getHorario_Cierre());
+                editor_mi_parking.putFloat("tiempo_maximo", (float) parking.getTiempo_Maximo());
+                editor_mi_parking.putInt("plazas", parking.getPlazas());
+                editor_mi_parking.putFloat("altura_minima", (float) parking.getAltura_Minima());
+                editor_mi_parking.putBoolean("adaptado_discapacidad", parking.isAdaptado_Discapacidad() != 0); // Convierto de Byte a Boolean
+                editor_mi_parking.putBoolean("plazas_discapacidad", parking.isPlazas_Discapacidad() != 0);
+                editor_mi_parking.putBoolean("motos", parking.isMotos() != 0);
+                editor_mi_parking.putBoolean("aseos", parking.isAseos() != 0);
+                editor_mi_parking.putBoolean("tarjeta", parking.isTarjeta() != 0);
+                editor_mi_parking.putBoolean("seguridad", parking.isSeguridad() != 0);
+                editor_mi_parking.putBoolean("coches_electricos", parking.isCoches_Electricos() != 0);
+                editor_mi_parking.putBoolean("lavado", parking.isLavado() != 0);
+                editor_mi_parking.putBoolean("servicio_24h", parking.isServicio_24h() != 0);
+                editor_mi_parking.putString("descripcion", parking.getDescripcion());
 
-            //Se guarda la hora actual en el fichero de preferencias mi parking  hora_inicial.
-            Calendar cal = Calendar.getInstance();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-            editor_mi_parking.putString("hora_inicial", sdf.format(cal.getTime()));
+                //Se guarda la hora actual en el fichero de preferencias mi parking  hora_inicial.
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                editor_mi_parking.putString("hora_inicial", sdf.format(cal.getTime()));
 
-            //Se cambia la apariencia del botón de APARCAR (activo) a DESAPARCAR (activo).
-            b.setText(R.string.desaparcar);
+                //Se cambia la apariencia del botón de APARCAR (activo) a DESAPARCAR (activo).
+                b.setText(R.string.desaparcar);
+            }
+            else
+            {
+                // TODO Comprobar que funciona
+                // Diálogo que avisa al usuario de que ya está aparcado
+                AlertDialog alertDialog=new AlertDialog.Builder(getActivity())
+                        .setIcon(android.R.drawable.alert_light_frame)
+                        .setTitle("Ya aparcado")
+                        .setMessage("Su coche se encuentra estacionado en otro parking, +" +
+                                "desaparque en la pestaña Mi parking antes de aparcar +" +
+                                "en este estacionamiento")
+                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-            //Se muestran todas las pestañas del menú en MainActivity.
+                            }
+                        }).create();
+            }
         }
         else // DESAPARCAR
         {
+            Mensaje="OCULTAR";
             //Limpiamos todos los campos del fichero de preferencias mi_parking y ponemos
             //id=-1(no aparcado)
             editor_mi_parking.clear();
@@ -225,13 +293,17 @@ public class ParkingFragment extends Fragment {
             // Se cambia la apariencia del botón de DESAPARCAR (activo) a APARCAR (activo).
             b.setText(R.string.aparcar);
 
-            // Se ocultan nuevamente las pestañas Mi Parking, Alarma y gasto y Volver al coche del menú en MainActivity.
-
             //TODO
             // Se guarda la hora actual en el fichero de preferencias mi parking  hora_final.
             // Se añade fichero al historial generado a partir de los datos almacenados en el fichero de preferencias mi parking y las operaciones correspondientes.
         }
 
+        //TODO Comprobar que manda mensaje a MainActivity para Activar/Ocultar las pestañas del menú
+        Log.e("sender", "Broadcasting message");
+        Intent intent = new Intent("custom-event-name");
+        // You can also include some extra data.
+        intent.putExtra("MOSTRAR_OCULTAR", Mensaje);
+        LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
 
         /*
         Button b = (Button) v.findViewById(R.id.b_aparcar);
