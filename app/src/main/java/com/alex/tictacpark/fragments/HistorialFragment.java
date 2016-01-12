@@ -4,12 +4,17 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
+import com.alex.tictacpark.parsers.HistorialParser;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,6 +27,8 @@ import com.alex.tictacpark.activities.MainActivity;
 public class HistorialFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private RecyclerView recyclerView;
+    private ProgressBar pb;
 
     /**
      * Use this factory method to create a new instance of
@@ -47,11 +54,20 @@ public class HistorialFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView;
-        //Asignamos un layout
-        rootView=inflater.inflate(R.layout.fragment_historial, container, false); //layout
+        // Asignamos un layout
+        rootView=inflater.inflate(R.layout.recycler_view, container, false); //layout
 
         // Ponemos el nombre "Historial" en la barra
         ((MainActivity) getActivity()).setActionBarTitle("Historial");
+
+        // Configuraciones del recyclerView
+        recyclerView=(RecyclerView)rootView.findViewById(R.id.RecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        // Parsear JSON
+        HistorialParser parser=new HistorialParser();
+        parser.parse(getActivity());
 
         return rootView;
     }

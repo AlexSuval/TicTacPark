@@ -275,7 +275,6 @@ public class ParkingFragment extends Fragment {
             else
             {
                 if(id!=parking.getId()) {
-                    // TODO Comprobar que funciona
                     // Diálogo que avisa al usuario de que ya está aparcado
                     AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                             .setIcon(android.R.drawable.ic_dialog_alert)
@@ -312,10 +311,11 @@ public class ParkingFragment extends Fragment {
         //Se guardan los cambios en el fichero
         editor_mi_parking.commit();
 
-        //TODO Comprobar que manda mensaje a MainActivity para Activar/Ocultar las pestañas del menú
-        Log.e("sender", "Broadcasting message");
+        // Mandamos un mensaje a MainActivity para Activar/Ocultar las pestañas del menú
+        // Para ello utilizamos un emisor de las notificaciones de aparcamiento
+        Log.e("Emisor", "Mensaje de envío de notificación");
         Intent intent = new Intent("custom-event-name");
-        // You can also include some extra data.
+        // Añadimos la información al intent y lo mandamos.
         intent.putExtra("MOSTRAR_OCULTAR", Mensaje);
         LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
 

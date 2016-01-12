@@ -4,15 +4,20 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -67,22 +72,21 @@ public class MainActivity extends AppCompatActivity
         Fragment mFragment=BuscarFragment.newInstance(0);
         inflate(mFragment,BUSCAR);
 
-        //Se oculta/activa el menú en función del estado correspondiente
-        //ocultarMenu(navigationView);
-//TODO TRADUCIR
-        // Registrar para recibir mensajes.
-        // We are registering an observer (mMessageReceiver) to receive Intents
-        // with actions named "custom-event-name".
+        // Se oculta/activa el menú en función del estado correspondiente
+        // Para ello utilizamos un receptor de las notificaciones de aparcamiento de ParkingFragment
+        // Registramos un observador (mMessageReceiver) para recibir Intents
+        // con acciones nombradas "custom-event-name".
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("custom-event-name"));
     }
 
-    // Our handler for received Intents. This will be called whenever an Intent
-    // with an action named "custom-event-name" is broadcasted.
+    // El manejador para Intents recibidos, que será llamdo cada vez que se emita un Intent
+    // con una acción "custom-event-name"
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
+            // Extraemos el mensaje obtenido del intent, que nos dará la información
+            // sobre si las pestañas deben ocultarse o mostrarse
             String message = intent.getStringExtra("MOSTRAR_OCULTAR");
             boolean ocultar;
             if(message=="OCULTAR")
@@ -90,7 +94,7 @@ public class MainActivity extends AppCompatActivity
             else
                 ocultar=false;
             mostrar_ocultarMenu(ocultar);
-            Log.e("receiver", "Got message: " + message);
+            Log.e("Receptor", "Mensaje obtenido: " + message);
         }
     };
 
@@ -100,28 +104,6 @@ public class MainActivity extends AppCompatActivity
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         super.onDestroy();
     }
-/*
-    public void ocultarMenu(NavigationView navigationView){
-        //Carga las preferencias de usuario
-        SharedPreferences sp = getSharedPreferences(PREFS_MI_PARKING,0);
-        int id = sp.getInt("id", -1); //Recupera si está aparcado o no
-
-        if(id==-1)
-        {
-            //Desactiva las pestañas de Mi parking, alarma y gasto y volver al coche, del menú
-            navigationView.getMenu().findItem(R.id.nav_parking).setEnabled(false);
-            navigationView.getMenu().findItem(R.id.nav_alarma).setEnabled(false);
-            navigationView.getMenu().findItem(R.id.nav_coche).setEnabled(false);
-        }
-        else
-        {
-            //Activa las pestañas de Mi parking, alarma y gasto y volver al coche, del menú
-            navigationView.getMenu().findItem(R.id.nav_parking).setEnabled(true);
-            navigationView.getMenu().findItem(R.id.nav_alarma).setEnabled(true);
-            navigationView.getMenu().findItem(R.id.nav_coche).setEnabled(true);
-        }
-    }
-*/
 
     public void mostrar_ocultarMenu(boolean ocultar)
     {
@@ -135,9 +117,7 @@ public class MainActivity extends AppCompatActivity
     // Se ejecuta al volver de otra actividad, ejecutándose desde el principio
     protected void onResume(){
         super.onResume();
-        Log.e("Estado","onResume");
-        //Se oculta/activa el menú en función del estado correspondiente
-        //ocultarMenu(navigationView);
+        Log.e("Estado", "onResume");
     }
 
     @Override
@@ -188,10 +168,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_coche:
                 Log.e("MAINACTIVITY", "Volver al coche");
-                //Se crea el Intent
-                Intent intent=new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("http://maps.google.com/maps")); //?saddr=ORIGEN&daddr=DESTINO
-                startActivity(intent);
+                clickVolverCoche();
                 break;
             case R.id.nav_historial:
                 Log.e("MAINACTIVITY", "Historial");
@@ -203,6 +180,45 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    // Método para mostrar el diálogo de "Volver al coche"
+    public void clickVolverCoche(){
+        // Recuperamos las coordenadas del coche aparcado
+        SharedPreferences sp_mi_parking=this.getSharedPreferences("PREFS_MI_PARKING", 0);
+        String latitud=Float.toString(sp_mi_parking.getFloat("latitud", 0));
+        String longitud=Float.toString(sp_mi_parking.getFloat("longitud", 0));
+        // Construimos el String destino con estas coordenadas
+        final String destino=latitud+","+longitud;
+
+        // TODO Calculamos el tiempo estimado en volver al coche
+
+        // Diálogo que avisa al usuario de que ya está aparcado
+        AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Volver al coche")
+                .setMessage("El tiempo estimado de vuelta al coche es de XX minutos, " +
+                        "¿desea recibir las indicaciones para volver?")
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Se crea el Intent, pasando la ruta de Google Maps:
+                        // Origen: Nuestras coordenadas actuales. Dejando el valor en blanco, toma por defecto nuestra ubicación actual
+                        // Destino: El construido con las coordenadas guardadas al aparcar.
+                        // dirflg=w: Para pasar por defecto la ruta a pie
+                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://maps.google.com/maps?saddr=" + "" + "&daddr=" + destino+"&dirflg=w"));
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create();
+        alertDialog.show();
+
     }
 
     // Método para poner el nombre del Parking en la barra

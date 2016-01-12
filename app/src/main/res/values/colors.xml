@@ -5,4 +5,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="rojoBrillante">#F80000</color>
     <color name="verdeKelly">#4CBB17</color>
+    <color name="recyclerViewBackground">#EEEEEE</color>
+    <color name="cardViewBackground">#FAFAFA</color>
+    <color name="black">#000</color>
 </resources>
