@@ -38,6 +38,12 @@ import com.alex.tictacpark.fragments.CocheFragment;
 import com.alex.tictacpark.fragments.HistorialFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileOutputStream;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -48,7 +54,8 @@ public class MainActivity extends AppCompatActivity
     private static final String COCHE = "COCHE";
     private static final String HISTORIAL = "HISTORIAL";
 
-    //Se usará para el fichero de preferencias
+    //Se usarán para los ficheros de preferencias
+    private static final String PREFS_GENERAL = "PREFS_GENERAL";
     private static final String PREFS_MI_PARKING = "PREFS_MI_PARKING";
 
     NavigationView navigationView;
@@ -72,12 +79,59 @@ public class MainActivity extends AppCompatActivity
         Fragment mFragment=BuscarFragment.newInstance(0);
         inflate(mFragment,BUSCAR);
 
+        // Comprobamos mediante el fichero de preferencias si el id es -1 para ocultar/mostrar las pestañas,
+        // pues si es el primer acceso a la app lo pondría a -1 y las ocultaría
+        SharedPreferences sp = getSharedPreferences(PREFS_MI_PARKING, 0);
+        int id=sp.getInt("id",-1);
+        if (id==-1){
+            mostrar_ocultarMenu(true);
+        }
+
         // Se oculta/activa el menú en función del estado correspondiente
         // Para ello utilizamos un receptor de las notificaciones de aparcamiento de ParkingFragment
         // Registramos un observador (mMessageReceiver) para recibir Intents
         // con acciones nombradas "custom-event-name".
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("custom-event-name"));
+
+        // Comprobamos mediante el fichero de preferencias si es el primer acceso a la app,
+        // en caso afirmativo, crearemos el fichero del historial
+        SharedPreferences settings = getSharedPreferences(PREFS_GENERAL, 0);
+        if (settings.getBoolean("primer_acceso_app", true)){
+            settings.edit().putBoolean("primer_acceso_app", false).commit();
+            CrearHistorial();   // Se crea el historial
+            //mostrar_ocultarMenu(true);  // Se ocultan las pestañas del menú
+        }
+    }
+
+    // Método para crear el fichero del historial
+    private void CrearHistorial(){
+        String string; // String para pasar en formato string el JSON
+        FileOutputStream fos;
+
+        // Creamos el objeto y String JSON
+        try{
+            JSONObject objeto = new JSONObject();
+            JSONArray array = new JSONArray();
+            objeto.put("historial", array);
+            string=objeto.toString();
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+            string="";
+        }
+
+        // Creamos el fichero JSON del historial
+        try{
+            fos=openFileOutput("historial.json", Context.MODE_PRIVATE);
+            fos.write(string.getBytes());
+            fos.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        Log.e("JSON", string);
     }
 
     // El manejador para Intents recibidos, que será llamdo cada vez que se emita un Intent

@@ -7,7 +7,7 @@ public class Historial {
 
     private String Nombre;
     private String Fecha;
-    private String Duración;
+    private String Duracion;
     private String Precio;
     private String Precio_hora;
 
@@ -30,12 +30,12 @@ public class Historial {
         Fecha = fecha;
     }
 
-    public String getDuración() {
-        return Duración;
+    public String getDuracion() {
+        return Duracion;
     }
 
-    public void setDuración(String duración) {
-        Duración = duración;
+    public void setDuracion(String duracion) {
+        Duracion = duracion;
     }
 
     public String getPrecio() {

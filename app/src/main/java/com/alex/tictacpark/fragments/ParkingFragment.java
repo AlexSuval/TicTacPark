@@ -1,6 +1,7 @@
 package com.alex.tictacpark.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,7 +22,15 @@ import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
 import com.alex.tictacpark.activities.ParkingDetalle;
 import com.alex.tictacpark.models.Parking;
+import com.alex.tictacpark.parsers.HistorialParser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -305,7 +314,43 @@ public class ParkingFragment extends Fragment {
 
             //TODO
             // Se guarda la hora actual en el fichero de preferencias mi parking  hora_final.
-            // Se añade fichero al historial generado a partir de los datos almacenados en el fichero de preferencias mi parking y las operaciones correspondientes.
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            editor_mi_parking.putString("hora_final", sdf.format(cal.getTime()));
+
+            // Se crea el formato de la fecha en la que se abandona el aparcamiento
+            SimpleDateFormat sdf_fecha = new SimpleDateFormat("dd/MM/yyyy");
+
+            // Se añade fichero al historial generado a partir de los datos almacenados
+            // en el fichero de preferencias mi parking y las operaciones correspondientes.
+            HistorialParser parser = new HistorialParser();
+            String JSON=parser.cargar(getActivity());
+            JSONObject raiz;
+            try{
+                raiz = new JSONObject(JSON);
+                JSONObject tarjeta=new JSONObject();
+                tarjeta.put("nombre",parking.getNombre());
+                tarjeta.put("fecha",sdf_fecha.format(cal.getTime())); // Se obtiene la fecha actual y se mete en el JSON
+                tarjeta.put("duracion","3 horas, 20 minutos");
+                tarjeta.put("precio","1.20€");
+                tarjeta.put("precio_hora","("+parking.getPrecio()+"€/h)");
+                JSONArray historial = raiz.getJSONArray("historial");
+                historial.put(tarjeta);
+                //TODO Guardar JSONObject, calcular duración y precio total
+                // Pasamos la tarjeta a String
+                String Historial_final=raiz.toString();
+                // Se sobreescribe el historial con la nueva tarjeta al anterior
+                OutputStreamWriter osw = new OutputStreamWriter(getActivity().openFileOutput("historial.json", Context.MODE_PRIVATE));
+                osw.write(Historial_final);
+                osw.close();
+                Log.e("Guardar JSON", "OK");
+            }
+            catch(JSONException e){
+                e.printStackTrace();
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
         }
 
         //Se guardan los cambios en el fichero

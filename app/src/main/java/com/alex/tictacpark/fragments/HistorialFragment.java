@@ -11,10 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
+import com.alex.tictacpark.adapters.HistorialAdapter;
+import com.alex.tictacpark.models.Historial;
 import com.alex.tictacpark.parsers.HistorialParser;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,7 +72,26 @@ public class HistorialFragment extends Fragment {
 
         // Parsear JSON
         HistorialParser parser=new HistorialParser();
-        parser.parse(getActivity());
+        ArrayList<Historial> historial_final = parser.parse(getActivity());
+
+        // Si está vacío, se pone visible el mensaje de que no existen entradas para mostrar y
+        // se oculta la progress bar
+        if(historial_final.size()==0)
+        {
+            TextView tv_historial_vacio=(TextView)rootView.findViewById(R.id.tv_historial_vacio);
+            tv_historial_vacio.setVisibility(View.VISIBLE);
+
+            ProgressBar pb=(ProgressBar)rootView.findViewById(R.id.progressBar);
+            pb.setVisibility(View.GONE);
+        }
+        // Sino, se muestra el historial y se oculta la progress bar
+        else
+        {
+            HistorialAdapter adapter=new HistorialAdapter(historial_final,R.layout.card_view_historial,getActivity());
+            recyclerView.setAdapter(adapter);
+            ProgressBar pb=(ProgressBar)rootView.findViewById(R.id.progressBar);
+            pb.setVisibility(View.GONE);
+        }
 
         return rootView;
     }
