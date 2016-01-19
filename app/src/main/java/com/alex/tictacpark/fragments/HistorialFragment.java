@@ -20,6 +20,7 @@ import com.alex.tictacpark.models.Historial;
 import com.alex.tictacpark.parsers.HistorialParser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,6 +74,9 @@ public class HistorialFragment extends Fragment {
         // Parsear JSON
         HistorialParser parser=new HistorialParser();
         ArrayList<Historial> historial_final = parser.parse(getActivity());
+
+        // Para dar la vuelta al historial: Se muestran primero las últimas entradas
+        Collections.reverse(historial_final);
 
         // Si está vacío, se pone visible el mensaje de que no existen entradas para mostrar y
         // se oculta la progress bar

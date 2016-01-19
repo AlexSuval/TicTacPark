@@ -31,9 +31,12 @@ import org.json.JSONObject;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -274,8 +277,8 @@ public class ParkingFragment extends Fragment {
 
                 //Se guarda la hora actual en el fichero de preferencias mi parking  hora_inicial.
                 Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                editor_mi_parking.putString("hora_inicial", sdf.format(cal.getTime()));
+                //SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                editor_mi_parking.putString("hora_inicial",cal.getTime().toString());
 
                 //Se cambia la apariencia del botón de APARCAR (activo) a DESAPARCAR (activo).
                 b.setText(R.string.desaparcar);
@@ -312,14 +315,29 @@ public class ParkingFragment extends Fragment {
             // Se cambia la apariencia del botón de DESAPARCAR (activo) a APARCAR (activo).
             b.setText(R.string.aparcar);
 
-            //TODO
-            // Se guarda la hora actual en el fichero de preferencias mi parking  hora_final.
+            // Se calcula la duración del estacionamiento:
             Calendar cal = Calendar.getInstance();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-            editor_mi_parking.putString("hora_final", sdf.format(cal.getTime()));
+            String Hora_final = cal.getTime().toString();
+            String Hora_inicial = sp_mi_parking.getString("hora_inicial", "0");
+            long horas=0;
+            long minutos=0;
+            try{
+                DateFormat formatter = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.ENGLISH);
+                Date date_final = formatter.parse(Hora_final);
+                Date date_inicial = formatter.parse(Hora_inicial);
+
+                long diff = date_final.getTime() - date_inicial.getTime();
+                horas = diff / (1000 * 60 * 60);
+                minutos = diff / (1000 * 60) - (horas*60);
+            }
+            catch(Exception e){
+                Log.e("Fallo al formatear: ", "Fallo");
+            }
 
             // Se crea el formato de la fecha en la que se abandona el aparcamiento
             SimpleDateFormat sdf_fecha = new SimpleDateFormat("dd/MM/yyyy");
+
+            //TODO CALCULAR PRECIO TOTAL DE ESTACIONAMIENTO
 
             // Se añade fichero al historial generado a partir de los datos almacenados
             // en el fichero de preferencias mi parking y las operaciones correspondientes.
@@ -331,7 +349,7 @@ public class ParkingFragment extends Fragment {
                 JSONObject tarjeta=new JSONObject();
                 tarjeta.put("nombre",parking.getNombre());
                 tarjeta.put("fecha",sdf_fecha.format(cal.getTime())); // Se obtiene la fecha actual y se mete en el JSON
-                tarjeta.put("duracion","3 horas, 20 minutos");
+                tarjeta.put("duracion", horas + " horas, "+ minutos + " minutos"); // Ejemplo: "3 horas, 20 minutos"
                 tarjeta.put("precio","1.20€");
                 tarjeta.put("precio_hora","("+parking.getPrecio()+"€/h)");
                 JSONArray historial = raiz.getJSONArray("historial");
