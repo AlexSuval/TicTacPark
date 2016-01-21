@@ -222,7 +222,19 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_coche:
                 Log.e("MAINACTIVITY", "Volver al coche");
-                clickVolverCoche();
+                // Recuperamos las coordenadas del coche aparcado
+                SharedPreferences sp_mi_parking=this.getSharedPreferences("PREFS_MI_PARKING", 0);
+                String latitud=Float.toString(sp_mi_parking.getFloat("latitud", 0));
+                String longitud=Float.toString(sp_mi_parking.getFloat("longitud", 0));
+                // Construimos el String destino con estas coordenadas
+                final String destino=latitud+","+longitud;
+                //Se crea el Intent, pasando la ruta de Google Maps:
+                // Origen: Nuestras coordenadas actuales. Dejando el valor en blanco, toma por defecto nuestra ubicación actual.
+                // Destino: El construido con las coordenadas guardadas al aparcar.
+                // dirflg=w: Para pasar por defecto la ruta a pie
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("http://maps.google.com/maps?saddr=" + "" + "&daddr=" + destino+"&dirflg=w"));
+                startActivity(intent);
                 break;
             case R.id.nav_historial:
                 Log.e("MAINACTIVITY", "Historial");
@@ -234,45 +246,6 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    // Método para mostrar el diálogo de "Volver al coche"
-    public void clickVolverCoche(){
-        // Recuperamos las coordenadas del coche aparcado
-        SharedPreferences sp_mi_parking=this.getSharedPreferences("PREFS_MI_PARKING", 0);
-        String latitud=Float.toString(sp_mi_parking.getFloat("latitud", 0));
-        String longitud=Float.toString(sp_mi_parking.getFloat("longitud", 0));
-        // Construimos el String destino con estas coordenadas
-        final String destino=latitud+","+longitud;
-
-        // TODO Calculamos el tiempo estimado en volver al coche
-
-        // Diálogo que avisa al usuario de que ya está aparcado
-        AlertDialog alertDialog = new AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Volver al coche")
-                .setMessage("El tiempo estimado de vuelta al coche es de XX minutos, " +
-                        "¿desea recibir las indicaciones para volver?")
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //Se crea el Intent, pasando la ruta de Google Maps:
-                        // Origen: Nuestras coordenadas actuales. Dejando el valor en blanco, toma por defecto nuestra ubicación actual
-                        // Destino: El construido con las coordenadas guardadas al aparcar.
-                        // dirflg=w: Para pasar por defecto la ruta a pie
-                        Intent intent = new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("http://maps.google.com/maps?saddr=" + "" + "&daddr=" + destino+"&dirflg=w"));
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .create();
-        alertDialog.show();
-
     }
 
     // Método para poner el nombre del Parking en la barra
