@@ -45,15 +45,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.alex.tictacpark.activities.MainActivity" />
         </activity>
-        <activity
-            android:name=".activities.PruebaActividad"
-            android:label="@string/title_activity_prueba_actividad"
-            android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.alex.tictacpark.activities.MainActivity" />
-        </activity>
     </application>
 
 </manifest>

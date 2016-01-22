@@ -3,18 +3,13 @@ package com.alex.tictacpark.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -26,23 +21,18 @@ import android.widget.Toast;
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
 import com.alex.tictacpark.activities.ParkingDetalle;
-import com.alex.tictacpark.activities.PruebaActividad;
 import com.alex.tictacpark.models.Parking;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
+
 import android.location.LocationListener;
 
-import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -100,7 +90,7 @@ public class BuscarFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView;
-        //Asignamos un layout
+        //Asignamos un layout al mapa
         rootView=inflater.inflate(R.layout.fragment_buscar, container, false); //layout
         mMapView=(MapView) rootView.findViewById(R.id.map); //mapa en sí
         mMapView.onCreate(savedInstanceState);
@@ -118,7 +108,6 @@ public class BuscarFragment extends Fragment
                 */
         //Inicializamos el mLocationManager
         mLocationManager=(LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
-
 
         return rootView;
     }
@@ -250,6 +239,11 @@ public class BuscarFragment extends Fragment
         mMap.animateCamera(cameraUpdate);
         addMarkers=new addMarkers(); //Inicializamos addMarkers
         addMarkers.execute(""); //Lanzamos addMarkers pasándole la url
+    }
+
+    public void moverCamara(LatLng coordenadas){
+        CameraUpdate cameraUpdate= CameraUpdateFactory.newLatLngZoom(coordenadas, 14);
+        mMap.animateCamera(cameraUpdate);
     }
 
     //Muestra cuadro de diálogo en caso de que el GPS esté desactivado

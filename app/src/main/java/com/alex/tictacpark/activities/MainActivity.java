@@ -1,6 +1,7 @@
 package com.alex.tictacpark.activities;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,10 +29,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.fragments.EstadoFragment;
 import com.alex.tictacpark.fragments.BuscarFragment;
+import com.alex.tictacpark.fragments.GeocoderFragment;
 import com.alex.tictacpark.fragments.ParkingFragment;
 import com.alex.tictacpark.fragments.AlarmaFragment;
 import com.alex.tictacpark.fragments.CocheFragment;
@@ -45,7 +48,7 @@ import org.json.JSONObject;
 import java.io.FileOutputStream;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GeocoderFragment.OnFragmentInteractionListener {
 
     private static final String ESTADO = "ESTADO";
     private static final String BUSCAR = "BUSCAR";
@@ -76,8 +79,16 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Fragment mFragment=BuscarFragment.newInstance(0);
-        inflate(mFragment,BUSCAR);
+        BuscarFragment bf = new BuscarFragment();
+        GeocoderFragment gf = new GeocoderFragment();
+
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        ft.add(R.id.container, gf);
+        ft.add(R.id.container2, bf);
+
+        ft.commit();
 
         // Comprobamos mediante el fichero de preferencias si el id es -1 para ocultar/mostrar las pestañas,
         // pues si es el primer acceso a la app lo pondría a -1 y las ocultaría
@@ -134,7 +145,7 @@ public class MainActivity extends AppCompatActivity
         Log.e("JSON", string);
     }
 
-    // El manejador para Intents recibidos, que será llamdo cada vez que se emita un Intent
+    // El manejador para Intents recibidos, que será llamado cada vez que se emita un Intent
     // con una acción "custom-event-name"
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -207,8 +218,19 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_buscar:
                 Log.e("MAINACTIVITY", "Buscar");
-                mFragment= BuscarFragment.newInstance(1);//Creamos el fragment
-                inflate(mFragment,BUSCAR);//Inflamos el fragment BUSCAR
+                //mFragment= BuscarFragment.newInstance(1);//Creamos el fragment
+                //inflate(mFragment,BUSCAR);//Inflamos el fragment BUSCAR
+                BuscarFragment bf = new BuscarFragment();
+                GeocoderFragment gf = new GeocoderFragment();
+
+                FragmentManager fm = getFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+
+                ft.add(R.id.container, gf);
+                ft.add(R.id.container2, bf);
+
+                ft.commit();
+
                 break;
             case R.id.nav_parking:
                 Log.e("MAINACTIVITY", "Mi Parking");
@@ -251,5 +273,14 @@ public class MainActivity extends AppCompatActivity
     // Método para poner el nombre del Parking en la barra
     public void setActionBarTitle(String title){
         getSupportActionBar().setTitle(title);
+    }
+
+    @Override
+    public void onFragmentInteraction(LatLng coordenadas) {
+        BuscarFragment bf=(BuscarFragment)getFragmentManager().findFragmentById(R.id.container2);
+
+        if(bf!=null){
+            bf.moverCamara(coordenadas);
+        }
     }
 }
