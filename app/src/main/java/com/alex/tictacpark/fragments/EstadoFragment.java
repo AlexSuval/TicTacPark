@@ -52,6 +52,10 @@ public class EstadoFragment extends Fragment {
         // Ponemos el nombre "Estado" en la barra
         ((MainActivity) getActivity()).setActionBarTitle("Estado");
 
+        ViewGroup.LayoutParams params = rootView.getLayoutParams();
+        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        rootView.setLayoutParams(params);
+
         return rootView;
     }
 

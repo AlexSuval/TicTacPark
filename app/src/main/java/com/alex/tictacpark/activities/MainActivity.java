@@ -29,6 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.alex.tictacpark.R;
@@ -79,14 +80,19 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //CORREGIR
+        FrameLayout view_visible = (FrameLayout) findViewById(R.id.container2);
+        view_visible.setVisibility(View.VISIBLE);
+        //CORREGIR
+
         BuscarFragment bf = new BuscarFragment();
         GeocoderFragment gf = new GeocoderFragment();
 
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
 
-        ft.add(R.id.container, gf);
-        ft.add(R.id.container2, bf);
+        ft.replace(R.id.container, bf);
+        ft.replace(R.id.container2, gf);
 
         ft.commit();
 
@@ -198,6 +204,18 @@ public class MainActivity extends AppCompatActivity
     //Infla el fragment, reemplazando el que se le pasa por el que había
     private void inflate(Fragment fragment,String tag)
     {
+        /*if(!tag.equals(BUSCAR)){
+            Fragment f = (Fragment) getFragmentManager().findFragmentById(R.id.container);
+            ViewGroup.LayoutParams params = f.getView().getLayoutParams();
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            f.getView().setLayoutParams(params);
+        }*/
+
+        //CORREGIR
+        FrameLayout view = (FrameLayout) findViewById(R.id.container2);
+        view.setVisibility(View.GONE);
+        //CORREGIR
+
         final FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.container,fragment,tag);
         transaction.commit();
@@ -220,14 +238,20 @@ public class MainActivity extends AppCompatActivity
                 Log.e("MAINACTIVITY", "Buscar");
                 //mFragment= BuscarFragment.newInstance(1);//Creamos el fragment
                 //inflate(mFragment,BUSCAR);//Inflamos el fragment BUSCAR
+
+                //CORREGIR
+                FrameLayout view_visible = (FrameLayout) findViewById(R.id.container2);
+                view_visible.setVisibility(View.VISIBLE);
+                //CORREGIR
+
                 BuscarFragment bf = new BuscarFragment();
                 GeocoderFragment gf = new GeocoderFragment();
 
                 FragmentManager fm = getFragmentManager();
                 FragmentTransaction ft = fm.beginTransaction();
 
-                ft.add(R.id.container, gf);
-                ft.add(R.id.container2, bf);
+                ft.replace(R.id.container, bf);
+                ft.replace(R.id.container2, gf);
 
                 ft.commit();
 
@@ -277,7 +301,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(LatLng coordenadas) {
-        BuscarFragment bf=(BuscarFragment)getFragmentManager().findFragmentById(R.id.container2);
+        BuscarFragment bf=(BuscarFragment)getFragmentManager().findFragmentById(R.id.container);
 
         if(bf!=null){
             bf.moverCamara(coordenadas);

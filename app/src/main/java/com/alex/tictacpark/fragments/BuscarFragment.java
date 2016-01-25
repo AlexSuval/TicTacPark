@@ -33,6 +33,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -351,9 +352,21 @@ public class BuscarFragment extends Fragment
     }
 
     //Función que añade el marker al mapa
-    private void showMarker(LatLng coordenadas, String nombre)
+    private void showMarker(LatLng coordenadas, String nombre, String tipo, double precio, String estado)
     {
-        mMap.addMarker(new MarkerOptions().position(coordenadas).title(nombre));
+        // Creamos String con Tipo de parking y precio/hora
+        String Info = tipo + " - " + precio + "€/h";
+
+        if(estado.equals("Libre"))  // Marker en color verde
+        {
+            mMap.addMarker(new MarkerOptions().position(coordenadas).title(nombre).snippet(Info)
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        }
+        else
+        {
+            mMap.addMarker(new MarkerOptions().position(coordenadas).title(nombre).snippet(Info)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        }
     }
 
     //Tarea asíncrona que añade los markers
@@ -365,11 +378,11 @@ public class BuscarFragment extends Fragment
             super.onPreExecute();
 
             // Creamos los objetos Parking
-            Parking Molinon = new Parking(0, "Parking El Molinón", 43.535667, -5.635787, "987654321");
-            Parking Europa = new Parking(1, "Parking Plaza Europa", 43.5385763,-5.664812, "987654322");
-            Parking Begona = new Parking(2, "Parking Begoña", 43.5374459,-5.6623837, "987654323");
-            Parking Nautico = new Parking(3, "Parking El Náutico", 43.5420452,-5.6614269, "987654324");
-            Parking Fomento = new Parking(4, "Parking Fomento", 43.5420643,-5.667993, "987654325");
+            Parking Molinon = new Parking(0, "Parking El Molinón", 43.535667, -5.635787, "987654321", "Público", 1.23, "Libre");
+            Parking Europa = new Parking(1, "Parking Plaza Europa", 43.5385763,-5.664812, "987654322", "Público", 1.23, "Completo");
+            Parking Begona = new Parking(2, "Parking Begoña", 43.5374459,-5.6623837, "987654323",  "Público", 1.23, "Libre");
+            Parking Nautico = new Parking(3, "Parking El Náutico", 43.5420452,-5.6614269, "987654324",  "Público", 1.23, "Libre");
+            Parking Fomento = new Parking(4, "Parking Fomento", 43.5420643,-5.667993, "987654325",  "Público", 1.23, "Completo");
 
             // Los metemos en el ArrayList de Parkings
             list_parking.add(Molinon);
@@ -391,7 +404,7 @@ public class BuscarFragment extends Fragment
                 // Creamos coordenadas
                 LatLng Coordenadas = new LatLng(parking.getLatitud(), parking.getLongitud());
                 // Mostramos los markers
-                showMarker(Coordenadas, parking.getNombre());
+                showMarker(Coordenadas, parking.getNombre(), parking.getTipo(), parking.getPrecio(), parking.getEstado());
             }
 
             //Escucha a que le demos click a algún marker
