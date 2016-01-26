@@ -97,14 +97,6 @@ public class HistorialFragment extends Fragment {
             pb.setVisibility(View.GONE);
         }
 
-        // TODO BUSCAR CÓMO MOSTRAR EL RESTO DE FRAGMENTS EN UN CONTAINER QUE OCUPE TODA LA PANTALLA
-        /*
-        Fragment f = (HistorialFragment) getFragmentManager().findFragmentById(R.id.container);
-        ViewGroup.LayoutParams params = f.getView().getLayoutParams();
-        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        f.getView().setLayoutParams(params);
-        */
-
         return rootView;
     }
 

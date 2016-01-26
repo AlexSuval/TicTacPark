@@ -80,10 +80,8 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //CORREGIR
         FrameLayout view_visible = (FrameLayout) findViewById(R.id.container2);
         view_visible.setVisibility(View.VISIBLE);
-        //CORREGIR
 
         BuscarFragment bf = new BuscarFragment();
         GeocoderFragment gf = new GeocoderFragment();
@@ -118,6 +116,23 @@ public class MainActivity extends AppCompatActivity
             settings.edit().putBoolean("primer_acceso_app", false).commit();
             CrearHistorial();   // Se crea el historial
             //mostrar_ocultarMenu(true);  // Se ocultan las pestañas del menú
+        }
+
+        Intent intent = getIntent();
+        boolean alarma = intent.getBooleanExtra("alarma",true); // Si está a true es que no entró desde la notificación de alarma, porque por defecto está a false
+        // Si alarma=false, entramos por notificación de alarma al apagarla, entonces ponemos el
+        // campo alarma=false en el archivo de preferencias, de forma que se desactivará el switch
+        // en AlarmaFragment
+        Log.e("Alarma=",Boolean.toString(alarma));
+        if (!alarma)
+        {
+            // Editor de preferencias General
+            SharedPreferences sp_general=this.getSharedPreferences("PREFS_GENERAL", 0);
+            final SharedPreferences.Editor editor_general = sp_general.edit();
+            // Ponemos alarma=false en el archivo de preferencias general
+            editor_general.putBoolean("alarma", false);
+            //Se guardan los cambios en el fichero
+            editor_general.commit();
         }
     }
 
@@ -211,10 +226,8 @@ public class MainActivity extends AppCompatActivity
             f.getView().setLayoutParams(params);
         }*/
 
-        //CORREGIR
         FrameLayout view = (FrameLayout) findViewById(R.id.container2);
         view.setVisibility(View.GONE);
-        //CORREGIR
 
         final FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.container,fragment,tag);
@@ -236,13 +249,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_buscar:
                 Log.e("MAINACTIVITY", "Buscar");
-                //mFragment= BuscarFragment.newInstance(1);//Creamos el fragment
-                //inflate(mFragment,BUSCAR);//Inflamos el fragment BUSCAR
 
-                //CORREGIR
                 FrameLayout view_visible = (FrameLayout) findViewById(R.id.container2);
                 view_visible.setVisibility(View.VISIBLE);
-                //CORREGIR
 
                 BuscarFragment bf = new BuscarFragment();
                 GeocoderFragment gf = new GeocoderFragment();

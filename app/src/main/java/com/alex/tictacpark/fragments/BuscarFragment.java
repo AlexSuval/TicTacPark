@@ -170,16 +170,10 @@ public class BuscarFragment extends Fragment
 
                 @Override
                 public void onProviderEnabled(String provider) {
-                    //Muestra mensaje al usuario de fallo con el GPS
-                    Toast.makeText(getActivity(),"El GPS se ha activado",
-                            Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onProviderDisabled(String provider) {
-                    //Muestra mensaje al usuario de fallo con el GPS
-                    Toast.makeText(getActivity(),"El GPS se ha desactivado",
-                            Toast.LENGTH_SHORT).show();
                 }
             };
 

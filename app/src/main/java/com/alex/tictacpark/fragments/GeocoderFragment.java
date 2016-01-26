@@ -110,8 +110,6 @@ public class GeocoderFragment extends Fragment {
             }
         });
 
-
-
         return rootView;
     }
 

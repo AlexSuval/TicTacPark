@@ -21,10 +21,10 @@
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -45,6 +45,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.alex.tictacpark.activities.MainActivity" />
         </activity>
+
+        <!-- Registro del BroadcastReceiver -->
+        <receiver android:name="com.alex.tictacpark.helpers.AlarmaReceiver"/>
+
     </application>
 
 </manifest>
