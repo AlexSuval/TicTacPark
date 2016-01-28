@@ -53,6 +53,29 @@ public class Parking implements Parcelable {
         this.Estado = Estado;
     }
 
+    // TODO PRUEBAS: Constructor con información de servicios
+    public Parking(int Id, String Nombre, double Latitud, double Longitud, String Telefono, String Tipo, double Precio, String Estado,
+                   byte Adaptado_Discapacidad, byte Plazas_Discapacidad, byte Motos, byte Aseos, byte Tarjeta, byte Seguridad,
+                   byte Coches_Electricos, byte Lavado, byte Servicio_24h){
+        this.Id = Id;
+        this.Nombre = Nombre;
+        this.Latitud = Latitud;
+        this.Longitud = Longitud;
+        this.Telefono = Telefono;
+        this.Tipo = Tipo;
+        this.Precio = Precio;
+        this.Estado = Estado;
+        this.Adaptado_Discapacidad = Adaptado_Discapacidad;
+        this.Plazas_Discapacidad = Plazas_Discapacidad;
+        this.Motos = Motos;
+        this.Aseos = Aseos;
+        this.Tarjeta = Tarjeta;
+        this.Seguridad = Seguridad;
+        this.Coches_Electricos = Coches_Electricos;
+        this.Lavado = Lavado;
+        this.Servicio_24h = Servicio_24h;
+    }
+
     public int getId() {
         return Id;
     }

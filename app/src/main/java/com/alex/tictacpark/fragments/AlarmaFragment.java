@@ -14,6 +14,9 @@ import android.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -37,6 +40,7 @@ public class AlarmaFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_SECTION_NUMBER = "section_number";
     private  SwipeRefreshLayout srl;
+    View v;
 
     /**
      * Use this factory method to create a new instance of
@@ -65,7 +69,7 @@ public class AlarmaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View v = inflater.inflate(R.layout.fragment_alarma, container, false);
+        v = inflater.inflate(R.layout.fragment_alarma, container, false);
 
         // Ponemos el nombre "Alarma y gasto" en la barra
         ((MainActivity) getActivity()).setActionBarTitle("Alarma y gasto");
@@ -73,7 +77,6 @@ public class AlarmaFragment extends Fragment {
         //Se configura el TimePicker en formato 24h
         final TimePicker tp =(TimePicker)v.findViewById(R.id.timePicker);
         tp.setIs24HourView(true);
-        // TODO OJO, RECUPERAR LOS VALORES METIDOS PARA LA ALARMA SI EL TIMEPICKER ESTÁ ACTIVADO
 
         // Asignar a variable al switch Activada/Desactivada y asignar evento onCheckedChangeListener
         // para realizar las acciones correspondientes
@@ -90,10 +93,29 @@ public class AlarmaFragment extends Fragment {
 
         // Comprobamos si la alarma está activada o no
         boolean estado_alarma = sp_general.getBoolean("alarma",false);
-        if (estado_alarma)  // Si está activada, ponemos el switch Activado
+        if (estado_alarma)  // Si está activada
+        {
+            // Ponemos el switch Activado
             sw.setChecked(true);
+            // Ponemos el TimePicker con los valores introducidos para la alarma
+            int hora_alarma = sp_general.getInt("hora_alarma", 0);
+            int minutos_alarma = sp_general.getInt("minutos_alarma",0);
+            Log.e("hora que recupero", Integer.toString(hora_alarma));
+            Log.e("minutos que recupero", Integer.toString(minutos_alarma));
+            // TODO Esto en principio sólo funcionaría para dispositivos con Lollipop
+            //tp.setHour(hora_alarma);
+            //tp.setMinute(minutos_alarma);
+            Log.e("hora que pongo en el tp", Integer.toString(tp.getCurrentHour()));
+            Log.e("min que pongo en el tp", Integer.toString(tp.getCurrentMinute()));
+        }
         else    // Sino, ponemos el switch Desactivado
+        {
             sw.setChecked(false);
+            // Para que en el caso de que desaparqué y había una alarma pendiente se cancele la alarma
+            if (manager != null) {
+                manager.cancel(pendingIntent);
+            }
+        }
 
         sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -109,16 +131,28 @@ public class AlarmaFragment extends Fragment {
                     Calendar current = Calendar.getInstance();
                     Calendar cal = Calendar.getInstance();
 
+                    // Guardamos en el fichero de preferencias general los valores introducidos en el TimePicker
+                    //tp.clearFocus();
+                    //tp.setIs24HourView(true);
+                    editor_general.putInt("hora_alarma", tp.getCurrentHour());
+                    editor_general.putInt("minutos_alarma", tp.getCurrentMinute());
+                    Log.e("hora en fichero", Integer.toString(tp.getCurrentHour()));
+                    Log.e("minutos en fichero", Integer.toString(tp.getCurrentMinute()));
+
+                    // Le pasamos al Calendar los datos introducidos en el TimePicker
                     cal.set(Calendar.HOUR_OF_DAY, tp.getCurrentHour()); //alarmHour from TimePicker
                     cal.set(Calendar.MINUTE, tp.getCurrentMinute()); //alarmMinute from TimePicker
+                    cal.set(Calendar.SECOND, 0);    // Segundos y milisegundos a 0
+                    cal.set(Calendar.MILLISECOND, 0);
 
                     // Se comprueba si la hora introducida en el TimePicker es anterior a la hora actual
                     if(cal.compareTo(current) <= 0){
                         //The set Date/Time already passed
                         Toast.makeText(getActivity(),
-                                "Invalid Date/Time",
+                                "La hora introducida es incorrecta",
                                 Toast.LENGTH_LONG).show();
-                        //TODO REFRESCAR PÁGINA PONIENDO EL SWITCH EN DESCONECTADO
+                        // TODO REFRESCAR PÁGINA PONIENDO EL SWITCH EN DESCONECTADO
+                        // COMPROBAR
                     }
                     else{
                         //activarAlarma(cal);
@@ -167,22 +201,18 @@ public class AlarmaFragment extends Fragment {
 
         });
 
-        //Se rellenan los TextView
-        RellenarTextView(v,false);
+        // Se rellenan los TextView
+        RellenarTextView(v);
 
-        //Se implementa el icono de refresco actualizando los datos
-        srl = (SwipeRefreshLayout)v.findViewById(R.id.swipe_refresh_layout);
-        srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
-            @Override
-        public void onRefresh(){
-                RellenarTextView(v,true);
-            }
-        });
+        // Carga el menú de actualización (refresco)
+        setHasOptionsMenu(true);
+
         return v;
     }
 
     // Método para rellenar los TextView
-    private void RellenarTextView(View v, boolean actualizar) {
+
+    private void RellenarTextView(View v) {
         TextView tiempo = (TextView) v.findViewById(R.id.tv_respuesta_tiempo);
         TextView gasto = (TextView) v.findViewById(R.id.tv_respuesta_gasto);
         TextView restante = (TextView) v.findViewById(R.id.tv_respuesta_restante);
@@ -213,10 +243,24 @@ public class AlarmaFragment extends Fragment {
         catch(Exception e){
             Log.e("Fallo al formatear: ", "Fallo");
         }
+    }
 
-        if(actualizar)
-        {
-            srl.setRefreshing(false); //Una vez actualizado se oculta el icono de refresco
+    // Cargamos el menú actualizar alarma
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_actualizar_alarma, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.actualizar:
+                // Se refrescan los datos
+                RellenarTextView(v);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

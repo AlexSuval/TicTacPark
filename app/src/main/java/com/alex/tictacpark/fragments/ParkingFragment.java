@@ -1,10 +1,13 @@
 package com.alex.tictacpark.fragments;
 
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -16,6 +19,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.alex.tictacpark.R;
@@ -228,6 +233,16 @@ public class ParkingFragment extends Fragment {
             }
         });
 
+        // Cargamos los iconos en un ArrayList<ImageView>
+        ArrayList<ImageView> iconos = cargarIconos(p);
+
+        LinearLayout linearLayout = (LinearLayout)view.findViewById(R.id.ll_iconos);
+
+        for(int i=0; i<iconos.size(); i++){
+            //TODO ROMPE AQUÍ LA APP
+            // linearLayout.addView(iconos.get(i));
+        }
+
         return view;
     }
 
@@ -312,6 +327,18 @@ public class ParkingFragment extends Fragment {
             editor_mi_parking.clear();
             editor_mi_parking.putInt("id", -1);
 
+            // Editor de preferencias General
+            SharedPreferences sp_general=getActivity().getSharedPreferences("PREFS_GENERAL", 0);
+            SharedPreferences.Editor editor_general = sp_general.edit();
+            // Desactivamos la alarma si hubiese alguna activa
+            // para ello limpiamos todos los campos del fichero de preferencias general
+            editor_general.clear();
+            editor_general.commit();
+            // TODO Cancelo todas las notificaciones, para que no me salte la de la alarma pendiente
+         /* ÉSTO CAMBIA LOS VALORES QUE SE INTRODUCEN AL HISTORIAL
+            NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancelAll();
+*/
             // Se cambia la apariencia del botón de DESAPARCAR (activo) a APARCAR (activo).
             b.setText(R.string.aparcar);
 
@@ -423,6 +450,60 @@ public class ParkingFragment extends Fragment {
         editor_general.commit(); //Se guardan los cambios en el fichero
         editor_mi_parking.commit();
         */
+    }
+
+    // Cargamos las imágenes en un ArrayList<Drawable>
+    public ArrayList<ImageView> cargarIconos(Parking parking){
+        ArrayList<ImageView> iconos = new ArrayList<ImageView>();
+        ImageView imageView = new ImageView(getActivity());
+
+        if(parking.isAdaptado_Discapacidad()!=0) // Convierto de Byte a Boolean
+        {
+            imageView.setBackgroundResource(R.drawable.ic_accessible_black_48dp);
+            iconos.add(imageView);
+        }
+        if(parking.isPlazas_Discapacidad()!=0)
+        {
+            imageView.setBackgroundResource(R.drawable.ic_airport_shuttle_black_48dp);
+            iconos.add(imageView);
+        }
+        if(parking.isMotos()!=0)
+        {
+            imageView.setBackgroundResource(R.drawable.ic_motorcycle_black_48dp);
+            iconos.add(imageView);
+        }
+        if(parking.isAseos()!=0)
+        {
+            imageView.setBackgroundResource(R.drawable.ic_wc_black_48dp);
+            iconos.add(imageView);
+        }
+        if(parking.isTarjeta()!=0)
+        {
+            imageView.setBackgroundResource(R.drawable.ic_credit_card_black_48dp);
+            iconos.add(imageView);
+        }
+        if(parking.isSeguridad()!=0)
+        {
+            imageView.setBackgroundResource(R.drawable.ic_enhanced_encryption_black_48dp);
+            iconos.add(imageView);
+        }
+        if(parking.isCoches_Electricos()!=0)
+        {
+            imageView.setBackgroundResource(R.drawable.ic_power_black_48dp);
+            iconos.add(imageView);
+        }
+        if(parking.isLavado()!=0)
+        {
+            imageView.setBackgroundResource(R.drawable.ic_local_car_wash_black_48dp);
+            iconos.add(imageView);
+        }
+        if(parking.isServicio_24h()!=0)
+        {
+            imageView.setBackgroundResource(R.drawable.ic_local_convenience_store_black_48dp);
+            iconos.add(imageView);
+        }
+
+        return iconos;
     }
 
     /**
