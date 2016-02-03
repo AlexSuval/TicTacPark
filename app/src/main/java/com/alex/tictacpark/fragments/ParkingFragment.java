@@ -240,8 +240,10 @@ public class ParkingFragment extends Fragment {
 
         for(int i=0; i<iconos.size(); i++){
             //TODO ROMPE AQUÍ LA APP
-            // linearLayout.addView(iconos.get(i));
+            linearLayout.addView(iconos.get(i));//i=0
         }
+        // Poner uno sólo funciona:
+        //linearLayout.addView(iconos.get(3));
 
         return view;
     }
@@ -455,51 +457,60 @@ public class ParkingFragment extends Fragment {
     // Cargamos las imágenes en un ArrayList<Drawable>
     public ArrayList<ImageView> cargarIconos(Parking parking){
         ArrayList<ImageView> iconos = new ArrayList<ImageView>();
-        ImageView imageView = new ImageView(getActivity());
+        //ImageView imageView = new ImageView(getActivity());
 
         if(parking.isAdaptado_Discapacidad()!=0) // Convierto de Byte a Boolean
         {
-            imageView.setBackgroundResource(R.drawable.ic_accessible_black_48dp);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setBackgroundResource(R.drawable.ic_accessible_black_36dp);
             iconos.add(imageView);
         }
         if(parking.isPlazas_Discapacidad()!=0)
         {
-            imageView.setBackgroundResource(R.drawable.ic_airport_shuttle_black_48dp);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setBackgroundResource(R.drawable.ic_airport_shuttle_black_36dp);
             iconos.add(imageView);
         }
         if(parking.isMotos()!=0)
         {
-            imageView.setBackgroundResource(R.drawable.ic_motorcycle_black_48dp);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setBackgroundResource(R.drawable.ic_motorcycle_black_36dp);
             iconos.add(imageView);
         }
         if(parking.isAseos()!=0)
         {
-            imageView.setBackgroundResource(R.drawable.ic_wc_black_48dp);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setBackgroundResource(R.drawable.ic_wc_black_36dp);
             iconos.add(imageView);
         }
         if(parking.isTarjeta()!=0)
         {
-            imageView.setBackgroundResource(R.drawable.ic_credit_card_black_48dp);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setBackgroundResource(R.drawable.ic_credit_card_black_36dp);
             iconos.add(imageView);
         }
         if(parking.isSeguridad()!=0)
         {
-            imageView.setBackgroundResource(R.drawable.ic_enhanced_encryption_black_48dp);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setBackgroundResource(R.drawable.ic_enhanced_encryption_black_36dp);
             iconos.add(imageView);
         }
         if(parking.isCoches_Electricos()!=0)
         {
-            imageView.setBackgroundResource(R.drawable.ic_power_black_48dp);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setBackgroundResource(R.drawable.ic_power_black_36dp);
             iconos.add(imageView);
         }
         if(parking.isLavado()!=0)
         {
-            imageView.setBackgroundResource(R.drawable.ic_local_car_wash_black_48dp);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setBackgroundResource(R.drawable.ic_local_car_wash_black_36dp);
             iconos.add(imageView);
         }
         if(parking.isServicio_24h()!=0)
         {
-            imageView.setBackgroundResource(R.drawable.ic_local_convenience_store_black_48dp);
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setBackgroundResource(R.drawable.ic_local_convenience_store_black_36dp);
             iconos.add(imageView);
         }
 

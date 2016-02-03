@@ -158,7 +158,7 @@ public class AlarmaFragment extends Fragment {
                         //activarAlarma(cal);
                         //manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + diff, pendingIntent);
                         Log.e("Tiempo de alarma: ", Long.toString(cal.getTimeInMillis()));
-                        // TODO NO TENGO MUY CLARO SI CALCUlA BIEN LA HORA A LA QUE DEBE SONAR LA ALARMA
+                        // TODO COMPROBAR QUE PONE BIEN ALARMAS PARA EL DÍA SIGUIENTE
                         manager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
                     }
 
