@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
@@ -239,11 +240,49 @@ public class ParkingFragment extends Fragment {
         LinearLayout linearLayout = (LinearLayout)view.findViewById(R.id.ll_iconos);
 
         for(int i=0; i<iconos.size(); i++){
-            //TODO ROMPE AQUÍ LA APP
-            linearLayout.addView(iconos.get(i));//i=0
+            linearLayout.addView(iconos.get(i));
         }
-        // Poner uno sólo funciona:
-        //linearLayout.addView(iconos.get(3));
+
+        // Añadimos en un ArrayList<String> la descripción de los servicios del Parking
+        ArrayList<String> descripcion = new ArrayList<String>();
+
+        if(p.isAdaptado_Discapacidad()!=0) // Convierto de Byte a Boolean
+            descripcion.add("Adaptado a personas con discapacidad");
+
+        if(p.isPlazas_Discapacidad()!=0)
+            descripcion.add("Plazas de aparcamiento para discapacitados");
+
+        if(p.isMotos()!=0)
+            descripcion.add("Plazas para motos");
+
+        if(p.isAseos()!=0)
+            descripcion.add("Aseos");
+
+        if(p.isTarjeta()!=0)
+            descripcion.add("Pago con tarjeta");
+
+        if(p.isSeguridad()!=0)
+            descripcion.add("Seguridad");
+
+        if(p.isCoches_Electricos()!=0)
+            descripcion.add("Carga de coches eléctricos");
+
+        if(p.isLavado()!=0)
+            descripcion.add("Lavado de vehículos");
+
+        if(p.isServicio_24h()!=0)
+            descripcion.add("Apertura 24 horas");
+
+        // Asignamos evento OnClick para mostrar la información de los servicios
+        for(int i=0; i<descripcion.size(); i++){
+            final String servicio = descripcion.get(i);
+            linearLayout.getChildAt(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getActivity(), servicio, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         return view;
     }
@@ -457,7 +496,6 @@ public class ParkingFragment extends Fragment {
     // Cargamos las imágenes en un ArrayList<Drawable>
     public ArrayList<ImageView> cargarIconos(Parking parking){
         ArrayList<ImageView> iconos = new ArrayList<ImageView>();
-        //ImageView imageView = new ImageView(getActivity());
 
         if(parking.isAdaptado_Discapacidad()!=0) // Convierto de Byte a Boolean
         {
