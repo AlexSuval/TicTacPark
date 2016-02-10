@@ -110,7 +110,15 @@ public class AlarmaFragment extends Fragment {
         }
         else    // Sino, ponemos el switch Desactivado
         {
+            // Ponemos el switch Desactivado
             sw.setChecked(false);
+            /*
+            // Ponemos el horario de alarma a 0, para mostrar "Alarma desactivada"
+            editor_general.putInt("hora_alarma", 0);
+            editor_general.putInt("minutos_alarma", 0);
+            //Se guardan los cambios en el fichero
+            editor_general.commit();
+*/
             // Para que en el caso de que desaparqué y había una alarma pendiente se cancele la alarma
             if (manager != null) {
                 manager.cancel(pendingIntent);
@@ -223,26 +231,68 @@ public class AlarmaFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         actualizacion.setText(sdf.format(cal.getTime()));
 
-        // Se calcula el tiempo consumido:
+        // Se calcula el tiempo consumido, el gasto acumulado y el tiempo restante para que se active la alarma:
         SharedPreferences sp_mi_parking=getActivity().getSharedPreferences("PREFS_MI_PARKING", 0);
         String Hora_final = cal.getTime().toString();
         String Hora_inicial = sp_mi_parking.getString("hora_inicial", "0");
         long horas=0;
         long minutos=0;
+
+        float precio_hora = sp_mi_parking.getFloat("precio", 0);
+        float horas_float=0;
+        float gasto_acumulado=0;
+
+        SharedPreferences sp_general=getActivity().getSharedPreferences("PREFS_GENERAL", 0);
+        int hora_alarma = sp_general.getInt("hora_alarma", 0);
+        Log.e("hora alarma", Integer.toString(hora_alarma));
+        int minutos_alarma = sp_general.getInt("minutos_alarma", 0);
+        Log.e("minutos alarma", Integer.toString(minutos_alarma));
+        long horas_activacion=0;
+        long minutos_activacion=0;
+        int hora_actual = cal.get( Calendar.HOUR_OF_DAY );
+        int minutos_actual = cal.get( Calendar.MINUTE );
+
         try{
             DateFormat formatter = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.ENGLISH);
             Date date_final = formatter.parse(Hora_final);
             Date date_inicial = formatter.parse(Hora_inicial);
 
+            // Tiempo consumido:
             long diff = date_final.getTime() - date_inicial.getTime();
             horas = diff / (1000 * 60 * 60);
             minutos = diff / (1000 * 60) - (horas*60);
+            if (horas>0)
+                tiempo.setText(horas + " horas, "+ minutos + " minutos"); // Ejemplo: "3 horas, 20 minutos"
+            else
+                tiempo.setText(minutos + " minutos"); // Ejemplo: "20 minutos"
 
-            tiempo.setText(horas + " horas, "+ minutos + " minutos"); // Ejemplo: "3 horas, 20 minutos"
+            // Gasto acumulado:
+            float diferencia = date_final.getTime() - date_inicial.getTime();
+            horas_float = diferencia / (1000 * 60 * 60);
+            gasto_acumulado = precio_hora * horas_float;
+            gasto.setText(String.format("%.2f", gasto_acumulado) + " €"); // Redondeamos el gasto acumulado a 2 decimales
         }
         catch(Exception e){
             Log.e("Fallo al formatear: ", "Fallo");
         }
+
+        // Tiempo restante para que se active la alarma
+        double activacion_alarma = (double) (hora_alarma * 60 + minutos_alarma);
+        double tiempo_actual = (double) (hora_actual * 60 + minutos_actual);
+        double tiempo_restante = activacion_alarma - tiempo_actual;
+
+        boolean estado_alarma = sp_general.getBoolean("alarma",false);
+        if (estado_alarma && tiempo_restante>0) // Si la alarma está activada (para que funcione en caso de desactivar la alarma y salir y entrar de nuevo en el fragment)
+        {
+            horas_activacion = (long) (tiempo_restante / 60);
+            minutos_activacion = (long) (tiempo_restante - horas_activacion * 60);
+            if(hora_alarma>hora_actual)
+                restante.setText(horas_activacion + " horas, " + minutos_activacion + " minutos"); // Ejemplo: "3 horas, 20 minutos"
+            else
+                restante.setText(minutos_activacion + " minutos"); // Ejemplo: "20 minutos"
+        }
+        else
+            restante.setText("Alarma desactivada");
     }
 
     // Cargamos el menú actualizar alarma
