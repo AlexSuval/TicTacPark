@@ -373,10 +373,10 @@ public class BuscarFragment extends Fragment
 
             // Creamos los objetos Parking
             Parking Molinon = new Parking(0, "Parking El Molinón", 43.535667, -5.635787, "987654321", "Público", 1.23, "Libre");
-            Parking Europa = new Parking(1, "Parking Plaza Europa", 43.5385763,-5.664812, "987654322", "Público", 1.23, "Completo");
-            Parking Begona = new Parking(2, "Parking Begoña", 43.5374459,-5.6623837, "987654323",  "Público", 1.23, "Libre");
-            Parking Nautico = new Parking(3, "Parking El Náutico", 43.5420452,-5.6614269, "987654324",  "Público", 1.23, "Libre");
-            Parking Fomento = new Parking(4, "Parking Fomento", 43.5420643,-5.667993, "987654325",  "Público", 1.23, "Completo", (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1);
+            Parking Europa = new Parking(1, "Parking Plaza Europa", 43.5385763,-5.664812, "987654322", "Privado", 1.23, "Completo");
+            Parking Begona = new Parking(2, "Parking Begoña", 43.5374459,-5.6623837, "987654323",  "Privado", 1.23, "Libre");
+            Parking Nautico = new Parking(3, "Parking El Náutico", 43.5420452,-5.6614269, "987654324",  "Privado", 1.23, "Libre");
+            Parking Fomento = new Parking(4, "Parking Fomento", 43.5420643,-5.667993, "987654325",  "Privado", 1.23, "Completo", (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1);
 
             // Los metemos en el ArrayList de Parkings
             list_parking.add(Molinon);

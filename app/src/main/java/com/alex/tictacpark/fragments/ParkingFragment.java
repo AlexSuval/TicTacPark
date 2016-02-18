@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -98,6 +99,9 @@ public class ParkingFragment extends Fragment {
         String latitud;
         final String telefono;
         final String url_map;
+        String nombre;
+        String tipo;
+        String estado;
 
         // Si este bundle está vacío es que se entró desde el menú (no se creó Intent)
         if(b==null)
@@ -221,18 +225,47 @@ public class ParkingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //Se crea el Intent
-                Intent intent=new Intent();
+                Intent intent = new Intent();
                 intent.setAction("android.intent.action.DIAL");
-                intent.setData(Uri.parse("tel:"+telefono));
+                intent.setData(Uri.parse("tel:" + telefono));
                 startActivity(intent);
             }
         });
 
+        // Se envía evento táctil a la vista
         view.setOnTouchListener(new View.OnTouchListener(){
             public boolean onTouch(View v,MotionEvent event){
                 return true;
             }
         });
+
+        // Añadimos nombre, tipo y estado del parking a la vista del fragment del parking:
+
+        // Recuperamos el nombre del parking
+        nombre=parking_aparcado.getNombre();
+        // Ponemos el nombre del parking en el TextView correspondiente
+        TextView tv_nombre=(TextView)view.findViewById(R.id.tv_nombre_parking);
+        tv_nombre.setText(nombre);
+
+        // Recuperamos el tipo de parking
+        tipo=parking_aparcado.getTipo();
+        // Ponemos el tipo de parking en el TextView correspondiente
+        TextView tv_tipo=(TextView)view.findViewById(R.id.tv_tipo_parking);
+        tv_tipo.setText(tipo);
+
+        // Recuperamos el estado del parking
+        estado=parking_aparcado.getEstado();
+        // Ponemos el estado del parking en el Button correspondiente
+        Button b_estado=(Button)view.findViewById(R.id.b_estado_parking);
+        b_estado.setText(estado);
+        if(estado.equals("Libre")) {
+            // Se cambia la apariencia del botón a verde con el texto LIBRE.
+            b_estado.setBackgroundColor(Color.GREEN);
+        }
+        else {
+            // Se cambia la apariencia del botón a rojo con el texto COMPLETO.
+            b_estado.setBackgroundColor(Color.RED);
+        }
 
         // Cargamos los iconos en un ArrayList<ImageView>
         ArrayList<ImageView> iconos = cargarIconos(p);
