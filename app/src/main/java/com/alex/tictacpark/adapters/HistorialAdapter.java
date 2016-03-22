@@ -6,6 +6,7 @@ package com.alex.tictacpark.adapters;
 
         import android.content.Context;
         import android.support.v7.widget.RecyclerView;
+        import android.view.ContextMenu;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
@@ -27,6 +28,15 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
     private int rowLayout;
     private Context mContext;
     private List<Historial> historial; // Lista historial
+    private int position;
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
 
     /* Métodos necesarios y siempre utilizados para aplicar la vista en forma de 'Card View' */
     // Constructor por defecto
@@ -65,6 +75,16 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
 
         // Se aplica el precio/hora
         viewHolder.precio_hora.setText(h.getPrecio_hora());
+
+        // Capturamos la posición antes de cargar el contexto del menú
+        final ViewHolder holder=viewHolder;
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View v){
+                setPosition(holder.getPosition());
+                return false;
+            }
+        });
     }
 
     @Override
@@ -72,8 +92,14 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
         return historial == null ? 0 : historial.size();
     }
 
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        holder.itemView.setOnLongClickListener(null);
+        super.onViewRecycled(holder);
+    }
+
     // Clase que inicializa los elementos gráficos de la interfaz.
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
         public TextView nombre;
         public TextView fecha;
         public TextView duracion;
@@ -87,6 +113,15 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
             duracion = (TextView) itemView.findViewById(R.id.tv_duracion);
             precio = (TextView) itemView.findViewById(R.id.tv_precio);
             precio_hora = (TextView) itemView.findViewById(R.id.tv_precio_hora);
+            itemView.setOnCreateContextMenuListener(this);
+        }
+
+        // Menú para gestionar el click prolongado en las Cards
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.setHeaderTitle("Seleccione la acción que desee realizar: ");
+            menu.add(0, R.id.acceder_parking, 0, "Ir al parking");
+            menu.add(0, R.id.borrar_entrada, 0, "Borrar entrada");
         }
     }
 }

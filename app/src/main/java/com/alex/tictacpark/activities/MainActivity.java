@@ -111,9 +111,11 @@ public class MainActivity extends AppCompatActivity
 
         // Comprobamos mediante el fichero de preferencias si es el primer acceso a la app,
         // en caso afirmativo, crearemos el fichero del historial
-        SharedPreferences settings = getSharedPreferences(PREFS_GENERAL, 0);
-        if (settings.getBoolean("primer_acceso_app", true)){
-            settings.edit().putBoolean("primer_acceso_app", false).commit();
+        SharedPreferences sp_general = getSharedPreferences(PREFS_GENERAL, 0);
+        SharedPreferences.Editor editor_general = sp_general.edit();
+
+        if (sp_general.getBoolean("primer_acceso_app", true)){
+            editor_general.putBoolean("primer_acceso_app", false);
             CrearHistorial();   // Se crea el historial
             //mostrar_ocultarMenu(true);  // Se ocultan las pestañas del menú
         }
@@ -126,14 +128,17 @@ public class MainActivity extends AppCompatActivity
         Log.e("Alarma=",Boolean.toString(alarma));
         if (!alarma)
         {
+            /*
             // Editor de preferencias General
             SharedPreferences sp_general=this.getSharedPreferences("PREFS_GENERAL", 0);
             final SharedPreferences.Editor editor_general = sp_general.edit();
+            */
             // Ponemos alarma=false en el archivo de preferencias general
             editor_general.putBoolean("alarma", false);
-            //Se guardan los cambios en el fichero
-            editor_general.commit();
         }
+
+        //Se guardan los cambios en el fichero
+        editor_general.commit();
     }
 
     // Método para crear el fichero del historial

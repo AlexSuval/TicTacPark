@@ -407,12 +407,14 @@ public class ParkingFragment extends Fragment {
             // Desactivamos la alarma si hubiese alguna activa
             // para ello limpiamos todos los campos del fichero de preferencias general
             editor_general.clear();
+            // Para no resetear al primer acceso de la app
+            editor_general.putBoolean("primer_acceso_app", false);
             editor_general.commit();
             // TODO Cancelo todas las notificaciones, para que no me salte la de la alarma pendiente
          /* ÉSTO CAMBIA LOS VALORES QUE SE INTRODUCEN AL HISTORIAL
             NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancelAll();
-*/
+        */
             // Se cambia la apariencia del botón de DESAPARCAR (activo) a APARCAR (activo).
             b.setText(R.string.aparcar);
 
@@ -422,6 +424,7 @@ public class ParkingFragment extends Fragment {
             String Hora_inicial = sp_mi_parking.getString("hora_inicial", "0");
             long horas=0;
             long minutos=0;
+            float horas_exacto=0;
             try{
                 DateFormat formatter = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.ENGLISH);
                 Date date_final = formatter.parse(Hora_final);
@@ -430,6 +433,9 @@ public class ParkingFragment extends Fragment {
                 long diff = date_final.getTime() - date_inicial.getTime();
                 horas = diff / (1000 * 60 * 60);
                 minutos = diff / (1000 * 60) - (horas*60);
+
+                float duracion = date_final.getTime() - date_inicial.getTime();
+                horas_exacto = duracion / (1000 * 60 * 60);
             }
             catch(Exception e){
                 Log.e("Fallo al formatear: ", "Fallo");
@@ -437,8 +443,6 @@ public class ParkingFragment extends Fragment {
 
             // Se crea el formato de la fecha en la que se abandona el aparcamiento
             SimpleDateFormat sdf_fecha = new SimpleDateFormat("dd/MM/yyyy");
-
-            //TODO CALCULAR PRECIO TOTAL DE ESTACIONAMIENTO
 
             // Se añade fichero al historial generado a partir de los datos almacenados
             // en el fichero de preferencias mi parking y las operaciones correspondientes.
@@ -448,14 +452,17 @@ public class ParkingFragment extends Fragment {
             try{
                 raiz = new JSONObject(JSON);
                 JSONObject tarjeta=new JSONObject();
-                tarjeta.put("nombre",parking.getNombre());
+                tarjeta.put("nombre", parking.getNombre());
                 tarjeta.put("fecha",sdf_fecha.format(cal.getTime())); // Se obtiene la fecha actual y se mete en el JSON
                 tarjeta.put("duracion", horas + " horas, "+ minutos + " minutos"); // Ejemplo: "3 horas, 20 minutos"
-                tarjeta.put("precio","1.20€");
-                tarjeta.put("precio_hora","("+parking.getPrecio()+"€/h)");
+                double precio_hora = parking.getPrecio();
+                tarjeta.put("precio_hora", "(" + String.format("%.2f", precio_hora)+"€/h)"); // Redondeamos el precio/hora a 2 decimales
+                double precio_total = precio_hora * horas_exacto;
+                tarjeta.put("precio", String.format("%.2f", precio_total) + "€"); // Redondeamos el precio total a 2 decimales
+
                 JSONArray historial = raiz.getJSONArray("historial");
                 historial.put(tarjeta);
-                //TODO Guardar JSONObject, calcular duración y precio total
+                //TODO Guardar JSONObject
                 // Pasamos la tarjeta a String
                 String Historial_final=raiz.toString();
                 // Se sobreescribe el historial con la nueva tarjeta al anterior

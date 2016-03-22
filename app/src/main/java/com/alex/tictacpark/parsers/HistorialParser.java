@@ -37,6 +37,9 @@ public class HistorialParser {
         // Cargamos el documento JSON en un String
         String json=cargar(c);
         if(json!=null){
+            /* TODO COMPILAR CON ESTO
+            Log.e("Ya hay un JSON", "OK");
+            */
             JSONObject jsonObject;
             try{
                 jsonObject=new JSONObject(json); // Recuperamos el JSON en un JSONObject

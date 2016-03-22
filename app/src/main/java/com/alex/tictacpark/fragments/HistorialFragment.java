@@ -1,13 +1,20 @@
 package com.alex.tictacpark.fragments;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -19,6 +26,11 @@ import com.alex.tictacpark.adapters.HistorialAdapter;
 import com.alex.tictacpark.models.Historial;
 import com.alex.tictacpark.parsers.HistorialParser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -97,6 +109,9 @@ public class HistorialFragment extends Fragment {
             pb.setVisibility(View.GONE);
         }
 
+        // Carga el menú de borrar historial
+        setHasOptionsMenu(true);
+
         return rootView;
     }
 
@@ -115,4 +130,98 @@ public class HistorialFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
+    // Cargamos el menú borrar historial
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_borrar_historial, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.borrar:
+                // Se crea un cuadro de diálogo
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Borrar historial");
+                builder.setMessage("¿Desea borrar todo su historial definitivamente?");
+                builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Se borra el historial
+                        BorrarHistorial();
+                        // Se carga de nuevo el adapter, para actualizar la vista
+                        ArrayList<Historial> historial_vacio = new ArrayList<>();
+                        HistorialAdapter adapter = new HistorialAdapter(historial_vacio, R.layout.card_view_historial, getActivity());
+                        recyclerView.setAdapter(adapter);
+                        TextView tv_historial_vacio = (TextView) getView().findViewById(R.id.tv_historial_vacio);
+                        tv_historial_vacio.setVisibility(View.VISIBLE);
+                        dialog.dismiss();
+                    }
+                });
+                builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    // Método para sobreescribir un fichero del historial vacío --> BorrarHistorial
+    private void BorrarHistorial(){
+        String string; // String para pasar en formato string el JSON
+        FileOutputStream fos;
+
+        // Creamos el objeto y String JSON
+        try{
+            JSONObject objeto = new JSONObject();
+            JSONArray array = new JSONArray();
+            objeto.put("historial", array);
+            string=objeto.toString();
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+            string="";
+        }
+
+        // Creamos el fichero JSON del historial
+        try{
+            fos=getActivity().openFileOutput("historial.json", Context.MODE_PRIVATE);
+            fos.write(string.getBytes());
+            fos.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        Log.e("JSON", string);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {/*
+        int position = -1;
+        try{
+            position = ((HistorialAdapter)getAdapter()).getPosition();
+        }
+        catch (Exception e) {
+            //Log.d(TAG, e.getLocalizedMessage(), e);
+            return super.onContextItemSelected(item);
+        }*/
+        switch (item.getItemId()) {
+            case R.id.acceder_parking:
+                Log.e("Clickamos: ", "Acceder");
+                // do your stuff
+                break;
+            case R.id.borrar_entrada:
+                Log.e("Clickamos: ", "Borrar");
+                // do your stuff
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
 }
