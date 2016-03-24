@@ -5,6 +5,7 @@ package com.alex.tictacpark.models;
  */
 public class Historial {
 
+    private int Id;
     private String Nombre;
     private String Fecha;
     private String Duracion;
@@ -12,6 +13,14 @@ public class Historial {
     private String Precio_hora;
 
     public Historial() {
+    }
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
     }
 
     public String getNombre() {

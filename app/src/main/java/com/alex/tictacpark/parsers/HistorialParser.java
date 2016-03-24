@@ -59,6 +59,9 @@ public class HistorialParser {
                     Historial h = new Historial();
 
                     // Obtenemos los campos de la tarjeta y los vamos metiendo en Historial
+                    int Id = tarjeta.getInt("id");
+                    h.setId(Id);
+
                     String Nombre = tarjeta.getString("nombre");
                     h.setNombre(Nombre);
 

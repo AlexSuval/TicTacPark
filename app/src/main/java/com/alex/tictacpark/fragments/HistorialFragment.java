@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -31,6 +32,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -47,6 +50,12 @@ public class HistorialFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private RecyclerView recyclerView;
     private ProgressBar pb;
+
+    // Adapter global para ser usado en todas las clases. Se requiere su uso en onContextItemSelected
+    HistorialAdapter adapter;
+
+    // ArrayList<Historial> global para ser usado en todas las clases
+    ArrayList<Historial> historial_final;
 
     /**
      * Use this factory method to create a new instance of
@@ -83,31 +92,8 @@ public class HistorialFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        // Parsear JSON
-        HistorialParser parser=new HistorialParser();
-        ArrayList<Historial> historial_final = parser.parse(getActivity());
-
-        // Para dar la vuelta al historial: Se muestran primero las últimas entradas
-        Collections.reverse(historial_final);
-
-        // Si está vacío, se pone visible el mensaje de que no existen entradas para mostrar y
-        // se oculta la progress bar
-        if(historial_final.size()==0)
-        {
-            TextView tv_historial_vacio=(TextView)rootView.findViewById(R.id.tv_historial_vacio);
-            tv_historial_vacio.setVisibility(View.VISIBLE);
-
-            ProgressBar pb=(ProgressBar)rootView.findViewById(R.id.progressBar);
-            pb.setVisibility(View.GONE);
-        }
-        // Sino, se muestra el historial y se oculta la progress bar
-        else
-        {
-            HistorialAdapter adapter=new HistorialAdapter(historial_final,R.layout.card_view_historial,getActivity());
-            recyclerView.setAdapter(adapter);
-            ProgressBar pb=(ProgressBar)rootView.findViewById(R.id.progressBar);
-            pb.setVisibility(View.GONE);
-        }
+        // Se muestra el historial
+        mostrarHistorial(rootView);
 
         // Carga el menú de borrar historial
         setHasOptionsMenu(true);
@@ -202,26 +188,105 @@ public class HistorialFragment extends Fragment {
         Log.e("JSON", string);
     }
 
+
     @Override
-    public boolean onContextItemSelected(MenuItem item) {/*
-        int position = -1;
-        try{
-            position = ((HistorialAdapter)getAdapter()).getPosition();
-        }
-        catch (Exception e) {
-            //Log.d(TAG, e.getLocalizedMessage(), e);
-            return super.onContextItemSelected(item);
-        }*/
+    public boolean onContextItemSelected(MenuItem item) {
+        final int index=adapter.getPosicion();
+
         switch (item.getItemId()) {
             case R.id.acceder_parking:
-                Log.e("Clickamos: ", "Acceder");
-                // do your stuff
+                accederParking(index);
                 break;
             case R.id.borrar_entrada:
-                Log.e("Clickamos: ", "Borrar");
-                // do your stuff
+                // Se crea un cuadro de diálogo
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Borrar entrada historial");
+                builder.setMessage("¿Desea borrar esta entrada definitivamente?");
+                builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        borrarEntrada(index);
+                        // Se carga de nuevo el adapter, para actualizar la vista del historial
+                        View rootView = getView();
+                        // Se notifica al adapter el id borrado
+                        adapter.notifyItemRemoved(index);
+                        mostrarHistorial(rootView);
+                        dialog.dismiss();
+                    }
+                });
+                builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
                 break;
         }
         return super.onContextItemSelected(item);
     }
+
+    private void accederParking(int posicion){
+        Historial h = historial_final.get(posicion);
+        int id=h.getId();
+        Log.e("Id parking", Integer.toString(id));
+    }
+
+    // Método para borrar la entrada del historial seleccionada.
+
+    private void borrarEntrada(int posicion){
+        HistorialParser parser = new HistorialParser();
+        String JSON=parser.cargar(getActivity());
+        JSONObject raiz;
+        try{
+            raiz = new JSONObject(JSON);
+            JSONArray historial = raiz.getJSONArray("historial");
+
+            // Eliminamos la posición tamaño-posición-1 por haber dado la vuelta al array para mostrar las entradas más recientes primero
+            historial.remove(historial.length() - posicion - 1);
+
+            // Pasamos a String
+            String Historial_final = raiz.toString();
+            // Se sobreescribe el historial sin la tarjeta eliminada al anterior
+            OutputStreamWriter osw = new OutputStreamWriter(getActivity().openFileOutput("historial.json", Context.MODE_PRIVATE));
+            osw.write(Historial_final);
+            osw.close();
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void mostrarHistorial(View rootView){
+        // Parsear JSON
+        HistorialParser parser=new HistorialParser();
+        historial_final = parser.parse(getActivity());
+
+        // Para dar la vuelta al historial: Se muestran primero las últimas entradas
+        Collections.reverse(historial_final);
+
+        // Se carga el adapter
+        adapter=new HistorialAdapter(historial_final,R.layout.card_view_historial,getActivity());
+        recyclerView.setAdapter(adapter);
+
+        // Si está vacío, se pone visible el mensaje de que no existen entradas para mostrar y
+        // se oculta la progress bar
+        if(historial_final.size()==0)
+        {
+            TextView tv_historial_vacio=(TextView)rootView.findViewById(R.id.tv_historial_vacio);
+            tv_historial_vacio.setVisibility(View.VISIBLE);
+
+            ProgressBar pb=(ProgressBar)rootView.findViewById(R.id.progressBar);
+            pb.setVisibility(View.GONE);
+        }
+        // Sino, se muestra el historial y se oculta la progress bar
+        else
+        {
+            ProgressBar pb=(ProgressBar)rootView.findViewById(R.id.progressBar);
+            pb.setVisibility(View.GONE);
+        }
+    }
+
 }

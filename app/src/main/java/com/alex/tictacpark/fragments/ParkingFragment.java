@@ -452,6 +452,7 @@ public class ParkingFragment extends Fragment {
             try{
                 raiz = new JSONObject(JSON);
                 JSONObject tarjeta=new JSONObject();
+                tarjeta.put("id", parking.getId());
                 tarjeta.put("nombre", parking.getNombre());
                 tarjeta.put("fecha",sdf_fecha.format(cal.getTime())); // Se obtiene la fecha actual y se mete en el JSON
                 tarjeta.put("duracion", horas + " horas, "+ minutos + " minutos"); // Ejemplo: "3 horas, 20 minutos"
