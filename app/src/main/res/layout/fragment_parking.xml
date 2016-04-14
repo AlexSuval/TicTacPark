@@ -11,7 +11,7 @@
         android:id="@+id/iv_foto_parking"
         android:contentDescription="Parking"
         android:layout_margin="10dp"
-        android:src="@drawable/parking"
+        android:src="@drawable/logo320x320"
         />
 
     <TextView
