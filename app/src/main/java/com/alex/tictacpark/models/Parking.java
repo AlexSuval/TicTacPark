@@ -23,7 +23,7 @@ public class Parking implements Parcelable {
     private double Precio;
     private String Horario_Apertura;
     private String Horario_Cierre;
-    private double Tiempo_Maximo;
+    private int Tiempo_Maximo;
     private int Plazas;
     private double Altura_Minima;
     private byte Adaptado_Discapacidad;
@@ -51,6 +51,43 @@ public class Parking implements Parcelable {
         this.Tipo = Tipo;
         this.Precio = Precio;
         this.Estado = Estado;
+    }
+
+    // Constructor completo
+    // TODO PRUEBAS: Constructor con información de servicios
+    public Parking(int Id, String Nombre, String Direccion, String Localidad, String Provincia,
+                   double Latitud, double Longitud, String Telefono, String Imagen, String Tipo,
+                   String Estado, double Precio, String Horario_Apertura, String Horario_Cierre,
+                   int Tiempo_Maximo, int Plazas, double Altura_Minima, byte Adaptado_Discapacidad,
+                   byte Plazas_Discapacidad, byte Motos, byte Aseos, byte Tarjeta, byte Seguridad,
+                   byte Coches_Electricos, byte Lavado, byte Servicio_24h, String Descripcion){
+        this.Id = Id;
+        this.Nombre = Nombre;
+        this.Direccion = Direccion;
+        this.Localidad = Localidad;
+        this.Provincia = Provincia;
+        this.Latitud = Latitud;
+        this.Longitud = Longitud;
+        this.Telefono = Telefono;
+        this.Imagen = Imagen;
+        this.Tipo = Tipo;
+        this.Estado = Estado;
+        this.Precio = Precio;
+        this.Horario_Apertura = Horario_Apertura;
+        this.Horario_Cierre = Horario_Cierre;
+        this.Tiempo_Maximo = Tiempo_Maximo;
+        this.Plazas = Plazas;
+        this.Altura_Minima = Altura_Minima;
+        this.Adaptado_Discapacidad = Adaptado_Discapacidad;
+        this.Plazas_Discapacidad = Plazas_Discapacidad;
+        this.Motos = Motos;
+        this.Aseos = Aseos;
+        this.Tarjeta = Tarjeta;
+        this.Seguridad = Seguridad;
+        this.Coches_Electricos = Coches_Electricos;
+        this.Lavado = Lavado;
+        this.Servicio_24h = Servicio_24h;
+        this.Descripcion = Descripcion;
     }
 
     // TODO PRUEBAS: Constructor con información de servicios
@@ -188,11 +225,11 @@ public class Parking implements Parcelable {
         Horario_Cierre = horario_Cierre;
     }
 
-    public double getTiempo_Maximo() {
+    public int getTiempo_Maximo() {
         return Tiempo_Maximo;
     }
 
-    public void setTiempo_Maximo(double tiempo_Maximo) {
+    public void setTiempo_Maximo(int tiempo_Maximo) {
         Tiempo_Maximo = tiempo_Maximo;
     }
 
@@ -314,7 +351,7 @@ public class Parking implements Parcelable {
         dest.writeDouble(Precio);
         dest.writeString(Horario_Apertura);
         dest.writeString(Horario_Cierre);
-        dest.writeDouble(Tiempo_Maximo);
+        dest.writeInt(Tiempo_Maximo);
         dest.writeInt(Plazas);
         dest.writeDouble(Altura_Minima);
         dest.writeByte(Adaptado_Discapacidad);
@@ -367,7 +404,7 @@ public class Parking implements Parcelable {
         Precio=source.readDouble();
         Horario_Apertura=source.readString();
         Horario_Cierre=source.readString();
-        Tiempo_Maximo=source.readDouble();
+        Tiempo_Maximo=source.readInt();
         Plazas=source.readInt();
         Altura_Minima=source.readDouble();
         Adaptado_Discapacidad=source.readByte();

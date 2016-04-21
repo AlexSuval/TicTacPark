@@ -98,7 +98,7 @@
         android:text="Texto descripción"
         android:id="@+id/tv_texto_descripcion"
         android:layout_below="@+id/tv_descripcion"
-        android:layout_alignRight="@+id/iv_foto_parking" />
+        android:layout_alignLeft="@+id/iv_foto_parking" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -108,5 +108,14 @@
         android:layout_alignLeft="@+id/tv_texto_descripcion"
         android:layout_alignStart="@+id/tv_texto_descripcion"
         android:id="@+id/ll_iconos"></LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/holo_red_light"
+        android:id="@+id/tv_advertencia_particulares"
+        android:layout_below="@+id/tv_texto_descripcion"
+        android:layout_alignLeft="@+id/iv_foto_parking" />
 
 </RelativeLayout>

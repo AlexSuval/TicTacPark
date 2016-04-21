@@ -101,6 +101,13 @@ public class ParkingFragment extends Fragment {
         final String url_map;
         String nombre;
         String tipo;
+        double precio;
+        String texto_descripcion;
+        int plazas;
+        String horario_apertura;
+        String horario_cierre;
+        int tiempo_maximo;
+        double altura_maxima;
         String estado;
 
         // Si este bundle está vacío es que se entró desde el menú (no se creó Intent)
@@ -127,7 +134,7 @@ public class ParkingFragment extends Fragment {
             parking_aparcado.setPrecio(sp_mi_parking.getFloat("precio", 0));
             parking_aparcado.setHorario_Apertura(sp_mi_parking.getString("horario_apertura", ""));
             parking_aparcado.setHorario_Cierre(sp_mi_parking.getString("horario_cierre", ""));
-            parking_aparcado.setTiempo_Maximo(sp_mi_parking.getFloat("tiempo_maximo", 0));
+            parking_aparcado.setTiempo_Maximo(sp_mi_parking.getInt("tiempo_maximo", 0));
             parking_aparcado.setPlazas(sp_mi_parking.getInt("plazas", -1));
             parking_aparcado.setAltura_Minima(sp_mi_parking.getFloat("altura_minima", 0));
 
@@ -239,7 +246,7 @@ public class ParkingFragment extends Fragment {
             }
         });
 
-        // Añadimos nombre, tipo y estado del parking a la vista del fragment del parking:
+        // Añadimos nombre, tipo, precio/hora y estado del parking a la vista del fragment del parking:
 
         // Recuperamos el nombre del parking
         nombre=parking_aparcado.getNombre();
@@ -249,9 +256,50 @@ public class ParkingFragment extends Fragment {
 
         // Recuperamos el tipo de parking
         tipo=parking_aparcado.getTipo();
+        // Recuperamos el precio/hora del parking
+        precio=parking_aparcado.getPrecio();
         // Ponemos el tipo de parking en el TextView correspondiente
         TextView tv_tipo=(TextView)view.findViewById(R.id.tv_tipo_parking);
-        tv_tipo.setText(tipo);
+        if(precio==0)
+            tv_tipo.setText(tipo+": Gratuito.");
+        else
+            tv_tipo.setText(tipo+": "+precio+"€/h.");
+
+        // Recuperamos el texto con la descripción del parking
+        texto_descripcion=parking_aparcado.getDescripcion();
+        // Recuperamos el número de plazas del parking
+        plazas=parking_aparcado.getPlazas();
+        // Recuperamos el horario de apertura del parking
+        horario_apertura=parking_aparcado.getHorario_Apertura();
+        // Recuperamos el horario de cierre del parking
+        horario_cierre=parking_aparcado.getHorario_Cierre();
+        // Recuperamos el tiempo máximo de estacionamiento en el parking
+        tiempo_maximo=parking_aparcado.getTiempo_Maximo();
+        // Recuperamos la altura máxima del parking
+        altura_maxima=parking_aparcado.getAltura_Minima();
+
+        // Ponemos el texto con la descripción del parking en el TextView correspondiente
+        TextView tv_texto_descripcion =(TextView)view.findViewById(R.id.tv_texto_descripcion);
+        tv_texto_descripcion.setText("- Descripción: " + texto_descripcion + "\n");
+        tv_texto_descripcion.append("- Número de plazas: " + plazas + " plazas." + "\n");
+        tv_texto_descripcion.append("- Horario de apertura: " + horario_apertura + " h." + "\n");
+        tv_texto_descripcion.append("- Horario de cierre: " + horario_cierre + " h." + "\n");
+        if (tiempo_maximo == 0)
+            tv_texto_descripcion.append("- Tiempo máximo de estacionamiento: No hay tiempo máximo de ocupación de plaza." + "\n");
+        else
+            tv_texto_descripcion.append("- Tiempo máximo de estacionamiento: " + tiempo_maximo + " horas." + "\n");
+        if (altura_maxima == 0)
+            tv_texto_descripcion.append("- Altura máxima permitida: Sin restricción de altura, se trata de un parking al aire libre.");
+        else
+            tv_texto_descripcion.append("- Altura máxima permitida: " + altura_maxima + " metros.");
+
+        // Ponemos el texto con un mensaje de advertencia en caso de que el tipo de parking sea
+        // Particular, en el TextView correspondiente
+        TextView tv_advertencia =(TextView)view.findViewById(R.id.tv_advertencia_particulares);
+        if(tipo.equals("Particular"))
+        {
+            tv_advertencia.append("- Parking particular: Le recomendamos que se ponga en contacto previamente con el propietario para consultar disponibilidad y reservar su plaza.");
+        }
 
         // Recuperamos el estado del parking
         estado=parking_aparcado.getEstado();

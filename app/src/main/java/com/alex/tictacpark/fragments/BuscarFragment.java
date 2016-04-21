@@ -22,6 +22,13 @@ import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
 import com.alex.tictacpark.activities.ParkingDetalle;
 import com.alex.tictacpark.models.Parking;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -37,6 +44,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +65,19 @@ public class BuscarFragment extends Fragment
     private LocationManager mLocationManager;
     private addMarkers addMarkers;
 
-    //Inicializamos el ArrayList, que contendrá todos los objetos Parking
+    // Variables necesarias para introducir los datos de conexión al servidor.
+    String ip = "192.168.0.11";// "192.168.43.192";
+    // Activando el móvil como punto de acceso y conectando el portátil con el móvil
+    // es la única forma en la que funciona depurando con el móvil, saco ipconfig y
+    // me conecto con: "192.168.43.192"
+    String raiz = "http://" + ip + ":8080/TicTacParkDWP/rest/TicTacPark";
+    String servidor = "localhost";
+    String puerto = "3306";
+    String baseDatos = "tictacpark";
+    String usuario = "root";
+    String password = "passking";
+
+    // Declaramos e inicializamos la ArrayList list_parking, que contendrá todos los objetos Parking
     private ArrayList<Parking> list_parking=new ArrayList<Parking>();
 
     //Configuración del mapa
@@ -310,7 +332,7 @@ public class BuscarFragment extends Fragment
         for(Parking p:list_parking){
             if (p.getLatitud()==latitud && p.getLongitud()==longitud)
             {
-                index=p.getId();
+                index=list_parking.indexOf(p);
             }
         }
 
@@ -363,6 +385,149 @@ public class BuscarFragment extends Fragment
         }
     }
 
+    // TODO EN PRUEBAS
+
+    // Método que invoca a peticionServicioRead(), indicándole como argumento la URI asociada al
+    // listado de parkings disponibles, y que devuelve una colección de objetos Parking.
+    public List<Parking> obtenerParkings()
+    {
+        String uri = raiz + "/lista/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password;
+
+        return peticionServicioRead(uri);
+    }
+
+    // Método que devuelve una colección de objetos Parking, y que recibe como parámetro de entrada
+    // la URI para realizar la petición al servicio web.
+    public ArrayList<Parking> peticionServicioRead(String uri)
+    {
+        // Se declara e inicializa una variable de tipo List que almacenará objetos de tipo Parking
+        //list_parking = new ArrayList<Parking>();
+
+        // Se declara e inicializa una variable de tipo RequestQueue, encargada de crear una nueva
+        // petición en la cola del servicio web.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+
+        // Se declara e inicializa un objeto de tipo JsonArrayRequest, que permite recuperar un
+        // JSONArray a partir de la URL que recibe. El constructor de la clase JsonArrayRequest
+        // recibe como argumentos de entrada el método para que el cliente realice operaciones sobre
+        // el servidor web, la uri para el acceso al recurso, y la interfaz Response.Listener,
+        // encargada de devolver la respuesta parseada a la petición del cliente, y la interfaz
+        // Response.ErrorListener encargada de entregar una respuesta errónea desde el servicio web.
+        JsonArrayRequest jArray = new JsonArrayRequest(Request.Method.GET,
+                uri,
+                new Response.Listener<JSONArray>()
+                {
+                    @Override
+                    public void onResponse(JSONArray response)
+                    {
+                        try
+                        {
+                            // Se vacía la lista de Parkings para actualizarla
+                            list_parking.clear();
+                            // Se construye un bucle for() para recorrer la respuesta parseada y
+                            // construir un nuevo objeto Parking por cada registro de la base de datos MySQL.
+                            for (int i = 0; i < response.length(); i++)
+                            {
+                                JSONObject jsObjectParking = (JSONObject) response.get(i);
+
+                                int id = jsObjectParking.getInt("id");
+                                String nombre = jsObjectParking.getString("nombre");
+                                Log.e("Parking ", nombre);
+                                String direccion = jsObjectParking.getString("direccion");
+                                String localidad = jsObjectParking.getString("localidad");
+                                String provincia = jsObjectParking.getString("provincia");
+                                double latitud = jsObjectParking.getDouble("latitud");
+                                double longitud = jsObjectParking.getDouble("longitud");
+                                String telefono = jsObjectParking.getString("telefono");
+                                String imagen = jsObjectParking.getString("imagen");
+                                String tipo = jsObjectParking.getString("tipo");
+                                String estado = jsObjectParking.getString("estado");
+                                double precio = jsObjectParking.getDouble("precio");
+                                String horario_apertura = jsObjectParking.getString("horario_apertura");
+                                String horario_cierre = jsObjectParking.getString("horario_cierre");
+                                int tiempo_maximo = jsObjectParking.getInt("tiempo_maximo");
+                                int plazas = jsObjectParking.getInt("plazas");
+                                double altura_minima = jsObjectParking.getDouble("altura_minima");
+
+                                String adaptado_discapacidad_st = jsObjectParking.getString("adaptado_discapacidad");
+                                byte adaptado_discapacidad = Byte.valueOf(adaptado_discapacidad_st);
+
+                                String plazas_discapacidad_st = jsObjectParking.getString("plazas_discapacidad");
+                                byte plazas_discapacidad = Byte.valueOf(plazas_discapacidad_st);
+
+                                String motos_st = jsObjectParking.getString("motos");
+                                byte motos = Byte.valueOf(motos_st);
+
+                                String aseos_st = jsObjectParking.getString("aseos");
+                                byte aseos = Byte.valueOf(aseos_st);
+
+                                String tarjeta_st = jsObjectParking.getString("tarjeta");
+                                byte tarjeta = Byte.valueOf(tarjeta_st);
+
+                                String seguridad_st = jsObjectParking.getString("seguridad");
+                                byte seguridad = Byte.valueOf(seguridad_st);
+
+                                String coches_electricos_st = jsObjectParking.getString("coches_electricos");
+                                byte coches_electricos = Byte.valueOf(coches_electricos_st);
+
+                                String lavado_st = jsObjectParking.getString("lavado");
+                                byte lavado = Byte.valueOf(lavado_st);
+
+                                String servicio_24h_st = jsObjectParking.getString("servicio_24h");
+                                byte servicio_24h = Byte.valueOf(servicio_24h_st);
+
+                                String descripcion = jsObjectParking.getString("descripcion");
+
+                                Parking nuevoParking = new Parking(id, nombre, direccion, localidad,
+                                        provincia, latitud, longitud, telefono,
+                                        imagen, tipo, estado, precio,
+                                        horario_apertura, horario_cierre, tiempo_maximo,
+                                        plazas, altura_minima, adaptado_discapacidad,
+                                        plazas_discapacidad, motos, aseos,
+                                        tarjeta, seguridad, coches_electricos,
+                                        lavado, servicio_24h, descripcion);
+                                // Se añade el objeto creado a la colección de tipo List<Parking>.
+                                list_parking.add(nuevoParking);
+                                Log.e("Tamaño list_parking ", String.valueOf(list_parking.size()));
+                            }
+                        } catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                },new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                try
+                {
+                    Toast.makeText(getActivity(), "Error de petición de servicio: " + error.toString(), Toast.LENGTH_LONG).show();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        );
+
+        // Se definen las políticas para la petición realizada. Recibe como argumento una instancia
+        // de la clase DefaultRetryPolicy, que recibe como parámetros de entrada el tiempo inicial
+        // de espera para la respuesta, el número máximo de intentos, y el multiplicador de retardo
+        // de envío por defecto.
+        jArray.setRetryPolicy(new DefaultRetryPolicy(
+                15000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        //Se añade la petición a la cola con el objeto de tipo JsonArrayRequest.
+        queue.add(jArray);
+        return list_parking;
+    }
+
+
+    // TODO FIN
+
     //Tarea asíncrona que añade los markers
     private class addMarkers extends AsyncTask<String, Void, Void>
     {
@@ -370,7 +535,7 @@ public class BuscarFragment extends Fragment
         protected void onPreExecute()
         {
             super.onPreExecute();
-
+/*
             // Creamos los objetos Parking
             Parking Molinon = new Parking(0, "Parking El Molinón", 43.535667, -5.635787, "987654321", "Público", 1.23, "Libre");
             Parking Europa = new Parking(1, "Parking Plaza Europa", 43.5385763,-5.664812, "987654322", "Privado", 1.23, "Completo");
@@ -384,6 +549,8 @@ public class BuscarFragment extends Fragment
             list_parking.add(Begona);
             list_parking.add(Nautico);
             list_parking.add(Fomento);
+            */
+            obtenerParkings();
         }
 
         @Override
@@ -391,12 +558,17 @@ public class BuscarFragment extends Fragment
         {
             super.onPostExecute(aVoid);
 
+            Log.e("Entró en ", "onPost");
+            Log.e("Marker ", String.valueOf(list_parking.size()));
+
             //for que recorre la lista de parkings y crea los markers
             for(int i=0; i<list_parking.size(); i++)
             {
+                Log.e("Entró en ", "el for");
                 Parking parking = list_parking.get(i);
                 // Creamos coordenadas
                 LatLng Coordenadas = new LatLng(parking.getLatitud(), parking.getLongitud());
+                Log.e("Marker Nombre ", String.valueOf(parking.getNombre()));
                 // Mostramos los markers
                 showMarker(Coordenadas, parking.getNombre(), parking.getTipo(), parking.getPrecio(), parking.getEstado());
             }
