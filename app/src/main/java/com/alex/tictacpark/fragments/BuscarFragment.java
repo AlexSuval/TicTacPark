@@ -63,7 +63,7 @@ public class BuscarFragment extends Fragment
     private String TAG = "BUSCAR";
     //private GoogleApiClient mGoogleApiClient;
     private LocationManager mLocationManager;
-    private addMarkers addMarkers;
+    //private addMarkers addMarkers;
 
     // Variables necesarias para introducir los datos de conexión al servidor.
     String ip = "192.168.0.11";// "192.168.43.192";
@@ -79,6 +79,9 @@ public class BuscarFragment extends Fragment
 
     // Declaramos e inicializamos la ArrayList list_parking, que contendrá todos los objetos Parking
     private ArrayList<Parking> list_parking=new ArrayList<Parking>();
+
+    // Variable que almacena el estado de la conexión a la DB
+    boolean conectado = false;
 
     //Configuración del mapa
     //Establece mi posición
@@ -254,18 +257,32 @@ public class BuscarFragment extends Fragment
         }
         CameraUpdate cameraUpdate= CameraUpdateFactory.newLatLngZoom(latLng,zoom);
         mMap.animateCamera(cameraUpdate);
-        addMarkers=new addMarkers(); //Inicializamos addMarkers
-        addMarkers.execute(""); //Lanzamos addMarkers pasándole la url
+
+        // Se comprueba el estado de la conexión. Si fue ok, entonces se obtienen los parkings de la DB
+        // No es necesario ejecutar la solicitud Volley en una AsyncTask, pues maneja todas las tareas relacionadas con la red en un hilo separado
+        peticionServicio();
+        if (conectado)
+            obtenerParkings();
+        Log.e("Marker ", String.valueOf(list_parking.size()));
+
+        //Escucha a que le demos click a algún marker
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            //Se identifica qué marker se está pulsando
+            public void onInfoWindowClick(Marker marker) {
+                //Genera el intent y empieza la actividad a través del intent
+                Intent intent = clickMarker(marker);
+                startActivity(intent);
+            }
+        });
     }
 
-    public void moverCamara(LatLng coordenadas){
-        CameraUpdate cameraUpdate= CameraUpdateFactory.newLatLngZoom(coordenadas, 14);
+    public void moverCamara(LatLng coordenadas) {
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordenadas, 14);
         mMap.animateCamera(cameraUpdate);
     }
 
     //Muestra cuadro de diálogo en caso de que el GPS esté desactivado
-    private void showGPSDisabledAlertToUser()
-    {
+    private void showGPSDisabledAlertToUser() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder
                 .setMessage(R.string.activacion_gps)
@@ -330,7 +347,7 @@ public class BuscarFragment extends Fragment
         // Buscar en el ArrayList el id del objeto con esas coordenadas
         int index=-1;
         for(Parking p:list_parking){
-            if (p.getLatitud()==latitud && p.getLongitud()==longitud)
+            if (p.getLatitud()==latitud && p.getLongitud() == longitud)
             {
                 index=list_parking.indexOf(p);
             }
@@ -385,21 +402,100 @@ public class BuscarFragment extends Fragment
         }
     }
 
-    // TODO EN PRUEBAS
 
-    // Método que invoca a peticionServicioRead(), indicándole como argumento la URI asociada al
-    // listado de parkings disponibles, y que devuelve una colección de objetos Parking.
-    public List<Parking> obtenerParkings()
+    // Método que devuelve el estado de la conexión al servidor
+    public void peticionServicio()
     {
-        String uri = raiz + "/lista/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password;
+        // Variable de tipo String que inicializa con la estructura principal de la URI
+        // para el acceso al servicio web.
+        // Nota: Para conectarnos con nuestro servidor web local (localhost), debemos usar la
+        // dirección IP de nuestro equipo en vez de "localhost" o "127.0.0.1". Esto es porque
+        // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
+        // nuestro dispositivo Android
+        String ip = "192.168.0.11";
+        // Con el emulador funciona: "10.0.2.2" (local apache server)
+        // Con el emulador (red eduroam) funciona: "10.38.32.149"
+        // Activando el móvil como punto de acceso y conectando el portátil con el móvil
+        // es la única forma en la que funciona depurando con el móvil, saco ipconfig y
+        // me conecto con: "192.168.43.192"
+        String raiz = "http://" + ip + ":8080/TicTacParkDWP/rest/TicTacPark";
+        String servidor = "localhost";
+        String puerto = "3306";
+        String baseDatos = "tictacpark";
+        String usuario = "root";
+        String password = "passking";
 
-        return peticionServicioRead(uri);
+        String uri = raiz + "/estado/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password;
+
+        // Se declara e inicializa una variable de tipo RequestQueue, encargada de crear
+        // una nueva petición en la cola del servicio web.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+
+        // Se declara e inicializa un objeto de tipo JsonArrayRequest, que permite recuperar un
+        // JSONArray a partir de la URL que recibe. El constructor de la clase JsonArrayRequest
+        // recibe como argumentos de entrada el método para que el cliente realice operaciones
+        // sobre el servicio web, la uri para el acceso al recurso, la interfaz Response.Listener,
+        // encargada de devolver la respuesta parseada a la petición del cliente, y la interfaz
+        // Response.ErrorListener encargada de entregar una respuesta errónea desde el servicio web.
+        JsonArrayRequest jArray = new JsonArrayRequest(Request.Method.GET,
+                uri,
+                new Response.Listener<JSONArray>()
+                {
+                    @Override
+                    public void onResponse(JSONArray response)
+                    {
+                        try
+                        {
+                            // Se comprueba mediante un condicional if, que el servicio web ha podido
+                            // conectar con el servidor MySQL con los datos introducidos por el usuario.
+                            if(response.get(1).toString().equals("true"))
+                            {
+                                conectado = true;
+                                Log.e(" Estado Conexión", "Fue OK");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        try
+                        {
+                            Log.e("Estado Conexión", "Falló");
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        );
+
+        // Se definen las políticas para la petición realizada. Recibe como argumento una
+        // instancia de la clase DefaultRetryPolicy, que recibe como parámetros de entrada
+        // el tiempo inicial de espera para la respuesta, el número máximo de intentos,
+        // y el multiplicador de retardo de envío por defecto.
+        jArray.setRetryPolicy(new DefaultRetryPolicy(
+                15000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        //Se añade la petición a la cola con el objeto de tipo JsonArrayRequest.
+        queue.add(jArray);
     }
 
-    // Método que devuelve una colección de objetos Parking, y que recibe como parámetro de entrada
-    // la URI para realizar la petición al servicio web.
-    public ArrayList<Parking> peticionServicioRead(String uri)
+    // Método que devuelve una colección de objetos Parking
+    public ArrayList<Parking> obtenerParkings()
     {
+        // URI asociada al listado de parkings disponibles
+        String uri = raiz + "/lista/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password;
+
         // Se declara e inicializa una variable de tipo List que almacenará objetos de tipo Parking
         //list_parking = new ArrayList<Parking>();
 
@@ -486,6 +582,13 @@ public class BuscarFragment extends Fragment
                                         plazas_discapacidad, motos, aseos,
                                         tarjeta, seguridad, coches_electricos,
                                         lavado, servicio_24h, descripcion);
+
+                                // Creamos coordenadas
+                                LatLng Coordenadas = new LatLng(nuevoParking.getLatitud(), nuevoParking.getLongitud());
+                                Log.e("Marker Nombre ", String.valueOf(nuevoParking.getNombre()));
+                                // Mostramos los markers
+                                showMarker(Coordenadas, nuevoParking.getNombre(), nuevoParking.getTipo(), nuevoParking.getPrecio(), nuevoParking.getEstado());
+
                                 // Se añade el objeto creado a la colección de tipo List<Parking>.
                                 list_parking.add(nuevoParking);
                                 Log.e("Tamaño list_parking ", String.valueOf(list_parking.size()));
@@ -523,72 +626,5 @@ public class BuscarFragment extends Fragment
         //Se añade la petición a la cola con el objeto de tipo JsonArrayRequest.
         queue.add(jArray);
         return list_parking;
-    }
-
-
-    // TODO FIN
-
-    //Tarea asíncrona que añade los markers
-    private class addMarkers extends AsyncTask<String, Void, Void>
-    {
-        @Override
-        protected void onPreExecute()
-        {
-            super.onPreExecute();
-/*
-            // Creamos los objetos Parking
-            Parking Molinon = new Parking(0, "Parking El Molinón", 43.535667, -5.635787, "987654321", "Público", 1.23, "Libre");
-            Parking Europa = new Parking(1, "Parking Plaza Europa", 43.5385763,-5.664812, "987654322", "Privado", 1.23, "Completo");
-            Parking Begona = new Parking(2, "Parking Begoña", 43.5374459,-5.6623837, "987654323",  "Privado", 1.23, "Libre");
-            Parking Nautico = new Parking(3, "Parking El Náutico", 43.5420452,-5.6614269, "987654324",  "Privado", 1.23, "Libre");
-            Parking Fomento = new Parking(4, "Parking Fomento", 43.5420643,-5.667993, "987654325",  "Privado", 1.23, "Completo", (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)1);
-
-            // Los metemos en el ArrayList de Parkings
-            list_parking.add(Molinon);
-            list_parking.add(Europa);
-            list_parking.add(Begona);
-            list_parking.add(Nautico);
-            list_parking.add(Fomento);
-            */
-            obtenerParkings();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid)
-        {
-            super.onPostExecute(aVoid);
-
-            Log.e("Entró en ", "onPost");
-            Log.e("Marker ", String.valueOf(list_parking.size()));
-
-            //for que recorre la lista de parkings y crea los markers
-            for(int i=0; i<list_parking.size(); i++)
-            {
-                Log.e("Entró en ", "el for");
-                Parking parking = list_parking.get(i);
-                // Creamos coordenadas
-                LatLng Coordenadas = new LatLng(parking.getLatitud(), parking.getLongitud());
-                Log.e("Marker Nombre ", String.valueOf(parking.getNombre()));
-                // Mostramos los markers
-                showMarker(Coordenadas, parking.getNombre(), parking.getTipo(), parking.getPrecio(), parking.getEstado());
-            }
-
-            //Escucha a que le demos click a algún marker
-            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                //Se identifica qué marker se está pulsando
-                public void onInfoWindowClick(Marker marker) {
-                    //Genera el intent y empieza la actividad a través del intent
-                    Intent intent = clickMarker(marker);
-                    startActivity(intent);
-                }
-            });
-        }
-
-        @Override
-        protected Void doInBackground(String... params)
-        {
-
-            return null;
-        }
     }
 }

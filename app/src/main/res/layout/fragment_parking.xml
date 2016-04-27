@@ -43,7 +43,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/telefono"
-        android:textColor="@android:color/holo_blue_light"
         android:id="@+id/tv_telefono_parking"
         android:layout_below="@+id/tv_direccion_parking"
         android:layout_alignRight="@+id/tv_direccion_parking"

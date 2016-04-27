@@ -7,9 +7,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -37,7 +41,9 @@ import org.json.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -109,6 +115,7 @@ public class ParkingFragment extends Fragment {
         int tiempo_maximo;
         double altura_maxima;
         String estado;
+        String imagen;
 
         // Si este bundle está vacío es que se entró desde el menú (no se creó Intent)
         if(b==null)
@@ -228,16 +235,22 @@ public class ParkingFragment extends Fragment {
         //Asignar a variable el TextView teléfono y asignar evento OnClick para abrir
         //la aplicación para llamar al clickar en teléfono
         TextView tv_telefono=(TextView)view.findViewById(R.id.tv_telefono_parking);
-        tv_telefono.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Se crea el Intent
-                Intent intent = new Intent();
-                intent.setAction("android.intent.action.DIAL");
-                intent.setData(Uri.parse("tel:" + telefono));
-                startActivity(intent);
-            }
-        });
+        if(telefono.equals("0"))
+            tv_telefono.setText("Sin teléfono.");
+        else
+        {
+            tv_telefono.setTextColor(Color.parseColor("#ff33b5e5")); // "holo_blue_light" == #ff33b5e5
+            tv_telefono.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Se crea el Intent
+                    Intent intent = new Intent();
+                    intent.setAction("android.intent.action.DIAL");
+                    intent.setData(Uri.parse("tel:" + telefono));
+                    startActivity(intent);
+                }
+            });
+        }
 
         // Se envía evento táctil a la vista
         view.setOnTouchListener(new View.OnTouchListener(){
@@ -314,6 +327,14 @@ public class ParkingFragment extends Fragment {
             // Se cambia la apariencia del botón a rojo con el texto COMPLETO.
             b_estado.setBackgroundColor(Color.RED);
         }
+
+        // Recuperamos la imagen/fotografía del parking
+        imagen=parking_aparcado.getImagen();
+        // Si la hay, ponemos la imagen del parking en la ImageView correspondiente,
+        // sino dejamos el logo de nuestra app
+        ImageView iv_imagen=(ImageView)view.findViewById(R.id.iv_foto_parking);
+        if (!"Sin foto".equals(imagen))
+            new DescargarImagen(iv_imagen).execute(imagen);
 
         // Cargamos los iconos en un ArrayList<ImageView>
         ArrayList<ImageView> iconos = cargarIconos(p);
@@ -398,7 +419,7 @@ public class ParkingFragment extends Fragment {
                 editor_mi_parking.putFloat("precio", (float) parking.getPrecio());
                 editor_mi_parking.putString("horario_apertura", parking.getHorario_Apertura());
                 editor_mi_parking.putString("horario_cierre", parking.getHorario_Cierre());
-                editor_mi_parking.putFloat("tiempo_maximo", (float) parking.getTiempo_Maximo());
+                editor_mi_parking.putInt("tiempo_maximo", parking.getTiempo_Maximo());
                 editor_mi_parking.putInt("plazas", parking.getPlazas());
                 editor_mi_parking.putFloat("altura_minima", (float) parking.getAltura_Minima());
                 editor_mi_parking.putBoolean("adaptado_discapacidad", parking.isAdaptado_Discapacidad() != 0); // Convierto de Byte a Boolean
@@ -642,6 +663,47 @@ public class ParkingFragment extends Fragment {
         }
 
         return iconos;
+    }
+
+    /*
+    Método para descargar la imagen a partir de la URL
+    La clase AsyncTask facilita el uso del hilo de interfaz de usuario. Permite realizar
+    operaciones en segundo plano y publicar los resultados sobre el hilo de interfaz de usuario
+    sin tener que manipular los hilos y/o manipuladores
+    */
+
+    private class DescargarImagen extends AsyncTask<String,Void,Bitmap>
+    {
+        ImageView imageView;
+
+        public DescargarImagen(ImageView imageView)
+        {
+            this.imageView = imageView;
+        }
+
+        protected Bitmap doInBackground(String...urls)
+        {
+            String urlImagen = urls[0];
+            Bitmap imagen = null;
+            try
+            {
+                InputStream is = new URL(urlImagen).openStream();
+                // Decodificamos el flujo de entrada is en un mapa de bits
+                imagen = BitmapFactory.decodeStream(is);
+            }
+            // Capturamos la excepción de descarga
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+            return imagen;
+        }
+
+        // onPostExecute corre en el hilo de UI tras el doInBackground
+        protected void onPostExecute(Bitmap result)
+        {
+            imageView.setImageBitmap(result);
+        }
     }
 
     /**
