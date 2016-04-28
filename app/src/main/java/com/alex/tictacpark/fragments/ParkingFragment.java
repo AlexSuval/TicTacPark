@@ -449,8 +449,8 @@ public class ParkingFragment extends Fragment {
                     AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Ya aparcado")
-                            .setMessage("Su coche se encuentra estacionado en otro parking," +
-                                    "desaparque en la pestaña Mi parking antes de aparcar" +
+                            .setMessage("Su coche se encuentra estacionado en otro parking, " +
+                                    "desaparque en la pestaña Mi parking antes de aparcar " +
                                     "en este estacionamiento")
                             .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                                 @Override

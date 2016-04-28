@@ -22,6 +22,8 @@ import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
 import com.alex.tictacpark.activities.ParkingDetalle;
 import com.alex.tictacpark.models.Parking;
+import com.alex.tictacpark.parsers.HistorialParser;
+import com.alex.tictacpark.parsers.ParkingsParser;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -46,8 +48,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +87,7 @@ public class BuscarFragment extends Fragment
     // Declaramos e inicializamos la ArrayList list_parking, que contendrá todos los objetos Parking
     private ArrayList<Parking> list_parking=new ArrayList<Parking>();
 
-    // Variable que almacena el estado de la conexión a la DB
+    // Variables que almacenan el estado de la conexión a la DB
     boolean conectado = false;
 
     //Configuración del mapa
@@ -468,6 +475,18 @@ public class BuscarFragment extends Fragment
                         try
                         {
                             Log.e("Estado Conexión", "Falló");
+                            Toast.makeText(getActivity(), "¡Atención! La aplicación está funcionando offline. El contenido puede no estar actualizado.", Toast.LENGTH_LONG).show();
+                            // Parsear JSON --> Cargar parkings offline
+                            ParkingsParser parser = new ParkingsParser();
+                            list_parking = parser.parse(getActivity());
+
+                            for (Parking p : list_parking)
+                            {
+                                // Creamos coordenadas
+                                LatLng Coordenadas = new LatLng(p.getLatitud(), p.getLongitud());
+                                // Mostramos los markers
+                                showMarker(Coordenadas, p.getNombre(), p.getTipo(), p.getPrecio(), p.getEstado());
+                            }
                         }
                         catch (Exception e)
                         {
@@ -518,6 +537,8 @@ public class BuscarFragment extends Fragment
                     {
                         try
                         {
+                            // Se borra el contenido de parkings.json
+                            BorrarParkings();
                             // Se vacía la lista de Parkings para actualizarla
                             list_parking.clear();
                             // Se construye un bucle for() para recorrer la respuesta parseada y
@@ -592,6 +613,28 @@ public class BuscarFragment extends Fragment
                                 // Se añade el objeto creado a la colección de tipo List<Parking>.
                                 list_parking.add(nuevoParking);
                                 Log.e("Tamaño list_parking ", String.valueOf(list_parking.size()));
+
+                                // Se añaden los Parkings de la DB a "parkings.json" para poder acceder offline.
+                                ParkingsParser parser = new ParkingsParser();
+                                String JSON=parser.cargar(getActivity());
+                                JSONObject raiz;
+                                try{
+                                    raiz = new JSONObject(JSON);
+                                    JSONArray parking_array = raiz.getJSONArray("parkings");
+                                    parking_array.put(jsObjectParking);
+                                    // Pasamos el JSONObject a String
+                                    String Parking_final=raiz.toString();
+                                    // Se sobreescribe el historial con la nueva tarjeta al anterior
+                                    OutputStreamWriter osw = new OutputStreamWriter(getActivity().openFileOutput("parkings.json", Context.MODE_PRIVATE));
+                                    osw.write(Parking_final);
+                                    osw.close();
+                                }
+                                catch(JSONException e){
+                                    e.printStackTrace();
+                                }
+                                catch(IOException e){
+                                    e.printStackTrace();
+                                }
                             }
                         } catch (Exception e)
                         {
@@ -625,6 +668,36 @@ public class BuscarFragment extends Fragment
 
         //Se añade la petición a la cola con el objeto de tipo JsonArrayRequest.
         queue.add(jArray);
+
         return list_parking;
+    }
+
+    // Método para sobreescribir un fichero del parking vacío --> borrar parkings.json
+    private void BorrarParkings(){
+        String string; // String para pasar en formato string el JSON
+        FileOutputStream fos;
+
+        // Creamos el objeto y String JSON
+        try
+        {
+            JSONObject objeto = new JSONObject();
+            JSONArray array = new JSONArray();
+            objeto.put("parkings", array);
+            string=objeto.toString();
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+            string="";
+        }
+
+        // Creamos el fichero JSON del historial
+        try{
+            fos=getActivity().openFileOutput("parkings.json", Context.MODE_PRIVATE);
+            fos.write(string.getBytes());
+            fos.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
