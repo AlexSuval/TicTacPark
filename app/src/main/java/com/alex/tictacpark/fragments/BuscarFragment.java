@@ -70,13 +70,19 @@ public class BuscarFragment extends Fragment
     private String TAG = "BUSCAR";
     //private GoogleApiClient mGoogleApiClient;
     private LocationManager mLocationManager;
-    //private addMarkers addMarkers;
 
-    // Variables necesarias para introducir los datos de conexión al servidor.
-    String ip = "192.168.0.11";// "192.168.43.192";
-    // Activando el móvil como punto de acceso y conectando el portátil con el móvil
-    // es la única forma en la que funciona depurando con el móvil, saco ipconfig y
-    // me conecto con: "192.168.43.192"
+    // Variable de tipo String que inicializa con la estructura principal de la URI
+    // para el acceso al servicio web.
+    // Nota: Para conectarnos con nuestro servidor web local (localhost), debemos usar la
+    // dirección IP de nuestro equipo en vez de "localhost" o "127.0.0.1". Esto es porque
+    // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
+    // nuestro dispositivo Android
+    String ip = "192.168.0.11";
+    // Con el móvil en mi casa funciona "192.168.0.11";
+    // Con el móvil como punto de acceso "192.168.43.192";
+    // Con el emulador funciona: "10.0.2.2" (local apache server)
+    // Con el emulador (red eduroam) funciona: "10.38.32.149"
+
     String raiz = "http://" + ip + ":8080/TicTacParkDWP/rest/TicTacPark";
     String servidor = "localhost";
     String puerto = "3306";
@@ -87,7 +93,7 @@ public class BuscarFragment extends Fragment
     // Declaramos e inicializamos la ArrayList list_parking, que contendrá todos los objetos Parking
     private ArrayList<Parking> list_parking=new ArrayList<Parking>();
 
-    // Variables que almacenan el estado de la conexión a la DB
+    // Variable que almacena el estado de la conexión a la DB
     boolean conectado = false;
 
     //Configuración del mapa
@@ -413,25 +419,6 @@ public class BuscarFragment extends Fragment
     // Método que devuelve el estado de la conexión al servidor
     public void peticionServicio()
     {
-        // Variable de tipo String que inicializa con la estructura principal de la URI
-        // para el acceso al servicio web.
-        // Nota: Para conectarnos con nuestro servidor web local (localhost), debemos usar la
-        // dirección IP de nuestro equipo en vez de "localhost" o "127.0.0.1". Esto es porque
-        // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
-        // nuestro dispositivo Android
-        String ip = "192.168.0.11";
-        // Con el emulador funciona: "10.0.2.2" (local apache server)
-        // Con el emulador (red eduroam) funciona: "10.38.32.149"
-        // Activando el móvil como punto de acceso y conectando el portátil con el móvil
-        // es la única forma en la que funciona depurando con el móvil, saco ipconfig y
-        // me conecto con: "192.168.43.192"
-        String raiz = "http://" + ip + ":8080/TicTacParkDWP/rest/TicTacPark";
-        String servidor = "localhost";
-        String puerto = "3306";
-        String baseDatos = "tictacpark";
-        String usuario = "root";
-        String password = "passking";
-
         String uri = raiz + "/estado/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password;
 
         // Se declara e inicializa una variable de tipo RequestQueue, encargada de crear
@@ -515,9 +502,6 @@ public class BuscarFragment extends Fragment
         // URI asociada al listado de parkings disponibles
         String uri = raiz + "/lista/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password;
 
-        // Se declara e inicializa una variable de tipo List que almacenará objetos de tipo Parking
-        //list_parking = new ArrayList<Parking>();
-
         // Se declara e inicializa una variable de tipo RequestQueue, encargada de crear una nueva
         // petición en la cola del servicio web.
         RequestQueue queue = Volley.newRequestQueue(getActivity());
@@ -538,7 +522,7 @@ public class BuscarFragment extends Fragment
                         try
                         {
                             // Se borra el contenido de parkings.json
-                            BorrarParkings();
+                            borrarParkings();
                             // Se vacía la lista de Parkings para actualizarla
                             list_parking.clear();
                             // Se construye un bucle for() para recorrer la respuesta parseada y
@@ -673,7 +657,7 @@ public class BuscarFragment extends Fragment
     }
 
     // Método para sobreescribir un fichero del parking vacío --> borrar parkings.json
-    private void BorrarParkings(){
+    private void borrarParkings(){
         String string; // String para pasar en formato string el JSON
         FileOutputStream fos;
 

@@ -3,6 +3,7 @@ package com.alex.tictacpark.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -20,12 +21,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
+import com.alex.tictacpark.activities.ParkingDetalle;
 import com.alex.tictacpark.adapters.HistorialAdapter;
 import com.alex.tictacpark.models.Historial;
+import com.alex.tictacpark.models.Parking;
 import com.alex.tictacpark.parsers.HistorialParser;
+import com.alex.tictacpark.parsers.ParkingsParser;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,6 +62,9 @@ public class HistorialFragment extends Fragment {
 
     // ArrayList<Historial> global para ser usado en todas las clases
     ArrayList<Historial> historial_final;
+
+    // Declaramos e inicializamos la ArrayList list_parking, que contendrá todos los objetos Parking
+    private ArrayList<Parking> list_parking=new ArrayList<Parking>();
 
     /**
      * Use this factory method to create a new instance of
@@ -225,14 +234,45 @@ public class HistorialFragment extends Fragment {
         return super.onContextItemSelected(item);
     }
 
+    // Método para acceder a la información del parking correspondiente a la entrada del historial seleccionada.
     private void accederParking(int posicion){
-        Historial h = historial_final.get(posicion);
-        int id=h.getId();
-        Log.e("Id parking", Integer.toString(id));
+        Parking parking_clickado = buscarParking(posicion);
+        if (parking_clickado!=null){
+            // Generamos el intent
+            Intent intent=new Intent(getActivity(),ParkingDetalle.class);
+            // Metemos el parking clickado en un ArrayList, para no tener que pasarle a la actividad
+            // el ArrayList con todos los objetos parking
+            ArrayList<Parking> parking_clickado_list = new ArrayList<Parking>();
+            parking_clickado_list.add(parking_clickado);
+            // Pasamos el parking_clickado a la actividad
+            intent.putParcelableArrayListExtra("parking_clickado", parking_clickado_list);
+            // Empieza la actividad a través del intent
+            startActivity(intent);
+        }
+        else
+        {
+            Toast.makeText(getActivity(), "El parking seleccionado ya no existe en TicTacPark.", Toast.LENGTH_LONG).show();
+        }
     }
 
-    // Método para borrar la entrada del historial seleccionada.
+    private Parking buscarParking(int posicion){
+        Historial h = historial_final.get(posicion);
+        int id=h.getId();
+        // Como los parkings se habrán actualizado (cargado de la DB) al acceder a la app,
+        // no repetimos un nuevo acceso, sino que cargamos los almacenados en el JSON
+        ParkingsParser parser = new ParkingsParser(); // Parsear JSON
+        list_parking = parser.parse(getActivity());
 
+        for (Parking p : list_parking)
+        {
+            if (id == p.getId())
+                return p;
+        }
+        return null;
+    }
+
+
+    // Método para borrar la entrada del historial seleccionada.
     private void borrarEntrada(int posicion){
         HistorialParser parser = new HistorialParser();
         String JSON=parser.cargar(getActivity());

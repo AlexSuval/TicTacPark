@@ -48,6 +48,17 @@
                 android:value="com.alex.tictacpark.activities.MainActivity" />
         </activity>
 
+        <activity
+            android:name=".activities.AreaPropietarios"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:label="@string/title_activity_area_propietarios"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.alex.tictacpark.activities.MainActivity" />
+        </activity>
+
         <!-- Registro del BroadcastReceiver -->
         <receiver android:name="com.alex.tictacpark.helpers.AlarmaReceiver"/>
 

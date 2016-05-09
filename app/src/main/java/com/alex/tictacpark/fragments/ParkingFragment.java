@@ -276,7 +276,7 @@ public class ParkingFragment extends Fragment {
         if(precio==0)
             tv_tipo.setText(tipo+": Gratuito.");
         else
-            tv_tipo.setText(tipo+": "+precio+"€/h.");
+            tv_tipo.setText(tipo+": "+String.format("%.2f", precio)+"€/h."); // Redondeamos el precio/hora a 2 decimales
 
         // Recuperamos el texto con la descripción del parking
         texto_descripcion=parking_aparcado.getDescripcion();
@@ -304,7 +304,7 @@ public class ParkingFragment extends Fragment {
         if (altura_maxima == 0)
             tv_texto_descripcion.append("- Altura máxima permitida: Sin restricción de altura, se trata de un parking al aire libre.");
         else
-            tv_texto_descripcion.append("- Altura máxima permitida: " + altura_maxima + " metros.");
+            tv_texto_descripcion.append("- Altura máxima permitida: " + String.format("%.2f", altura_maxima) + " metros.");
 
         // Ponemos el texto con un mensaje de advertencia en caso de que el tipo de parking sea
         // Particular, en el TextView correspondiente

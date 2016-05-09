@@ -4,7 +4,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="estado">Estado</string>
+    <string name="estado">Acceso propietarios</string>
     <string name="buscar">Buscar</string>
     <string name="parking">Mi Parking</string>
     <string name="alarma">Alarma y gasto</string>
@@ -29,8 +29,15 @@
     <!-- Strings utilizados en el Historial -->
     <string name="historial_vacio">No existen entradas en el historial.</string>
 
+    <!-- Strings utilizados en la pantalla de acceso de propietarios -->
+    <string name="accesoPropietarios">Acceso al área de propietario</string>
+    <string name="usuario"><u>Usuario</u></string>
+    <string name="contrasena"><u>Contraseña</u></string>
+    <string name="iniciarSesion"><u>Iniciar sesión</u></string>
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_parking_detalle">Titulo</string>
+    <string name="title_activity_area_propietarios">Área de propietario</string>
     <string name="title_activity_prueba_actividad">PruebaActividad</string>
 </resources>

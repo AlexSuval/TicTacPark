@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorAccentAlex">#ff9a0e32</color>
     <color name="rojoBrillante">#F80000</color>
     <color name="verdeKelly">#4CBB17</color>
     <color name="recyclerViewBackground">#EEEEEE</color>
