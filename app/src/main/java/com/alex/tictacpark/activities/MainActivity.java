@@ -5,20 +5,12 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -27,27 +19,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.alex.tictacpark.R;
-import com.alex.tictacpark.fragments.EstadoFragment;
+import com.alex.tictacpark.fragments.AccesoFragment;
 import com.alex.tictacpark.fragments.BuscarFragment;
 import com.alex.tictacpark.fragments.GeocoderFragment;
 import com.alex.tictacpark.fragments.ParkingFragment;
 import com.alex.tictacpark.fragments.AlarmaFragment;
-import com.alex.tictacpark.fragments.CocheFragment;
 import com.alex.tictacpark.fragments.HistorialFragment;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -59,7 +40,7 @@ import java.io.FileOutputStream;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, GeocoderFragment.OnFragmentInteractionListener {
 
-    private static final String ESTADO = "ESTADO";
+    private static final String ACCESO = "ACCESO";
     private static final String BUSCAR = "BUSCAR";
     private static final String PARKING = "PARKING";
     private static final String ALARMA = "ALARMA";
@@ -255,10 +236,10 @@ public class MainActivity extends AppCompatActivity
         Fragment mFragment;
 
         switch (id){
-            case R.id.nav_estado:
-                Log.e("MAINACTIVITY", "Estado");
-                mFragment= EstadoFragment.newInstance(0);//Creamos el fragment
-                inflate(mFragment,ESTADO);//Inflamos el fragment ESTADO
+            case R.id.nav_acceso:
+                Log.e("MAINACTIVITY", "Acceso");
+                mFragment= AccesoFragment.newInstance(0);//Creamos el fragment
+                inflate(mFragment,ACCESO);//Inflamos el fragment ACCESO
                 break;
             case R.id.nav_buscar:
                 Log.e("MAINACTIVITY", "Buscar");

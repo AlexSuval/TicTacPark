@@ -1,25 +1,27 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.alex.tictacpark.fragments.EstadoFragment">
+    tools:context="com.alex.tictacpark.fragments.AccesoFragment">
 
     <TableLayout
         android:id="@+id/tableLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
 
         <TableRow
             android:id="@+id/tableRow1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
-            <TextView
-                android:id="@+id/txtAccesoPropietarios"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/accesoPropietarios"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+            <ImageView
+                android:id="@+id/iv_foto_parking"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:contentDescription="TicTacPark"
+                android:layout_margin="30dp"
+                android:src="@drawable/logo320x320" />
         </TableRow>
 
         <TableRow
@@ -31,7 +33,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/usuario" />
+                android:hint="@string/usuario"
+                android:inputType="textNoSuggestions" />
         </TableRow>
 
         <TableRow
@@ -60,7 +63,20 @@
                 android:onClick="iniciarSesion" />
         </TableRow>
 
-        <!-- TODO Switch y Texto Estado del Parking
+        <TableRow
+            android:id="@+id/tableRow5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nuevoRegistro"
+                android:id="@+id/btnNuevoRegistro"
+                android:onClick="nuevoRegistro" />
+        </TableRow>
+
+        <!-- TODO Switch Estado del Parking
         <TableRow
             android:id="@+id/tableRow5"
             android:layout_width="wrap_content"
@@ -75,17 +91,6 @@
                 android:layout_gravity="center"
                 android:layout_centerHorizontal="true"/>
         </TableRow>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Estado del Parking"
-            android:id="@+id/textView2"
-            android:layout_gravity="center_horizontal|top"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="61dp" />
              -->
     </TableLayout>
-</RelativeLayout>
+</ScrollView>

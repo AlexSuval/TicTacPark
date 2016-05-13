@@ -77,9 +77,10 @@ public class BuscarFragment extends Fragment
     // dirección IP de nuestro equipo en vez de "localhost" o "127.0.0.1". Esto es porque
     // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
     // nuestro dispositivo Android
-    String ip = "192.168.0.11";
+    String ip = "192.168.42.41";
     // Con el móvil en mi casa funciona "192.168.0.11";
     // Con el móvil como punto de acceso "192.168.43.192";
+    // Con el móvil con anclaje de USB "192.168.42.173";
     // Con el emulador funciona: "10.0.2.2" (local apache server)
     // Con el emulador (red eduroam) funciona: "10.38.32.149"
 
@@ -499,6 +500,24 @@ public class BuscarFragment extends Fragment
     // Método que devuelve una colección de objetos Parking
     public ArrayList<Parking> obtenerParkings()
     {
+        /* Si tarda en obtener los parkings de la DB vamos cargándolos offline
+        if (list_parking.size()==0){
+            Log.e("Cargando markers ", "offline.");
+            Toast.makeText(getActivity(), "Cargando markers offline.", Toast.LENGTH_LONG).show();
+            // Parsear JSON --> Cargar parkings offline
+            ParkingsParser parser = new ParkingsParser();
+            list_parking = parser.parse(getActivity());
+
+            for (Parking p : list_parking)
+            {
+                // Creamos coordenadas
+                LatLng Coordenadas = new LatLng(p.getLatitud(), p.getLongitud());
+                // Mostramos los markers
+                showMarker(Coordenadas, p.getNombre(), p.getTipo(), p.getPrecio(), p.getEstado());
+            }
+        }
+        */
+
         // URI asociada al listado de parkings disponibles
         String uri = raiz + "/lista/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password;
 

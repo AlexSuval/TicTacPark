@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_estado" android:icon="@android:drawable/ic_menu_manage"
+        <item android:id="@+id/nav_acceso" android:icon="@android:drawable/ic_menu_manage"
             android:title="@string/estado" />
         <item android:id="@+id/nav_buscar" android:icon="@android:drawable/ic_menu_search"
             android:title="@string/buscar" />

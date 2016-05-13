@@ -36,6 +36,7 @@ public class Parking implements Parcelable {
     private byte Lavado;
     private byte Servicio_24h;
     private String Descripcion;
+    private int Id_Usuario;
 
     // Constructor por defecto
     public Parking() {
@@ -54,6 +55,44 @@ public class Parking implements Parcelable {
     }
 
     // Constructor completo
+    public Parking(int Id, String Nombre, String Direccion, String Localidad, String Provincia,
+                   double Latitud, double Longitud, String Telefono, String Imagen, String Tipo,
+                   String Estado, double Precio, String Horario_Apertura, String Horario_Cierre,
+                   int Tiempo_Maximo, int Plazas, double Altura_Minima, byte Adaptado_Discapacidad,
+                   byte Plazas_Discapacidad, byte Motos, byte Aseos, byte Tarjeta, byte Seguridad,
+                   byte Coches_Electricos, byte Lavado, byte Servicio_24h, String Descripcion,
+                   int Id_Usuario){
+        this.Id = Id;
+        this.Nombre = Nombre;
+        this.Direccion = Direccion;
+        this.Localidad = Localidad;
+        this.Provincia = Provincia;
+        this.Latitud = Latitud;
+        this.Longitud = Longitud;
+        this.Telefono = Telefono;
+        this.Imagen = Imagen;
+        this.Tipo = Tipo;
+        this.Estado = Estado;
+        this.Precio = Precio;
+        this.Horario_Apertura = Horario_Apertura;
+        this.Horario_Cierre = Horario_Cierre;
+        this.Tiempo_Maximo = Tiempo_Maximo;
+        this.Plazas = Plazas;
+        this.Altura_Minima = Altura_Minima;
+        this.Adaptado_Discapacidad = Adaptado_Discapacidad;
+        this.Plazas_Discapacidad = Plazas_Discapacidad;
+        this.Motos = Motos;
+        this.Aseos = Aseos;
+        this.Tarjeta = Tarjeta;
+        this.Seguridad = Seguridad;
+        this.Coches_Electricos = Coches_Electricos;
+        this.Lavado = Lavado;
+        this.Servicio_24h = Servicio_24h;
+        this.Descripcion = Descripcion;
+        this.Id_Usuario = Id_Usuario;
+    }
+
+    // Constructor completo, salvo Id_Usuario
     // TODO PRUEBAS: Constructor con información de servicios
     public Parking(int Id, String Nombre, String Direccion, String Localidad, String Provincia,
                    double Latitud, double Longitud, String Telefono, String Imagen, String Tipo,
@@ -329,6 +368,14 @@ public class Parking implements Parcelable {
         Descripcion = descripcion;
     }
 
+    public int getId_Usuario() {
+        return Id_Usuario;
+    }
+
+    public void setId_Usuario(int id_usuario) {
+        Id_Usuario = id_usuario;
+    }
+
     @Override
     public int describeContents() {
         return hashCode();
@@ -338,7 +385,7 @@ public class Parking implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(Id);
-        dest.writeString (Nombre);
+        dest.writeString(Nombre);
         dest.writeString (Direccion);
         dest.writeString (Localidad);
         dest.writeString (Provincia);
@@ -363,7 +410,8 @@ public class Parking implements Parcelable {
         dest.writeByte(Coches_Electricos);
         dest.writeByte(Lavado);
         dest.writeByte(Servicio_24h);
-        dest.writeString (Descripcion);
+        dest.writeString(Descripcion);
+        dest.writeInt(Id_Usuario);
     }
 
     // Parcelable protocol requires a Parcelable.Creator object called CREATOR
@@ -417,5 +465,6 @@ public class Parking implements Parcelable {
         Lavado=source.readByte();
         Servicio_24h=source.readByte();
         Descripcion=source.readString();
+        Id_Usuario=source.readInt();
     }
 }

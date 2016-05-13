@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/cerrar_sesion"
+        android:title="Cerrar sesion"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_exit_to_app_white_48dp"
+        app:showAsAction="ifRoom" />
+
+    <item android:id="@+id/mi_cuenta"
+        android:title="Mi cuenta"
+        android:orderInCategory="99"
+        android:icon="@drawable/ic_account_box_white_48dp"
+        app:showAsAction="ifRoom" />
+
+</menu>

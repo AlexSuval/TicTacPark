@@ -15,9 +15,6 @@ import android.widget.Toast;
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.AreaPropietarios;
 import com.alex.tictacpark.activities.MainActivity;
-import com.alex.tictacpark.activities.ParkingDetalle;
-import com.alex.tictacpark.models.Parking;
-import com.alex.tictacpark.parsers.ParkingsParser;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,22 +22,18 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 
 import org.json.JSONArray;
-
-import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link EstadoFragment.OnFragmentInteractionListener} interface
+ * {@link AccesoFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link EstadoFragment#newInstance} factory method to
+ * Use the {@link AccesoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EstadoFragment extends Fragment {
+public class AccesoFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -54,9 +47,10 @@ public class EstadoFragment extends Fragment {
     // dirección IP de nuestro equipo en vez de "localhost" o "127.0.0.1". Esto es porque
     // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
     // nuestro dispositivo Android
-    String ip = "192.168.0.11";
+    String ip = "192.168.42.41";
     // Con el móvil en mi casa funciona "192.168.0.11";
     // Con el móvil como punto de acceso "192.168.43.192";
+    // Con el móvil con anclaje de USB "192.168.42.173";
     // Con el emulador funciona: "10.0.2.2" (local apache server)
     // Con el emulador (red eduroam) funciona: "10.38.32.149"
 
@@ -64,24 +58,26 @@ public class EstadoFragment extends Fragment {
     String servidor = "localhost";
     String puerto = "3306";
     String baseDatos = "tictacpark";
+    String usuario = "root";
+    String password = "passking";
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
      * @param SectionNumber Indica el número de la sección pulsada.
-     * @return A new instance of fragment EstadoFragment.
+     * @return A new instance of fragment AccesoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static EstadoFragment newInstance(int SectionNumber) {
-        EstadoFragment fragment = new EstadoFragment();
+    public static AccesoFragment newInstance(int SectionNumber) {
+        AccesoFragment fragment = new AccesoFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, SectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public EstadoFragment() {
+    public AccesoFragment() {
         // Required empty public constructor
     }
 
@@ -90,9 +86,9 @@ public class EstadoFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView;
         //Asignamos un layout
-        rootView=inflater.inflate(R.layout.fragment_estado, container, false); //layout
+        rootView=inflater.inflate(R.layout.fragment_acceso, container, false); //layout
 
-        // Ponemos el nombre "Estado" en la barra
+        // Ponemos el nombre "Área de propietario" en la barra
         ((MainActivity) getActivity()).setActionBarTitle("Área de propietario");
 /*
         ViewGroup.LayoutParams params = rootView.getLayoutParams();
@@ -121,18 +117,18 @@ public class EstadoFragment extends Fragment {
     // Método que define las acciones al hacer click en Iniciar sesión
     public void clickIniciarSesion(View v)
     {
-        String usuario = edUsuario.getText().toString();
-        String password = edPassword.getText().toString();
-        peticionServicio(usuario, password);
+        String usuario_introducido = edUsuario.getText().toString().replace(" ", "%20"); // Reemplazamos los espacios en blancos para que la ruta funcione correctamente
+        String password_introducida = edPassword.getText().toString();
+        peticionServicio(usuario_introducido, password_introducida);
     }
 
     // Método que devuelve el estado de la conexión al servidor
-    public void peticionServicio(final String usuario, String password)
+    public void peticionServicio(final String usuario_introducido, String password_introducida)
     {
-        String uri = raiz + "/estado/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password;
+        String uri = raiz + "/estadoSesion/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password + "/" + usuario_introducido + "/" + password_introducida;
 
-        final String usuario_correcto = usuario;
-        final String password_correcta = password;
+        final String usuario_correcto = edUsuario.getText().toString(); // Recupero el usuario sin %20
+        final String password_correcta = password_introducida;
 
         // Se declara e inicializa una variable de tipo RequestQueue, encargada de crear
         // una nueva petición en la cola del servicio web.
@@ -155,16 +151,19 @@ public class EstadoFragment extends Fragment {
                         {
                             // Se comprueba mediante un condicional if, que el servicio web ha podido
                             // conectar con el servidor MySQL con los datos introducidos por el usuario.
-                            if(response.get(1).toString().equals("true"))
+                            if(!response.get(1).toString().equals("-1"))
                             {
-                                Log.e("Estado Conexión", "Fue OK");
+                                Log.e("Iniciar sesión", "Fue OK");
+                                // TODO Guardar el usuario_introducido y password_introducida en el JSON general
                                 //Genera el intent y empieza la actividad a través del intent
                                 Intent intent=new Intent(getActivity(), AreaPropietarios.class);
-                                // Pasamos el usuario y password a la actividad
+                                // Pasamos el usuario y el Id_Usuario a la actividad
                                 intent.putExtra("usuario", usuario_correcto);
-                                intent.putExtra("password", password_correcta);
+                                intent.putExtra("id_usuario", response.get(1).toString());
                                 startActivity(intent);
                             }
+                            else
+                                Toast.makeText(getActivity(), "Los datos introducidos son incorrectos.", Toast.LENGTH_LONG).show();
                         }
                         catch (Exception e)
                         {
@@ -180,7 +179,7 @@ public class EstadoFragment extends Fragment {
                         try
                         {
                             Log.e("Estado Conexión", "Falló");
-                            Toast.makeText(getActivity(), "Los datos introducidos son incorrectos.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "No hay conexión. Por favor, inténtelo de nuevo más tarde.", Toast.LENGTH_LONG).show();
                         }
                         catch (Exception e)
                         {

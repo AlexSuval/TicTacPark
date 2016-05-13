@@ -29,11 +29,19 @@
     <!-- Strings utilizados en el Historial -->
     <string name="historial_vacio">No existen entradas en el historial.</string>
 
-    <!-- Strings utilizados en la pantalla de acceso de propietarios -->
+    <!-- Strings utilizados en el área de propietarios -->
     <string name="accesoPropietarios">Acceso al área de propietario</string>
     <string name="usuario"><u>Usuario</u></string>
     <string name="contrasena"><u>Contraseña</u></string>
     <string name="iniciarSesion"><u>Iniciar sesión</u></string>
+    <string name="nombre"><u>Nombre</u></string>
+    <string name="apellidos"><u>Apellidos</u></string>
+    <string name="dni"><u>DNI</u></string>
+    <string name="email"><u>Email</u></string>
+    <string name="repetirEmail"><u>Repetir email</u></string>
+    <string name="repetirContrasena"><u>Repetir contraseña</u></string>
+    <string name="nuevoRegistro"><u>Nuevo registro</u></string>
+    <string name="nuevoParking"><u>Añadir nuevo parking</u></string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
