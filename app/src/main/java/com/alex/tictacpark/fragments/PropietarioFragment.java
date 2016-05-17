@@ -1,6 +1,8 @@
 package com.alex.tictacpark.fragments;
 
+import android.app.AlarmManager;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,8 +25,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -66,9 +70,14 @@ import java.util.Locale;
  * Activities that contain this fragment must implement the
  * {@link PropietarioFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
+ * Use the {@link PropietarioFragment#newInstance} factory method to
+ * create an instance of this fragment.
  */
 public class PropietarioFragment extends Fragment
 {
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_SECTION_NUMBER = "section_number";
+
     // Variable de tipo String que inicializa con la estructura principal de la URI
     // para el acceso al servicio web.
     // Nota: Para conectarnos con nuestro servidor web local (localhost), debemos usar la
@@ -91,6 +100,22 @@ public class PropietarioFragment extends Fragment
     // Declaramos e inicializamos la ArrayList list_parking, que contendrá todos los objetos Parking
     private ArrayList<Parking> list_mis_parkings=new ArrayList<Parking>();
 
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param SectionNumber Indica el número de la sección pulsada.
+     * @return A new instance of fragment PropietarioFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static PropietarioFragment newInstance(int SectionNumber) {
+        PropietarioFragment fragment = new PropietarioFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, SectionNumber);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public PropietarioFragment() {
         // Required empty public constructor
     }
@@ -101,18 +126,20 @@ public class PropietarioFragment extends Fragment
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_propietario, container, false);
 
-        Bundle b=getActivity().getIntent().getExtras();
+        // Abrimos el fichero de preferencias
+        SharedPreferences sp_usuario=getActivity().getSharedPreferences("PREFS_USUARIO", 0);
 
-        Intent intent=getActivity().getIntent();
-        String usuario = intent.getStringExtra("usuario");
+        // Recuperamos del fichero de preferencias el usuario
+        String usuario = sp_usuario.getString("usuario", "-1");
+
         // Ponemos el nombre del propietario en la barra
-        ((AreaPropietarios) getActivity()).setActionBarTitle(usuario);
+        ((MainActivity) getActivity()).setActionBarTitle(usuario);
 
         // Se carga la tabla con los parkings del usuario
-        String id_usuario = intent.getStringExtra("id_usuario");
+        String id_usuario = getArguments().getString("id_usuario", "-1");
         cargarTabla(id_usuario, view);
 
-        for(Parking p:list_mis_parkings)
+        for (Parking p : list_mis_parkings)
             Log.e("Parking ", p.getNombre());
 
         // Se envía evento táctil a la vista
@@ -229,11 +256,28 @@ public class PropietarioFragment extends Fragment
                                 // Cargamos una nueva fila
                                 TableRow tbrow = new TableRow(getActivity());
 
-                                TextView t1v = new TextView(getActivity());
-                                t1v.setText(estado + " ");
-                                //t1v.setTextColor(Color.WHITE);
-                                t1v.setGravity(Gravity.CENTER);
-                                tbrow.addView(t1v);
+                                Switch swEstado = new Switch(getActivity());
+                                swEstado.setBackgroundResource(R.drawable.estado_toggle);
+                                swEstado.setTextOn("Libre");
+                                swEstado.setTextOff("Completo");
+                                if(estado.equals("Libre"))
+                                    swEstado.setChecked(true);
+                                else
+                                    swEstado.setChecked(false);
+                                swEstado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                    @Override
+                                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                        if(isChecked) // Switch ON --> Estado = Libre
+                                        {
+                                            Log.e("Estado: ", "LIBRE "+ id);
+                                        }
+                                        else // Switch OFF --> Estado = Completo
+                                        {
+                                            Log.e("Estado: ", "COMPLETO " + id);
+                                        }
+                                    }
+                                });
+                                tbrow.addView(swEstado);
 
                                 TextView t2v = new TextView(getActivity());
                                 t2v.setText(" " + nombre + " \n" + " (" + localidad + ") ");
@@ -330,9 +374,20 @@ public class PropietarioFragment extends Fragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
+
             case R.id.cerrar_sesion:
-                // TODO Se limpian usuario y pass del fichero de preferencias y se carga AccesoFragment
+                // Se limpian todos los campos del fichero de preferencias usuario
+                // y se infla el fragment AccesoFragment
+                SharedPreferences sp_usuario = getActivity().getSharedPreferences("PREFS_USUARIO", 0);
+                SharedPreferences.Editor editor_usuario = sp_usuario.edit();
+                editor_usuario.clear();
+                editor_usuario.commit();
+                // Inflamos el fragment AccesoFragment, reemplazando al que había
+                final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.replace(R.id.container, new AccesoFragment(), "ACCESO");
+                ft.commit();
                 return true;
+
             case R.id.mi_cuenta:
                 // TODO Se carga MiCuentaFragment
                 return true;

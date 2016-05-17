@@ -20,7 +20,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.fragments.AccesoFragment;
@@ -29,6 +32,14 @@ import com.alex.tictacpark.fragments.GeocoderFragment;
 import com.alex.tictacpark.fragments.ParkingFragment;
 import com.alex.tictacpark.fragments.AlarmaFragment;
 import com.alex.tictacpark.fragments.HistorialFragment;
+import com.alex.tictacpark.fragments.PropietarioFragment;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -211,7 +222,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     //Infla el fragment, reemplazando el que se le pasa por el que había
-    private void inflate(Fragment fragment,String tag)
+    public void inflate(Fragment fragment,String tag)
     {
         /*if(!tag.equals(BUSCAR)){
             Fragment f = (Fragment) getFragmentManager().findFragmentById(R.id.container);
@@ -224,7 +235,7 @@ public class MainActivity extends AppCompatActivity
         view.setVisibility(View.GONE);
 
         final FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.container,fragment,tag);
+        transaction.replace(R.id.container, fragment, tag);
         transaction.commit();
     }
 
@@ -238,7 +249,7 @@ public class MainActivity extends AppCompatActivity
         switch (id){
             case R.id.nav_acceso:
                 Log.e("MAINACTIVITY", "Acceso");
-                mFragment= AccesoFragment.newInstance(0);//Creamos el fragment
+                mFragment= AccesoFragment.newInstance(0); // Creamos el fragment
                 inflate(mFragment,ACCESO);//Inflamos el fragment ACCESO
                 break;
             case R.id.nav_buscar:

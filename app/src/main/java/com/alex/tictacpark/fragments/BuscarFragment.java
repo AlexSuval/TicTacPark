@@ -77,7 +77,7 @@ public class BuscarFragment extends Fragment
     // dirección IP de nuestro equipo en vez de "localhost" o "127.0.0.1". Esto es porque
     // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
     // nuestro dispositivo Android
-    String ip = "192.168.42.41";
+    String ip = "192.168.0.11";
     // Con el móvil en mi casa funciona "192.168.0.11";
     // Con el móvil como punto de acceso "192.168.43.192";
     // Con el móvil con anclaje de USB "192.168.42.173";

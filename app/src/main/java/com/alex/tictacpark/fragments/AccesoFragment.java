@@ -1,7 +1,9 @@
 package com.alex.tictacpark.fragments;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.alex.tictacpark.R;
@@ -47,7 +50,7 @@ public class AccesoFragment extends Fragment {
     // dirección IP de nuestro equipo en vez de "localhost" o "127.0.0.1". Esto es porque
     // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
     // nuestro dispositivo Android
-    String ip = "192.168.42.41";
+    String ip = "192.168.0.11";
     // Con el móvil en mi casa funciona "192.168.0.11";
     // Con el móvil como punto de acceso "192.168.43.192";
     // Con el móvil con anclaje de USB "192.168.42.173";
@@ -85,50 +88,56 @@ public class AccesoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView;
+
         //Asignamos un layout
-        rootView=inflater.inflate(R.layout.fragment_acceso, container, false); //layout
+        rootView = inflater.inflate(R.layout.fragment_acceso, container, false); // layout
 
-        // Ponemos el nombre "Área de propietario" en la barra
-        ((MainActivity) getActivity()).setActionBarTitle("Área de propietario");
-/*
-        ViewGroup.LayoutParams params = rootView.getLayoutParams();
-        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        rootView.setLayoutParams(params);
-*/
-        // Se asocian las variables de tipo EditText con sus controles a nivel de layout
-        edUsuario = (EditText)rootView.findViewById(R.id.edUsuario);
-        edPassword = (EditText)rootView.findViewById(R.id.edPassword);
-        btnIniciarSesion = (Button)rootView.findViewById(R.id.btnIniciarSesion);
-        //btnIniciarSesion.setVisibility(View.INVISIBLE);
+        // Abrimos el fichero de preferencias
+        SharedPreferences sp_usuario=getActivity().getSharedPreferences("PREFS_USUARIO", 0);
+        // Recuperamos del fichero de preferencias si hay una sesión iniciada
+        if(sp_usuario.getBoolean("sesion_iniciada", false)) // Si es true --> Sesión iniciada
+        {
+            // Recuperamos del fichero de preferencias el id_usuario
+            String usuario_propietario = sp_usuario.getString("usuario", "");
+            String password_propietario = sp_usuario.getString("password", "");
+            // Aunque haya una sesión iniciada, se comprueba que hay conexión y que las credenciales
+            // almacenadas en el fichero de preferencias son correctas
+            peticionServicio(usuario_propietario, password_propietario);
+        }
+        else {
+            // Ponemos el nombre "Área de propietario" en la barra
+            ((MainActivity) getActivity()).setActionBarTitle("Área de propietario");
 
-        //Asignar a variable el Botón Iniciar Sesión y asignar evento OnClick para realizar las
-        //acciones correspondientes
+            // Se asocian las variables de tipo EditText con sus controles a nivel de layout
+            edUsuario = (EditText) rootView.findViewById(R.id.edUsuario);
+            edPassword = (EditText) rootView.findViewById(R.id.edPassword);
+            btnIniciarSesion = (Button) rootView.findViewById(R.id.btnIniciarSesion);
 
-        btnIniciarSesion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickIniciarSesion(v);
-            }
-        });
-
-        return rootView;
+            //Asignar a variable el Botón Iniciar Sesión y asignar evento OnClick para realizar las
+            //acciones correspondientes
+            btnIniciarSesion.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickIniciarSesion(v);
+                }
+            });
+        }
+            return rootView;
     }
 
     // Método que define las acciones al hacer click en Iniciar sesión
     public void clickIniciarSesion(View v)
     {
-        String usuario_introducido = edUsuario.getText().toString().replace(" ", "%20"); // Reemplazamos los espacios en blancos para que la ruta funcione correctamente
+        String usuario_introducido = edUsuario.getText().toString();
         String password_introducida = edPassword.getText().toString();
         peticionServicio(usuario_introducido, password_introducida);
     }
 
     // Método que devuelve el estado de la conexión al servidor
-    public void peticionServicio(final String usuario_introducido, String password_introducida)
+    public void peticionServicio(final String usuario_introducido, final String password_introducida)
     {
-        String uri = raiz + "/estadoSesion/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password + "/" + usuario_introducido + "/" + password_introducida;
-
-        final String usuario_correcto = edUsuario.getText().toString(); // Recupero el usuario sin %20
-        final String password_correcta = password_introducida;
+        String usuario_url = usuario_introducido.replace(" ", "%20"); // Reemplazamos los espacios en blancos para que la ruta funcione correctamente
+        String uri = raiz + "/estadoSesion/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password + "/" + usuario_url + "/" + password_introducida;
 
         // Se declara e inicializa una variable de tipo RequestQueue, encargada de crear
         // una nueva petición en la cola del servicio web.
@@ -154,13 +163,24 @@ public class AccesoFragment extends Fragment {
                             if(!response.get(1).toString().equals("-1"))
                             {
                                 Log.e("Iniciar sesión", "Fue OK");
-                                // TODO Guardar el usuario_introducido y password_introducida en el JSON general
-                                //Genera el intent y empieza la actividad a través del intent
-                                Intent intent=new Intent(getActivity(), AreaPropietarios.class);
-                                // Pasamos el usuario y el Id_Usuario a la actividad
-                                intent.putExtra("usuario", usuario_correcto);
-                                intent.putExtra("id_usuario", response.get(1).toString());
-                                startActivity(intent);
+                                // Se guardan el estado de la sesión, el usuario_introducido y password_introducida en el fichero de preferencias PREFS_USUARIO
+                                SharedPreferences sp_usuario=getActivity().getSharedPreferences("PREFS_USUARIO", 0);
+                                SharedPreferences.Editor editor_usuario = sp_usuario.edit();
+                                editor_usuario.putBoolean("sesion_iniciada", true);
+                                editor_usuario.putString("usuario", usuario_introducido);
+                                editor_usuario.putString("password", password_introducida);
+                                editor_usuario.commit();
+
+                                // Inflamos el fragment PropietarioFragment, reemplazando al que había y pasándole el id_usuario
+                                // para las credenciales introducidas
+                                PropietarioFragment propietario = new PropietarioFragment();
+                                Bundle bundle = new Bundle();
+                                bundle.putString("id_usuario", response.get(1).toString());
+                                propietario.setArguments(bundle);
+
+                                final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                ft.replace(R.id.container, propietario, "PROPIETARIO");
+                                ft.commit();
                             }
                             else
                                 Toast.makeText(getActivity(), "Los datos introducidos son incorrectos.", Toast.LENGTH_LONG).show();
