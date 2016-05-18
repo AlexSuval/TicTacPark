@@ -49,7 +49,7 @@
         </activity>
 
         <activity
-            android:name=".activities.AreaPropietarios"
+            android:name=".activities.AreaUsuario"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:label="@string/title_activity_area_propietarios"
             android:parentActivityName=".activities.MainActivity"

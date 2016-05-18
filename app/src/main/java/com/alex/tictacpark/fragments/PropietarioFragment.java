@@ -35,12 +35,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alex.tictacpark.R;
-import com.alex.tictacpark.activities.AreaPropietarios;
 import com.alex.tictacpark.activities.MainActivity;
-import com.alex.tictacpark.activities.ParkingDetalle;
 import com.alex.tictacpark.models.Parking;
-import com.alex.tictacpark.parsers.HistorialParser;
-import com.alex.tictacpark.parsers.ParkingsParser;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -186,8 +182,7 @@ public class PropietarioFragment extends Fragment
                             list_mis_parkings.clear();
                             // Se construye un bucle for() para recorrer la respuesta parseada y
                             // construir un nuevo objeto Parking por cada registro de la base de datos MySQL.
-                            for (int i = 0; i < response.length(); i++)
-                            {
+                            for (int i = 0; i < response.length(); i++) {
                                 JSONObject jsObjectParking = (JSONObject) response.get(i);
 
                                 final int id = jsObjectParking.getInt("id");
@@ -260,18 +255,17 @@ public class PropietarioFragment extends Fragment
                                 swEstado.setBackgroundResource(R.drawable.estado_toggle);
                                 swEstado.setTextOn("Libre");
                                 swEstado.setTextOff("Completo");
-                                if(estado.equals("Libre"))
+                                if (estado.equals("Libre"))
                                     swEstado.setChecked(true);
                                 else
                                     swEstado.setChecked(false);
                                 swEstado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                        if(isChecked) // Switch ON --> Estado = Libre
+                                        if (isChecked) // Switch ON --> Estado = Libre
                                         {
-                                            Log.e("Estado: ", "LIBRE "+ id);
-                                        }
-                                        else // Switch OFF --> Estado = Completo
+                                            Log.e("Estado: ", "LIBRE " + id);
+                                        } else // Switch OFF --> Estado = Completo
                                         {
                                             Log.e("Estado: ", "COMPLETO " + id);
                                         }
@@ -310,8 +304,6 @@ public class PropietarioFragment extends Fragment
                                 tbrow.addView(btnEliminar);
 
                                 stk.addView(tbrow);
-
-
                             }
                         } catch (Exception e)
                         {
@@ -325,8 +317,18 @@ public class PropietarioFragment extends Fragment
             {
                 try
                 {
-                    Toast.makeText(getActivity(), "Error de petición de servicio: " + error.toString(), Toast.LENGTH_LONG).show();
-                } catch (Exception e)
+                    // Un error en la petición del servicio supone que el propietario no tiene parkings
+                    TableRow tbrow = new TableRow(getActivity());
+
+                    TextView t1v = new TextView(getActivity());
+                    t1v.setText("No dispone de parkings actualmente");
+                    t1v.setTextColor(Color.BLACK);
+                    t1v.setGravity(Gravity.CENTER);
+                    tbrow.addView(t1v);
+
+                    stk.addView(tbrow);
+                }
+                catch (Exception e)
                 {
                     e.printStackTrace();
                 }

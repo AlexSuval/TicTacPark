@@ -76,21 +76,5 @@
                 android:onClick="nuevoRegistro" />
         </TableRow>
 
-        <!-- TODO Switch Estado del Parking
-        <TableRow
-            android:id="@+id/tableRow5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/switch1"
-                android:background="@drawable/estado_toggle"
-                android:textOn="LIBRE"
-                android:textOff="COMPLETO"
-                android:layout_gravity="center"
-                android:layout_centerHorizontal="true"/>
-        </TableRow>
-             -->
     </TableLayout>
 </ScrollView>

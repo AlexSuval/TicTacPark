@@ -12,12 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.alex.tictacpark.R;
-import com.alex.tictacpark.activities.AreaPropietarios;
 import com.alex.tictacpark.activities.MainActivity;
+import com.alex.tictacpark.activities.AreaUsuario;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -43,6 +42,7 @@ public class AccesoFragment extends Fragment {
     // Declaramos las variables necesarias para introducir los datos de conexión al servidor
     private EditText edUsuario, edPassword;
     private Button btnIniciarSesion;
+    private Button btnNuevoRegistro;
 
     // Variable de tipo String que inicializa con la estructura principal de la URI
     // para el acceso al servicio web.
@@ -89,14 +89,13 @@ public class AccesoFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView;
 
-        //Asignamos un layout
-        rootView = inflater.inflate(R.layout.fragment_acceso, container, false); // layout
-
         // Abrimos el fichero de preferencias
         SharedPreferences sp_usuario=getActivity().getSharedPreferences("PREFS_USUARIO", 0);
         // Recuperamos del fichero de preferencias si hay una sesión iniciada
         if(sp_usuario.getBoolean("sesion_iniciada", false)) // Si es true --> Sesión iniciada
         {
+            //Asignamos el layout fragment_propietario
+            rootView = inflater.inflate(R.layout.fragment_propietario, container, false);
             // Recuperamos del fichero de preferencias el id_usuario
             String usuario_propietario = sp_usuario.getString("usuario", "");
             String password_propietario = sp_usuario.getString("password", "");
@@ -104,7 +103,11 @@ public class AccesoFragment extends Fragment {
             // almacenadas en el fichero de preferencias son correctas
             peticionServicio(usuario_propietario, password_propietario);
         }
-        else {
+        else // Si es false --> No hay sesión iniciada --> Iniciar sesión
+        {
+            //Asignamos el layout fragment_acceso
+            rootView = inflater.inflate(R.layout.fragment_acceso, container, false);
+
             // Ponemos el nombre "Área de propietario" en la barra
             ((MainActivity) getActivity()).setActionBarTitle("Área de propietario");
 
@@ -112,13 +115,25 @@ public class AccesoFragment extends Fragment {
             edUsuario = (EditText) rootView.findViewById(R.id.edUsuario);
             edPassword = (EditText) rootView.findViewById(R.id.edPassword);
             btnIniciarSesion = (Button) rootView.findViewById(R.id.btnIniciarSesion);
+            btnNuevoRegistro = (Button) rootView.findViewById(R.id.btnNuevoRegistro);
 
             //Asignar a variable el Botón Iniciar Sesión y asignar evento OnClick para realizar las
             //acciones correspondientes
             btnIniciarSesion.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    clickIniciarSesion(v);
+                    clickIniciarSesion();
+                }
+            });
+
+            //Asignar a variable el Botón Nuevo Registro y asignar evento OnClick para realizar las
+            //acciones correspondientes
+            btnNuevoRegistro.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Genera el intent y empieza la actividad a través del intent
+                    Intent intent=new Intent(getActivity(), AreaUsuario.class);
+                    startActivity(intent);
                 }
             });
         }
@@ -126,7 +141,7 @@ public class AccesoFragment extends Fragment {
     }
 
     // Método que define las acciones al hacer click en Iniciar sesión
-    public void clickIniciarSesion(View v)
+    public void clickIniciarSesion()
     {
         String usuario_introducido = edUsuario.getText().toString();
         String password_introducida = edPassword.getText().toString();
@@ -156,15 +171,13 @@ public class AccesoFragment extends Fragment {
                     @Override
                     public void onResponse(JSONArray response)
                     {
-                        try
-                        {
+                        try {
                             // Se comprueba mediante un condicional if, que el servicio web ha podido
                             // conectar con el servidor MySQL con los datos introducidos por el usuario.
-                            if(!response.get(1).toString().equals("-1"))
-                            {
+                            if (!response.get(1).toString().equals("-1")) {
                                 Log.e("Iniciar sesión", "Fue OK");
                                 // Se guardan el estado de la sesión, el usuario_introducido y password_introducida en el fichero de preferencias PREFS_USUARIO
-                                SharedPreferences sp_usuario=getActivity().getSharedPreferences("PREFS_USUARIO", 0);
+                                SharedPreferences sp_usuario = getActivity().getSharedPreferences("PREFS_USUARIO", 0);
                                 SharedPreferences.Editor editor_usuario = sp_usuario.edit();
                                 editor_usuario.putBoolean("sesion_iniciada", true);
                                 editor_usuario.putString("usuario", usuario_introducido);
@@ -182,8 +195,26 @@ public class AccesoFragment extends Fragment {
                                 ft.replace(R.id.container, propietario, "PROPIETARIO");
                                 ft.commit();
                             }
+                            // Si los datos introducidos son incorrectos y se entró con credenciales
+                            // guardadas en el fichero de preferencias, es que las credenciales han
+                            // sido modificadas desde otro dispositivo, por lo tanto, se limpia el
+                            // fichero de preferencias y se infla el fragment AccesoFragment
                             else
+                            {
+                                // Se limpian todos los campos del fichero de preferencias usuario
+                                // y se infla el fragment AccesoFragment
+                                SharedPreferences sp_usuario = getActivity().getSharedPreferences("PREFS_USUARIO", 0);
+                                SharedPreferences.Editor editor_usuario = sp_usuario.edit();
+                                editor_usuario.clear();
+                                editor_usuario.commit();
+                                // Inflamos el fragment AccesoFragment, reemplazando al que había
+                                final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                ft.replace(R.id.container, new AccesoFragment(), "ACCESO");
+                                ft.commit();
+                                // Tanto accediendo desde el cuadro de inicio de sesión como a través
+                                // de una sesión abierta, se indica que los datos introducidos son incorrectos
                                 Toast.makeText(getActivity(), "Los datos introducidos son incorrectos.", Toast.LENGTH_LONG).show();
+                            }
                         }
                         catch (Exception e)
                         {

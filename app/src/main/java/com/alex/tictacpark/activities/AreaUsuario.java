@@ -9,20 +9,21 @@ import android.view.MenuItem;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.fragments.PropietarioFragment;
+import com.alex.tictacpark.fragments.RegistroFragment;
 
-public class AreaPropietarios extends AppCompatActivity {
+public class AreaUsuario extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_area_propietarios);
+        setContentView(R.layout.activity_nuevo_registro);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Infla el fragment PropietarioFragment en la actividad AreaPropietarios
+        //Infla el fragment RegistroFragment en la actividad AreaUsuario
         if(savedInstanceState==null)
         {
-            Fragment newFragment = new PropietarioFragment();
+            Fragment newFragment = new RegistroFragment();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.container,newFragment).commit();
         }
@@ -32,12 +33,11 @@ public class AreaPropietarios extends AppCompatActivity {
     }
 
     @Override
-    //Al darle al botón de vuelta atrás va hacia atrás
+    // Al darle al botón de vuelta atrás va hacia atrás
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case android.R.id.home:
                 onBackPressed();
-                //Toast.makeText(this, "Volver atrás", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

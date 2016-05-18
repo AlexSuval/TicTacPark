@@ -1,19 +1,19 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ScrollViewRegistro"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:scrollbars="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context="com.alex.tictacpark.fragments.RegistroFragment">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:orientation="vertical">
 
         <EditText
             android:id="@+id/edNombre"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/nombre"
             android:inputType="textPersonName">
@@ -21,7 +21,7 @@
 
         <EditText
             android:id="@+id/edApellidos"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/apellidos"
             android:inputType="textPersonName">
@@ -29,7 +29,7 @@
 
         <EditText
             android:id="@+id/edDNI"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/dni"
             android:inputType="textPersonName">
@@ -37,7 +37,7 @@
 
         <EditText
             android:id="@+id/edTelefono"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/telefono"
             android:inputType="phone">
@@ -45,7 +45,7 @@
 
         <EditText
             android:id="@+id/edEmail"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/email"
             android:inputType="textEmailAddress">
@@ -53,7 +53,7 @@
 
         <EditText
             android:id="@+id/edRepetirEmail"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/repetirEmail"
             android:inputType="textEmailAddress">
@@ -61,7 +61,7 @@
 
         <EditText
             android:id="@+id/edUsuario"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/usuario"
             android:inputType="textPersonName">
@@ -69,14 +69,14 @@
 
         <EditText
             android:id="@+id/edPassword"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/contrasena"
             android:inputType="textPassword" />
 
         <EditText
             android:id="@+id/edRepetirPassword"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/repetirContrasena"
             android:inputType="textPassword" />
@@ -84,7 +84,7 @@
         <Button
             style="?android:attr/buttonStyleSmall"
             android:id="@+id/btnNuevoRegistro"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/nuevoRegistro"
             android:onClick="nuevoRegistro" />

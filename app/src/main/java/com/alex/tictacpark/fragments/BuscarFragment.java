@@ -1,5 +1,6 @@
 package com.alex.tictacpark.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -97,6 +98,10 @@ public class BuscarFragment extends Fragment
     // Variable que almacena el estado de la conexión a la DB
     boolean conectado = false;
 
+    // Variable que almacena el ProgressDialog que se activa mientras se espera a que finalicen
+    // las tareas Volley
+    ProgressDialog cargando;
+
     //Configuración del mapa
     //Establece mi posición
     private static final LocationRequest REQUEST = LocationRequest.create()
@@ -137,6 +142,12 @@ public class BuscarFragment extends Fragment
 
         // Ponemos el nombre "Buscar" en la barra
         ((MainActivity) getActivity()).setActionBarTitle("Buscar");
+
+        // Se crea el ProgressDialog que indica que se están cargando los parkings
+        cargando = new ProgressDialog(getActivity());
+        cargando.setTitle("Cargando parkings");
+        cargando.setMessage("Espere mientras acaba de cargarse el mapa");
+        cargando.show();
 
         /*
         //Inicializamos el objeto GoogleApiClient con las propiedades que va a tener
@@ -480,6 +491,8 @@ public class BuscarFragment extends Fragment
                         {
                             e.printStackTrace();
                         }
+                        // Se desactiva el ProgressDialog una vez finalizada la tarea
+                        cargando.dismiss();
                     }
                 }
         );
@@ -500,24 +513,6 @@ public class BuscarFragment extends Fragment
     // Método que devuelve una colección de objetos Parking
     public ArrayList<Parking> obtenerParkings()
     {
-        /* Si tarda en obtener los parkings de la DB vamos cargándolos offline
-        if (list_parking.size()==0){
-            Log.e("Cargando markers ", "offline.");
-            Toast.makeText(getActivity(), "Cargando markers offline.", Toast.LENGTH_LONG).show();
-            // Parsear JSON --> Cargar parkings offline
-            ParkingsParser parser = new ParkingsParser();
-            list_parking = parser.parse(getActivity());
-
-            for (Parking p : list_parking)
-            {
-                // Creamos coordenadas
-                LatLng Coordenadas = new LatLng(p.getLatitud(), p.getLongitud());
-                // Mostramos los markers
-                showMarker(Coordenadas, p.getNombre(), p.getTipo(), p.getPrecio(), p.getEstado());
-            }
-        }
-        */
-
         // URI asociada al listado de parkings disponibles
         String uri = raiz + "/lista/" + servidor + "/" + puerto + "/" + baseDatos + "/" + usuario + "/" + password;
 
@@ -643,6 +638,8 @@ public class BuscarFragment extends Fragment
                         {
                             e.printStackTrace();
                         }
+                        // Se desactiva el ProgressDialog una vez finalizada la tarea
+                        cargando.dismiss();
                     }
                 },new Response.ErrorListener()
         {
@@ -652,10 +649,13 @@ public class BuscarFragment extends Fragment
                 try
                 {
                     Toast.makeText(getActivity(), "Error de petición de servicio: " + error.toString(), Toast.LENGTH_LONG).show();
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     e.printStackTrace();
                 }
+                // Se desactiva el ProgressDialog una vez finalizada la tarea
+                cargando.dismiss();
             }
         }
         );

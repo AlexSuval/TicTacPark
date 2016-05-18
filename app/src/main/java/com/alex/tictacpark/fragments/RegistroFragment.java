@@ -1,95 +1,273 @@
 package com.alex.tictacpark.fragments;
 
-import android.app.Activity;
+import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.alex.tictacpark.R;
+import com.alex.tictacpark.activities.AreaUsuario;
+import com.alex.tictacpark.activities.MainActivity;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link RegistroFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link RegistroFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class RegistroFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    // Declaramos las variables necesarias para introducir los datos de conexión al servidor
+    private EditText edNombre, edApellidos, edDNI, edTelefono, edEmail, edRepetirEmail, edUsuario, edPassword, edRepetirPassword;
+    private Button btnNuevoRegistro;
 
-    private OnFragmentInteractionListener mListener;
+    // Variable de tipo String que inicializa con la estructura principal de la URI
+    // para el acceso al servicio web.
+    // Nota: Para conectarnos con nuestro servidor web local (localhost), debemos usar la
+    // dirección IP de nuestro equipo en vez de "localhost" o "127.0.0.1". Esto es porque
+    // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
+    // nuestro dispositivo Android
+    String ip = "192.168.0.11";
+    // Con el móvil en mi casa funciona "192.168.0.11";
+    // Con el móvil como punto de acceso "192.168.43.192";
+    // Con el móvil con anclaje de USB "192.168.42.173";
+    // Con el emulador funciona: "10.0.2.2" (local apache server)
+    // Con el emulador (red eduroam) funciona: "10.38.32.149"
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RegistroFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RegistroFragment newInstance(String param1, String param2) {
-        RegistroFragment fragment = new RegistroFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    String raiz = "http://" + ip + ":8080/TicTacParkDWP/rest/TicTacPark";
+    String servidor = "localhost";
+    String puerto = "3306";
+    String baseDatos = "tictacpark";
+    String usuario = "root";
+    String password = "passking";
 
     public RegistroFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_registro, container, false);
+
+        // Asignamos el layout fragment_registro
+        View view=inflater.inflate(R.layout.fragment_registro, container, false);
+
+        // Ponemos el nombre "Nuevo registro" en la barra
+        ((AreaUsuario) getActivity()).setActionBarTitle("Nuevo registro");
+
+        // Se asocian las variables de tipo EditText con sus controles a nivel de layout
+        edNombre = (EditText) view.findViewById(R.id.edNombre);
+        edApellidos = (EditText) view.findViewById(R.id.edApellidos);
+        edDNI = (EditText) view.findViewById(R.id.edDNI);
+        edTelefono = (EditText) view.findViewById(R.id.edTelefono);
+        edEmail = (EditText) view.findViewById(R.id.edEmail);
+        edRepetirEmail = (EditText) view.findViewById(R.id.edRepetirEmail);
+        edUsuario = (EditText) view.findViewById(R.id.edUsuario);
+        edPassword = (EditText) view.findViewById(R.id.edPassword);
+        edRepetirPassword = (EditText) view.findViewById(R.id.edRepetirPassword);
+        btnNuevoRegistro = (Button) view.findViewById(R.id.btnNuevoRegistro);
+
+        // Asignar a variable el Botón Nuevo Registro y asignar evento OnClick para realizar las
+        // acciones correspondientes
+        btnNuevoRegistro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(nuevoRegistro())
+                {
+                    Toast.makeText(getActivity(), "Bienvenid@ " + edUsuario.getText().toString(), Toast.LENGTH_LONG).show();
+
+                    // Se guardan el estado de la sesión, el usuario_introducido y password_introducida en el fichero de preferencias PREFS_USUARIO
+                    SharedPreferences sp_usuario = getActivity().getSharedPreferences("PREFS_USUARIO", 0);
+                    SharedPreferences.Editor editor_usuario = sp_usuario.edit();
+                    editor_usuario.putBoolean("sesion_iniciada", true);
+                    editor_usuario.putString("usuario", edUsuario.getText().toString());
+                    editor_usuario.putString("password", edPassword.getText().toString());
+                    editor_usuario.commit();
+
+                    //Genera el intent y empieza la actividad a través del intent
+                    Intent intent=new Intent(getActivity(), MainActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    // Método que invocará a peticionNuevoRegistro(), indicándole como argumento la URI
+    // asociada para la creación de un nuevo propietario, en caso de que los datos introducidos
+    // sean correctos.
+    public Boolean nuevoRegistro()
+    {
+        boolean registroInsertado = false;
+        String nuevo_nombre = edNombre.getText().toString().replace(" ", "%20"); // Reemplazamos los espacios en blanco para que la ruta funcione correctamente
+        String nuevo_apellidos = edApellidos.getText().toString().replace(" ", "%20"); // Reemplazamos los espacios en blanco para que la ruta funcione correctamente
+        String nuevo_dni = edDNI.getText().toString();
+        String nuevo_telefono = edTelefono.getText().toString();
+        String nuevo_email = edEmail.getText().toString();
+        String repetir_email = edRepetirEmail.getText().toString();
+        String nuevo_usuario = edUsuario.getText().toString().replace(" ", "%20"); // Reemplazamos los espacios en blanco para que la ruta funcione correctamente
+        String nuevo_password = edPassword.getText().toString();
+        String repetir_password = edRepetirPassword.getText().toString();
+
+        String uri = raiz + "/registro/" + servidor + "/" + puerto + "/" + baseDatos + "/" +
+                usuario + "/" + password + "/" + nuevo_nombre + "/" + nuevo_apellidos + "/" +
+                nuevo_dni + "/" + nuevo_telefono + "/" + nuevo_email + "/" + nuevo_usuario + "/" +
+                nuevo_password;
+
+        if(nuevo_nombre.equals("") || nuevo_apellidos.equals("") || nuevo_dni.equals("")
+                || nuevo_telefono.equals("") || nuevo_email.equals("") || nuevo_usuario.equals("")
+                || nuevo_password.equals(""))
+        {
+            Toast.makeText(getActivity(), "Debe completar todos los campos para completar un nuevo registro.", Toast.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+        else if (!emailValido(nuevo_email))
+        {
+            Toast.makeText(getActivity(), "El formato del email introducido es incorrecto.", Toast.LENGTH_LONG).show();
         }
+        else if (!passwordValida(nuevo_password))
+        {
+            Toast.makeText(getActivity(), "La contraseña debe contener entre 8 y 50 caracteres.", Toast.LENGTH_LONG).show();
+        }
+        else if(!nuevo_email.equals(repetir_email))
+        {
+            Toast.makeText(getActivity(), "Los emails no coinciden.", Toast.LENGTH_LONG).show();
+        }
+        else if(!nuevo_password.equals(repetir_password))
+        {
+            Toast.makeText(getActivity(), "Las contraseñas no coinciden.", Toast.LENGTH_LONG).show();
+        }
+        else if(nuevo_telefono.length()!=9)
+        {
+            Toast.makeText(getActivity(), "El teléfono debe constar de 9 dígitos.", Toast.LENGTH_LONG).show();
+        }
+        else if(nuevo_dni.length()!=9)
+        {
+            Toast.makeText(getActivity(), "El DNI debe constar de 9 caracteres.", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            try
+            {
+                peticionNuevoRegistro(uri);
+                registroInsertado = true;
+            }
+            catch (Exception e)
+            {
+                registroInsertado = false;
+                Log.e("Usuario no insertado: ", e.getMessage());
+            }
+        }
+        return registroInsertado;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    /**
+     * Método usado para chequear si el formato de email es correcto.
+     *
+     * @param email
+     * @return boolean true para correcto false para incorrecto
+     */
+    private boolean emailValido(String email) {
+        boolean esCorrecto = false;
+
+        String expresion = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = email;
+
+        Pattern pattern = Pattern.compile(expresion, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        if (matcher.matches())
+        {
+            esCorrecto = true;
+        }
+        return esCorrecto;
+    }
+
+    /**
+     * Método usado para chequear si el formato de contraseña es correcto, debe contener entre 8 y 50 caracteres.
+     *
+     * @param password
+     * @return boolean true para correcto false para incorrecto
+     */
+    private boolean passwordValida(String password)
+    {
+        Log.e("Tamaño password ", Integer.toString(password.length()));
+        return (password.length() > 7 & password.length()<51);
+    }
+
+    // Método encargado de realizar peticiones de creación de un usuario y que recibe como parámetro
+    // de entrada la URI para realizar dicha petición al servicio web.
+    public void peticionNuevoRegistro(String uri)
+    {
+        // Se declara e inicializa una variable de tipo RequestQueue, encargada de crear
+        // una nueva petición en la cola del servicio web.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+
+        // Se declara e inicializa un objeto de tipo StringRequest, que permite recuperar un
+        // String a partir de la URL que recibe. El constructor de la clase StringRequest
+        // recibe como argumentos de entrada el método para que el cliente realice operaciones
+        // sobre el servicio web, la uri para el acceso al recurso, la interfaz Response.Listener,
+        // encargada de devolver la respuesta parseada a la petición del cliente, y la interfaz
+        // Response.ErrorListener encargada de entregar una respuesta errónea desde el servicio web.
+        StringRequest sRequest = new StringRequest(Request.Method.GET,
+                uri, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response)
+            {
+                try
+                {
+                    Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                try
+                {
+                    Toast.makeText(getActivity(), "Error al insertar usuario: " + error.toString(),Toast.LENGTH_LONG).show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Se definen las políticas para la petición realizada. Recibe como argumento una
+        // instancia de la clase DefaultRetryPolicy, que recibe como parámetros de entrada
+        // el tiempo inicial de espera para la respuesta, el número máximo de intentos,
+        // y el multiplicador de retardo de envío por defecto.
+        sRequest.setRetryPolicy(new DefaultRetryPolicy(
+                15000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        //Se añade la petición a la cola con el objeto de tipo JsonArrayRequest.
+        queue.add(sRequest);
     }
 
     /**
