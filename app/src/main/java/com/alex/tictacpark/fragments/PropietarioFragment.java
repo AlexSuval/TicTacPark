@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alex.tictacpark.R;
+import com.alex.tictacpark.activities.AreaUsuario;
 import com.alex.tictacpark.activities.MainActivity;
 import com.alex.tictacpark.models.Parking;
 import com.android.volley.DefaultRetryPolicy;
@@ -80,7 +81,7 @@ public class PropietarioFragment extends Fragment
     // dirección IP de nuestro equipo en vez de "localhost" o "127.0.0.1". Esto es porque
     // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
     // nuestro dispositivo Android
-    String ip = "192.168.0.11";
+    String ip = "192.168.0.12";
     // Con el móvil en mi casa funciona "192.168.0.11";
     // Con el móvil como punto de acceso "192.168.43.192";
     // Con el emulador funciona: "10.0.2.2" (local apache server)
@@ -95,6 +96,8 @@ public class PropietarioFragment extends Fragment
 
     // Declaramos e inicializamos la ArrayList list_parking, que contendrá todos los objetos Parking
     private ArrayList<Parking> list_mis_parkings=new ArrayList<Parking>();
+
+    String id_usuario;
 
     /**
      * Use this factory method to create a new instance of
@@ -132,11 +135,8 @@ public class PropietarioFragment extends Fragment
         ((MainActivity) getActivity()).setActionBarTitle(usuario);
 
         // Se carga la tabla con los parkings del usuario
-        String id_usuario = getArguments().getString("id_usuario", "-1");
+        id_usuario = getArguments().getString("id_usuario", "-1");
         cargarTabla(id_usuario, view);
-
-        for (Parking p : list_mis_parkings)
-            Log.e("Parking ", p.getNombre());
 
         // Se envía evento táctil a la vista
         view.setOnTouchListener(new View.OnTouchListener(){
@@ -391,7 +391,12 @@ public class PropietarioFragment extends Fragment
                 return true;
 
             case R.id.mi_cuenta:
-                // TODO Se carga MiCuentaFragment
+                //Genera el intent y empieza la actividad a través del intent
+                Intent intent=new Intent(getActivity(), AreaUsuario.class);
+                // Pasamos la acción a realizar a la actividad
+                intent.putExtra("accion", "Cuenta");
+                intent.putExtra("id_usuario", id_usuario);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

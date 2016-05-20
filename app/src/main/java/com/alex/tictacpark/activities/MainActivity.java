@@ -207,8 +207,23 @@ public class MainActivity extends AppCompatActivity
     @Override
     // Se ejecuta al volver de otra actividad, ejecutándose desde el principio
     protected void onResume(){
-        super.onResume();
         Log.e("Estado", "onResume");
+        super.onResume();
+        // Se guardan el estado de la sesión, el usuario_introducido y password_introducida en el fichero de preferencias PREFS_USUARIO
+        SharedPreferences sp_usuario = this.getSharedPreferences("PREFS_USUARIO", 0);
+        SharedPreferences.Editor editor_usuario = sp_usuario.edit();
+        Log.e("Refrescar acceso", Boolean.toString(sp_usuario.getBoolean("refrescar_acceso", false)));
+        // Si entramos al realizar un nuevo registro
+        if(sp_usuario.getBoolean("refrescar_acceso", false))
+        {
+            Log.e("Entramos para reinicio ", "en acceso fragment");
+            editor_usuario.putBoolean("refrescar_acceso", false);
+            editor_usuario.commit();
+            // Refrescamos el área del propietario
+            Fragment newFragment = new AccesoFragment();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.container, newFragment).commit();
+        }
     }
 
     @Override

@@ -89,5 +89,14 @@
             android:text="@string/nuevoRegistro"
             android:onClick="nuevoRegistro" />
 
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:id="@+id/btnDarmeBaja"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/darmeBaja"
+            android:visibility="gone"
+            android:onClick="nuevoRegistro" />
+
     </LinearLayout>
 </ScrollView>
