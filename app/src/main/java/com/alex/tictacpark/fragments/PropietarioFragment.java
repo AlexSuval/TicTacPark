@@ -44,6 +44,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -185,7 +186,7 @@ public class PropietarioFragment extends Fragment
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject jsObjectParking = (JSONObject) response.get(i);
 
-                                final int id = jsObjectParking.getInt("id");
+                                int id = jsObjectParking.getInt("id");
                                 String nombre = jsObjectParking.getString("nombre");
                                 Log.e("Parking ", nombre);
                                 String direccion = jsObjectParking.getString("direccion");
@@ -251,6 +252,7 @@ public class PropietarioFragment extends Fragment
                                 // Cargamos una nueva fila
                                 TableRow tbrow = new TableRow(getActivity());
 
+                                // Switch de Estado
                                 Switch swEstado = new Switch(getActivity());
                                 swEstado.setBackgroundResource(R.drawable.estado_toggle);
                                 swEstado.setTextOn("Libre");
@@ -259,26 +261,31 @@ public class PropietarioFragment extends Fragment
                                     swEstado.setChecked(true);
                                 else
                                     swEstado.setChecked(false);
+                                final String id_parking = Integer.toString(id);
                                 swEstado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                     @Override
                                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                         if (isChecked) // Switch ON --> Estado = Libre
                                         {
-                                            Log.e("Estado: ", "LIBRE " + id);
+                                            String estado = "Libre";
+                                            modificarEstado(id_parking, estado);
                                         } else // Switch OFF --> Estado = Completo
                                         {
-                                            Log.e("Estado: ", "COMPLETO " + id);
+                                            String estado = "Completo";
+                                            modificarEstado(id_parking, estado);
                                         }
                                     }
                                 });
                                 tbrow.addView(swEstado);
 
+                                // Nombre y localidad del Parking
                                 TextView t2v = new TextView(getActivity());
                                 t2v.setText(" " + nombre + " \n" + " (" + localidad + ") ");
                                 t2v.setTextColor(Color.BLACK);
                                 t2v.setGravity(Gravity.CENTER);
                                 tbrow.addView(t2v);
 
+                                // Botón Modificar
                                 Button btnModificar = new Button(getActivity());
                                 btnModificar.setText("Modificar");
                                 //btnModificar.setId(id);
@@ -286,11 +293,12 @@ public class PropietarioFragment extends Fragment
                                     @Override
                                     public void onClick(View v) {
                                         // TODO Cargar modificar parking
-                                        Log.e("Click en Modificar ", Integer.toString(id));
                                     }
                                 });
                                 tbrow.addView(btnModificar);
 
+                                // Botón Eliminar
+                                final String nombre_parking = nombre;
                                 Button btnEliminar = new Button(getActivity());
                                 btnEliminar.setText("Eliminar");
                                 //btnEliminar.setId(id);
@@ -298,7 +306,28 @@ public class PropietarioFragment extends Fragment
                                     @Override
                                     public void onClick(View v) {
                                         // TODO Cargar eliminar parking
-                                        Log.e("Click en Eliminar ", Integer.toString(id));
+                                        // Se crea un cuadro de diálogo
+                                        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
+                                        builder.setTitle("Eliminar parking");
+                                        builder.setMessage("¿Seguro que desea eliminar el parking '" + nombre_parking + "'?");
+                                        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                if (eliminarParking(id_parking)) {
+                                                    // Se refresca el área de propietario, para ello inflamos el fragment AccesoFragment, reemplazando al que había
+                                                    final FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                                    ft.replace(R.id.container, new AccesoFragment(), "ACCESO");
+                                                    ft.commit();
+                                                }
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                        android.app.AlertDialog dialog = builder.create();
+                                        dialog.show();
                                     }
                                 });
                                 tbrow.addView(btnEliminar);
@@ -349,6 +378,104 @@ public class PropietarioFragment extends Fragment
         queue.add(jArray);
 
         return view;
+    }
+
+    // Método que invocará a peticionServicioParking(), indicándole como argumento la URI
+    // asociada para cambiar el estado del parking.
+    public void modificarEstado(String id, String estado)
+    {
+        String uri = raiz + "/modificaEstado/" + servidor + "/" + puerto + "/" + baseDatos + "/" +
+                usuario + "/" + password + "/" + id + "/" + estado;
+
+        try
+        {
+            // Se modifica el estado del parking
+            peticionServicioParking(uri);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    // Método que invocará a peticionServicioParking(), indicándole como argumento la URI
+    // asociada para la eliminación de un parking
+    public Boolean eliminarParking(String id)
+    {
+        boolean parkingBorrado = false;
+
+        String uri = raiz + "/borra/" + servidor + "/" + puerto + "/" + baseDatos + "/" +
+                usuario + "/" + password + "/" + id;
+
+        try
+        {
+            // Se elimina el parking
+            peticionServicioParking(uri);
+            parkingBorrado = true;
+        }
+        catch (Exception e)
+        {
+            parkingBorrado = false;
+        }
+
+        return parkingBorrado;
+    }
+
+    // Método encargado de realizar peticiones de creación, modificación o eliminación de un usuario
+    // y que recibe como parámetro de entrada la URI para realizar dicha petición al servicio web.
+    public void peticionServicioParking(String uri)
+    {
+        // Se declara e inicializa una variable de tipo RequestQueue, encargada de crear
+        // una nueva petición en la cola del servicio web.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+
+        // Se declara e inicializa un objeto de tipo StringRequest, que permite recuperar un
+        // String a partir de la URL que recibe. El constructor de la clase StringRequest
+        // recibe como argumentos de entrada el método para que el cliente realice operaciones
+        // sobre el servicio web, la uri para el acceso al recurso, la interfaz Response.Listener,
+        // encargada de devolver la respuesta parseada a la petición del cliente, y la interfaz
+        // Response.ErrorListener encargada de entregar una respuesta errónea desde el servicio web.
+        StringRequest sRequest = new StringRequest(Request.Method.GET,
+                uri, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response)
+            {
+                try
+                {
+                    // Nuevo usuario insertado o Usuario borrado correctamente
+                    Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                try
+                {
+                    Toast.makeText(getActivity(), "Error en la petición de servicio de parking: " + error.toString(),Toast.LENGTH_LONG).show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // Se definen las políticas para la petición realizada. Recibe como argumento una
+        // instancia de la clase DefaultRetryPolicy, que recibe como parámetros de entrada
+        // el tiempo inicial de espera para la respuesta, el número máximo de intentos,
+        // y el multiplicador de retardo de envío por defecto.
+        sRequest.setRetryPolicy(new DefaultRetryPolicy(
+                15000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        //Se añade la petición a la cola con el objeto de tipo JsonArrayRequest.
+        queue.add(sRequest);
     }
 
     /**
