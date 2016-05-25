@@ -293,7 +293,10 @@ public class ParkingFragment extends Fragment {
 
         // Ponemos el texto con la descripción del parking en el TextView correspondiente
         TextView tv_texto_descripcion =(TextView)view.findViewById(R.id.tv_texto_descripcion);
-        tv_texto_descripcion.setText("- Descripción: " + texto_descripcion + "\n");
+        if ("No".equals(texto_descripcion))
+            tv_texto_descripcion.setText("");
+        else
+            tv_texto_descripcion.setText("- Descripción: " + texto_descripcion + "\n");
         tv_texto_descripcion.append("- Número de plazas: " + plazas + " plazas." + "\n");
         tv_texto_descripcion.append("- Horario de apertura: " + horario_apertura + " h." + "\n");
         tv_texto_descripcion.append("- Horario de cierre: " + horario_cierre + " h." + "\n");
@@ -333,7 +336,7 @@ public class ParkingFragment extends Fragment {
         // Si la hay, ponemos la imagen del parking en la ImageView correspondiente,
         // sino dejamos el logo de nuestra app
         ImageView iv_imagen=(ImageView)view.findViewById(R.id.iv_foto_parking);
-        if (!"Sin foto".equals(imagen))
+        if (!"No".equals(imagen))
             new DescargarImagen(iv_imagen).execute(imagen);
 
         // Cargamos los iconos en un ArrayList<ImageView>

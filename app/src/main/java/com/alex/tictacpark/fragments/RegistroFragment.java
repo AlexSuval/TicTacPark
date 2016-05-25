@@ -235,7 +235,7 @@ public class RegistroFragment extends Fragment {
     }
 
     // Método que invocará a peticionServicioUsuario(), indicándole como argumento la URI
-    // asociada para la creación de un nuevo propietario, en caso de que los datos introducidos
+    // asociada para la modificación de los datos de propietario, en caso de que los datos introducidos
     // sean correctos.
     public Boolean modificarUsuario(String id_usuario)
     {

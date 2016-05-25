@@ -96,9 +96,14 @@ public class AccesoFragment extends Fragment {
         {
             //Asignamos el layout fragment_propietario
             rootView = inflater.inflate(R.layout.fragment_propietario, container, false);
+
             // Recuperamos del fichero de preferencias el id_usuario
             String usuario_propietario = sp_usuario.getString("usuario", "");
             String password_propietario = sp_usuario.getString("password", "");
+
+            // Ponemos el nombre del propietario en la barra (así aparecerá en caso de no tener conexión)
+            ((MainActivity) getActivity()).setActionBarTitle(usuario_propietario);
+
             // Aunque haya una sesión iniciada, se comprueba que hay conexión y que las credenciales
             // almacenadas en el fichero de preferencias son correctas
             peticionServicio(usuario_propietario, password_propietario);
@@ -111,7 +116,7 @@ public class AccesoFragment extends Fragment {
             // Ponemos el nombre "Área de propietario" en la barra
             ((MainActivity) getActivity()).setActionBarTitle("Área de propietario");
 
-            // Se asocian las variables de tipo EditText con sus controles a nivel de layout
+            // Se asocian las variables de tipo EditText y Button con sus controles a nivel de layout
             edUsuario = (EditText) rootView.findViewById(R.id.edUsuario);
             edPassword = (EditText) rootView.findViewById(R.id.edPassword);
             btnIniciarSesion = (Button) rootView.findViewById(R.id.btnIniciarSesion);
@@ -139,7 +144,8 @@ public class AccesoFragment extends Fragment {
                 }
             });
         }
-            return rootView;
+
+        return rootView;
     }
 
     // Método que define las acciones al hacer click en Iniciar sesión
@@ -147,7 +153,11 @@ public class AccesoFragment extends Fragment {
     {
         String usuario_introducido = edUsuario.getText().toString();
         String password_introducida = edPassword.getText().toString();
-        peticionServicio(usuario_introducido, password_introducida);
+
+        if(usuario_introducido.equals("") || password_introducida.equals(""))
+            Toast.makeText(getActivity(), "Debe completar los campos usuario y contraseña.", Toast.LENGTH_LONG).show();
+        else
+            peticionServicio(usuario_introducido, password_introducida);
     }
 
     // Método que devuelve el estado de la conexión al servidor

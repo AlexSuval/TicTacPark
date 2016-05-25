@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -35,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alex.tictacpark.R;
+import com.alex.tictacpark.activities.AreaParking;
 import com.alex.tictacpark.activities.AreaUsuario;
 import com.alex.tictacpark.activities.MainActivity;
 import com.alex.tictacpark.models.Parking;
@@ -75,6 +77,9 @@ public class PropietarioFragment extends Fragment
 {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+    // Declaramos las variables necesarias para introducir los datos de conexión al servidor
+    private Button btnNuevoParking;
 
     // Variable de tipo String que inicializa con la estructura principal de la URI
     // para el acceso al servicio web.
@@ -139,6 +144,23 @@ public class PropietarioFragment extends Fragment
         id_usuario = getArguments().getString("id_usuario", "-1");
         cargarTabla(id_usuario, view);
 
+        // Se asocia la variable Button con su control a nivel de layout
+        btnNuevoParking = (Button) view.findViewById(R.id.btnNuevoParking);
+
+        // Asignar a variable el Botón Nuevo Parking y asignar evento OnClick para realizar las
+        // acciones correspondientes
+        btnNuevoParking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Genera el intent y empieza la actividad a través del intent
+                Intent intent=new Intent(getActivity(), AreaParking.class);
+                // Pasamos la acción a realizar a la actividad
+                intent.putExtra("accion", "Nuevo parking");
+                intent.putExtra("id_usuario", id_usuario);
+                startActivity(intent);
+            }
+        });
+
         // Se envía evento táctil a la vista
         view.setOnTouchListener(new View.OnTouchListener(){
             public boolean onTouch(View v,MotionEvent event){
@@ -186,7 +208,7 @@ public class PropietarioFragment extends Fragment
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject jsObjectParking = (JSONObject) response.get(i);
 
-                                int id = jsObjectParking.getInt("id");
+                                final int id = jsObjectParking.getInt("id");
                                 String nombre = jsObjectParking.getString("nombre");
                                 Log.e("Parking ", nombre);
                                 String direccion = jsObjectParking.getString("direccion");
@@ -236,7 +258,7 @@ public class PropietarioFragment extends Fragment
 
                                 int id_usuario = jsObjectParking.getInt("id_usuario");
 
-                                Parking nuevoParking = new Parking(id, nombre, direccion, localidad,
+                                final Parking nuevoParking = new Parking(id, nombre, direccion, localidad,
                                         provincia, latitud, longitud, telefono,
                                         imagen, tipo, estado, precio,
                                         horario_apertura, horario_cierre, tiempo_maximo,
@@ -292,7 +314,12 @@ public class PropietarioFragment extends Fragment
                                 btnModificar.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        // TODO Cargar modificar parking
+                                        //Genera el intent y empieza la actividad a través del intent
+                                        Intent intent=new Intent(getActivity(), AreaParking.class);
+                                        // Pasamos la acción a realizar a la actividad
+                                        intent.putExtra("accion", "Modificar parking");
+                                        intent.putExtra("parking", nuevoParking);
+                                        startActivity(intent);
                                     }
                                 });
                                 tbrow.addView(btnModificar);
@@ -305,7 +332,6 @@ public class PropietarioFragment extends Fragment
                                 btnEliminar.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        // TODO Cargar eliminar parking
                                         // Se crea un cuadro de diálogo
                                         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
                                         builder.setTitle("Eliminar parking");

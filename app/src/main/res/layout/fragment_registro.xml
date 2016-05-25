@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:text="@string/darmeBaja"
             android:visibility="gone"
-            android:onClick="nuevoRegistro" />
+            android:onClick="darmeBaja" />
 
     </LinearLayout>
 </ScrollView>

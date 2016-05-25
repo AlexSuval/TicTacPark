@@ -22,10 +22,11 @@
             android:name=".activities.MainActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|uiMode|orientation|screenSize|smallestScreenSize"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -47,7 +48,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.alex.tictacpark.activities.MainActivity" />
         </activity>
-
         <activity
             android:name=".activities.AreaUsuario"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
@@ -60,8 +60,13 @@
         </activity>
 
         <!-- Registro del BroadcastReceiver -->
-        <receiver android:name="com.alex.tictacpark.helpers.AlarmaReceiver"/>
+        <receiver android:name=".helpers.AlarmaReceiver" />
 
+        <activity
+            android:name=".activities.AreaParking"
+            android:label="@string/title_activity_area_parking"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
     </application>
 
 </manifest>

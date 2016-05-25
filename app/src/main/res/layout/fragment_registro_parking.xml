@@ -1,0 +1,246 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ScrollViewRegistro"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.alex.tictacpark.fragments.RegistroparkingFragment">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:id="@+id/tvDatos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="@string/datos" />
+
+        <EditText
+            android:id="@+id/edNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/nombre_parking"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/edDireccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/direccion_parking"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/edLocalidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/localidad"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/edProvincia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/provincia"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/edLatitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/latitud"
+            android:inputType="numberSigned|numberDecimal" />
+
+        <EditText
+            android:id="@+id/edLongitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/longitud"
+            android:inputType="numberSigned|numberDecimal" />
+
+        <EditText
+            android:id="@+id/edTelefono"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/telefono"
+            android:inputType="phone" />
+
+        <EditText
+            android:id="@+id/edImagen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/imagen"
+            android:inputType="textUri" />
+
+        <EditText
+            android:id="@+id/edPrecio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/precio"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/edHorarioApertura"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/apertura"
+            android:inputType="time" />
+
+        <EditText
+            android:id="@+id/edHorarioCierre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/cierre"
+            android:inputType="time" />
+
+        <EditText
+            android:id="@+id/edTiempoMaximo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/tiempoMaximo"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/edPlazas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/plazas"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/edAltura"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/altura"
+            android:inputType="numberDecimal" />
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:id="@+id/tvTipo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="@string/tipo" />
+
+        <Spinner
+            android:id="@+id/spTipo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:id="@+id/tvEstado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="@string/estado" />
+
+        <Spinner
+            android:id="@+id/spEstado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:id="@+id/tvServicios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="@string/servicios" />
+
+        <CheckBox
+            android:id="@+id/cbAdaptado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/adaptado"
+            android:layout_gravity="center_horizontal" />
+
+        <CheckBox
+            android:id="@+id/cbPlazasDiscapacitados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/plazasDiscapacitados"
+            android:layout_gravity="center_horizontal" />
+
+        <CheckBox
+            android:id="@+id/cbMotos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/motos"
+            android:layout_gravity="center_horizontal" />
+
+        <CheckBox
+            android:id="@+id/cbAseos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/aseos"
+            android:layout_gravity="center_horizontal" />
+
+        <CheckBox
+            android:id="@+id/cbTarjeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tarjeta"
+            android:layout_gravity="center_horizontal" />
+
+        <CheckBox
+            android:id="@+id/cbSeguridad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/seguridad"
+            android:layout_gravity="center_horizontal" />
+
+        <CheckBox
+            android:id="@+id/cbElectricos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/electricos"
+            android:layout_gravity="center_horizontal" />
+
+        <CheckBox
+            android:id="@+id/cbLavado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/lavado"
+            android:layout_gravity="center_horizontal" />
+
+        <CheckBox
+            android:id="@+id/cbServicio24h"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/servicio24h"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:id="@+id/tvDescripcion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="@string/descripcion" />
+
+        <EditText
+            android:id="@+id/edDescripcion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/descripcion"
+            android:inputType="textMultiLine" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:id="@+id/btnNuevoParking"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nuevoParking"
+            android:onClick="nuevoParking" />
+
+    </LinearLayout>
+</ScrollView>

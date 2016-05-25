@@ -4,7 +4,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="estado">Acceso propietarios</string>
+    <string name="acceso">Acceso propietarios</string>
     <string name="buscar">Buscar</string>
     <string name="parking">Mi Parking</string>
     <string name="alarma">Alarma y gasto</string>
@@ -43,10 +43,50 @@
     <string name="nuevoRegistro"><u>Nuevo registro</u></string>
     <string name="darmeBaja"><u>Darme de baja</u></string>
     <string name="nuevoParking"><u>Añadir nuevo parking</u></string>
+    <string name="datos"><u>Datos del parking</u></string>
+    <string name="nombre_parking"><u>Nombre(*)</u></string>
+    <string name="direccion_parking"><u>Dirección(*)</u></string>
+    <string name="localidad"><u>Localidad(*)</u></string>
+    <string name="provincia"><u>Provincia(*)</u></string>
+    <string name="latitud"><u>Latitud(*)</u></string>
+    <string name="longitud"><u>Longitud(*)</u></string>
+    <string name="imagen"><u>Imagen</u></string>
+    <string name="precio"><u>Precio (€/h)(*)</u></string>
+    <string name="apertura"><u>Horario de apertura (HH:MM:SS)(*)</u></string>
+    <string name="cierre"><u>Horario de cierre (HH:MM:SS)(*)</u></string>
+    <string name="tiempoMaximo"><u>Tiempo máximo de estacionamiento</u></string>
+    <string name="plazas"><u>Plazas(*)</u></string>
+    <string name="altura"><u>Altura máxima (m)</u></string>
+    <string name="tipo"><u>Tipo (Seleccione una opción)(*)</u></string>
+    <string name="estado"><u>Estado (Seleccione una opción)(*)</u></string>
+    <string name="servicios"><u>Servicios(*)</u></string>
+    <string name="adaptado"><u>Adaptado a personas con discapacidad</u></string>
+    <string name="plazasDiscapacitados"><u>Plazas de aparcamiento para discapacitados</u></string>
+    <string name="motos"><u>Plazas para motos</u></string>
+    <string name="aseos"><u>Aseos</u></string>
+    <string name="tarjeta"><u>Pago con tarjeta</u></string>
+    <string name="seguridad"><u>Seguridad</u></string>
+    <string name="electricos"><u>Carga de coches eléctricos</u></string>
+    <string name="lavado"><u>Lavado de vehículos</u></string>
+    <string name="servicio24h"><u>Apertura 24 horas</u></string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- Strings-Array utilizados en los spinners del área de propietarios -->
+    <string-array name="opciones_tipo">
+        <item>Público</item>
+        <item>Privado</item>
+        <item>ORA</item>
+        <item>Particular</item>
+    </string-array>
+
+    <string-array name="opciones_estado">
+        <item>Libre</item>
+        <item>Completo</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_parking_detalle">Titulo</string>
     <string name="title_activity_area_propietarios">Área de propietario</string>
     <string name="title_activity_prueba_actividad">PruebaActividad</string>
+    <string name="title_activity_area_parking">AreaParking</string>
 </resources>

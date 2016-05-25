@@ -3,7 +3,7 @@
 
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_acceso" android:icon="@android:drawable/ic_menu_manage"
-            android:title="@string/estado" />
+            android:title="@string/acceso" />
         <item android:id="@+id/nav_buscar" android:icon="@android:drawable/ic_menu_search"
             android:title="@string/buscar" />
         <item android:id="@+id/nav_parking" android:icon="@android:drawable/ic_menu_myplaces"
