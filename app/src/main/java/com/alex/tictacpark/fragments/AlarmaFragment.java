@@ -1,14 +1,10 @@
 package com.alex.tictacpark.fragments;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -34,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Handler;
 
 public class AlarmaFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -49,7 +44,6 @@ public class AlarmaFragment extends Fragment {
      * @param SectionNumber Indica el número de la sección pulsada.
      * @return A new instance of fragment AlarmaFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static AlarmaFragment newInstance(int SectionNumber) {
         AlarmaFragment fragment = new AlarmaFragment();
         Bundle args = new Bundle();
@@ -80,7 +74,6 @@ public class AlarmaFragment extends Fragment {
 
         // Asignar a variable al switch Activada/Desactivada y asignar evento onCheckedChangeListener
         // para realizar las acciones correspondientes
-
         manager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getActivity(), AlarmaReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, 0);
@@ -97,28 +90,12 @@ public class AlarmaFragment extends Fragment {
         {
             // Ponemos el switch Activado
             sw.setChecked(true);
-            // Ponemos el TimePicker con los valores introducidos para la alarma
-            int hora_alarma = sp_general.getInt("hora_alarma", 0);
-            int minutos_alarma = sp_general.getInt("minutos_alarma",0);
-            Log.e("hora que recupero", Integer.toString(hora_alarma));
-            Log.e("minutos que recupero", Integer.toString(minutos_alarma));
-            // TODO Esto en principio sólo funcionaría para dispositivos con Lollipop
-            //tp.setHour(hora_alarma);
-            //tp.setMinute(minutos_alarma);
-            Log.e("hora que pongo en el tp", Integer.toString(tp.getCurrentHour()));
-            Log.e("min que pongo en el tp", Integer.toString(tp.getCurrentMinute()));
         }
-        else    // Sino, ponemos el switch Desactivado
+        else    // Si no está activada
         {
             // Ponemos el switch Desactivado
             sw.setChecked(false);
-            /*
-            // Ponemos el horario de alarma a 0, para mostrar "Alarma desactivada"
-            editor_general.putInt("hora_alarma", 0);
-            editor_general.putInt("minutos_alarma", 0);
-            //Se guardan los cambios en el fichero
-            editor_general.commit();
-*/
+
             // Para que en el caso de que desaparqué y había una alarma pendiente se cancele la alarma
             if (manager != null) {
                 manager.cancel(pendingIntent);
@@ -140,8 +117,6 @@ public class AlarmaFragment extends Fragment {
                     Calendar cal = Calendar.getInstance();
 
                     // Guardamos en el fichero de preferencias general los valores introducidos en el TimePicker
-                    //tp.clearFocus();
-                    //tp.setIs24HourView(true);
                     editor_general.putInt("hora_alarma", tp.getCurrentHour());
                     editor_general.putInt("minutos_alarma", tp.getCurrentMinute());
                     Log.e("hora en fichero", Integer.toString(tp.getCurrentHour()));
@@ -154,52 +129,29 @@ public class AlarmaFragment extends Fragment {
                     cal.set(Calendar.MILLISECOND, 0);
 
                     // Se comprueba si la hora introducida en el TimePicker es anterior a la hora actual
-                    if(cal.compareTo(current) <= 0){
-                        //The set Date/Time already passed
+                    if(cal.compareTo(current) <= 0)
+                    {
+                        // La hora introducida ya ha pasado
                         Toast.makeText(getActivity(),
                                 "La hora introducida es incorrecta",
                                 Toast.LENGTH_LONG).show();
-                        // TODO REFRESCAR PÁGINA PONIENDO EL SWITCH EN DESCONECTADO
-                        // COMPROBAR
+                        // Ponemos alarma=false en el archivo de preferencias general
+                        editor_general.putBoolean("alarma", false);
+                        Log.e("Alarma: ", "OFF");
                     }
-                    else{
-                        //activarAlarma(cal);
-                        //manager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + diff, pendingIntent);
+                    else // Se activa la alarma
+                    {
                         Log.e("Tiempo de alarma: ", Long.toString(cal.getTimeInMillis()));
-                        // TODO COMPROBAR QUE PONE BIEN ALARMAS PARA EL DÍA SIGUIENTE
                         manager.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
                     }
-
-                    // Método peor? para calcular la hora en la que se debe activar la alarma
-                    /*
-                    // Obtener hora actual como hora inicial
-                    Calendar cal = Calendar.getInstance();
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
-                    // Hora final: La que sacamos del timepicker.
-                    long hora=tp.getCurrentHour();
-                    long minuto=tp.getCurrentMinute();
-                    String alarma_final=hora+":"+minuto;
-                    String alarma_inicial=cal.getTime().toString();
-                    long diff=0;
-                    try{
-                        DateFormat formatter = new SimpleDateFormat("kk:mm");
-                        Date date_alarma_inicial = sdf.parse(alarma_inicial);
-                        Date date_alarma_final = formatter.parse(alarma_final);
-                        diff = date_alarma_final.getTime() - date_alarma_inicial.getTime(); // diff en ms
-                        Log.e("Tiempo para la alarma", Long.toString(diff));
-                    }
-                    catch(Exception e){
-                        Log.e("Fallo al formatear: ", "Fallo");
-                    }
-                    */
                 }
                 else // Switch OFF --> Se desactiva la alarma
                 {
                     // Ponemos alarma=false en el archivo de preferencias general
                     editor_general.putBoolean("alarma", false);
                     Log.e("Alarma: ", "OFF");
-                    if (manager!= null) {
+                    if (manager!= null)
+                    {
                         manager.cancel(pendingIntent);
                     }
                 }
@@ -219,7 +171,6 @@ public class AlarmaFragment extends Fragment {
     }
 
     // Método para rellenar los TextView
-
     private void RellenarTextView(View v) {
         TextView tiempo = (TextView) v.findViewById(R.id.tv_respuesta_tiempo);
         TextView gasto = (TextView) v.findViewById(R.id.tv_respuesta_gasto);

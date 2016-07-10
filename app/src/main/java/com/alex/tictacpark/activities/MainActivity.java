@@ -20,10 +20,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.fragments.AccesoFragment;
@@ -32,14 +29,6 @@ import com.alex.tictacpark.fragments.GeocoderFragment;
 import com.alex.tictacpark.fragments.ParkingFragment;
 import com.alex.tictacpark.fragments.AlarmaFragment;
 import com.alex.tictacpark.fragments.HistorialFragment;
-import com.alex.tictacpark.fragments.PropietarioFragment;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -128,11 +117,6 @@ public class MainActivity extends AppCompatActivity
         Log.e("Alarma=",Boolean.toString(alarma));
         if (!alarma)
         {
-            /*
-            // Editor de preferencias General
-            SharedPreferences sp_general=this.getSharedPreferences("PREFS_GENERAL", 0);
-            final SharedPreferences.Editor editor_general = sp_general.edit();
-            */
             // Ponemos alarma=false en el archivo de preferencias general
             editor_general.putBoolean("alarma", false);
         }
@@ -147,7 +131,8 @@ public class MainActivity extends AppCompatActivity
         FileOutputStream fos;
 
         // Creamos el objeto y String JSON
-        try{
+        try
+        {
             JSONObject objeto = new JSONObject();
             JSONArray array = new JSONArray();
             objeto.put("historial", array);
@@ -159,7 +144,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         // Creamos el fichero JSON del historial
-        try{
+        try
+        {
             fos=openFileOutput("historial.json", Context.MODE_PRIVATE);
             fos.write(string.getBytes());
             fos.close();
@@ -239,13 +225,6 @@ public class MainActivity extends AppCompatActivity
     //Infla el fragment, reemplazando el que se le pasa por el que había
     public void inflate(Fragment fragment,String tag)
     {
-        /*if(!tag.equals(BUSCAR)){
-            Fragment f = (Fragment) getFragmentManager().findFragmentById(R.id.container);
-            ViewGroup.LayoutParams params = f.getView().getLayoutParams();
-            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            f.getView().setLayoutParams(params);
-        }*/
-
         FrameLayout view = (FrameLayout) findViewById(R.id.container2);
         view.setVisibility(View.GONE);
 
@@ -261,7 +240,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         Fragment mFragment;
 
-        switch (id){
+        switch (id)
+        {
             case R.id.nav_acceso:
                 Log.e("MAINACTIVITY", "Acceso");
                 mFragment= AccesoFragment.newInstance(0); // Creamos el fragment

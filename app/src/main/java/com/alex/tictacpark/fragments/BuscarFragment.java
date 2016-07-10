@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -23,7 +22,6 @@ import com.alex.tictacpark.R;
 import com.alex.tictacpark.activities.MainActivity;
 import com.alex.tictacpark.activities.ParkingDetalle;
 import com.alex.tictacpark.models.Parking;
-import com.alex.tictacpark.parsers.HistorialParser;
 import com.alex.tictacpark.parsers.ParkingsParser;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -54,22 +52,15 @@ import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BuscarFragment extends Fragment
-    /*implements OnMapReadyCallback,
-    GoogleApiClient.ConnectionCallbacks,
-    GoogleApiClient.OnConnectionFailedListener,
-        LocationListener,
-    GoogleMap.OnMyLocationButtonClickListener*/ {
+public class BuscarFragment extends Fragment {
 
     private GoogleMap mMap;
     private MapView mMapView;
     private String TAG = "BUSCAR";
-    //private GoogleApiClient mGoogleApiClient;
     private LocationManager mLocationManager;
 
     // Variable de tipo String que inicializa con la estructura principal de la URI
@@ -79,7 +70,7 @@ public class BuscarFragment extends Fragment
     // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
     // nuestro dispositivo Android
     String ip = "192.168.0.12";
-    // Con el móvil en mi casa funciona "192.168.0.11";
+    // Con el móvil en mi casa funciona "192.168.0.12";
     // Con el móvil como punto de acceso "192.168.43.192";
     // Con el móvil con anclaje de USB "192.168.42.173";
     // Con el emulador funciona: "10.0.2.2" (local apache server)
@@ -105,9 +96,9 @@ public class BuscarFragment extends Fragment
     //Configuración del mapa
     //Establece mi posición
     private static final LocationRequest REQUEST = LocationRequest.create()
-            .setInterval(5000)  //5000 ms --> COMPLETAR COMENTARIO en api de google maps
-            .setFastestInterval(16) //16ms=60fps
-            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            .setInterval(5000)  // Intervalo para las actualizaciones de ubicación activa: 5000 ms
+            .setFastestInterval(16) // Intervalo más rápido para las actualizaciones de ubicación: 16ms=60fps
+            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // La mejor ubicación posible
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -119,7 +110,6 @@ public class BuscarFragment extends Fragment
      * @param SectionNumber Indica el número de la sección pulsada.
      * @return A new instance of fragment BuscarFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static BuscarFragment newInstance(int SectionNumber) {
         BuscarFragment fragment = new BuscarFragment();
         Bundle args = new Bundle();
@@ -149,14 +139,6 @@ public class BuscarFragment extends Fragment
         cargando.setMessage("Espere mientras acaba de cargarse el mapa");
         cargando.show();
 
-        /*
-        //Inicializamos el objeto GoogleApiClient con las propiedades que va a tener
-        mGoogleApiClient=new GoogleApiClient.Builder(getActivity()) //getActivity para sacar el contexto de la actividad
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-                */
         //Inicializamos el mLocationManager
         mLocationManager=(LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
 
@@ -172,20 +154,16 @@ public class BuscarFragment extends Fragment
 
     public void startMap(){
         int status= GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
-        if(status==ConnectionResult.SUCCESS)    //Comprueba si tiene Google Play Services instalado
+        if(status==ConnectionResult.SUCCESS)    // Comprueba si tiene Google Play Services instalado
         {
             configurarMapa();
-        }
-        else {
-            //TODO Gestionar qué pasa si no está instalado Google Play Services
-
         }
     }
 
     private void configurarMapa(){
-        mMap=mMapView.getMap(); //Cargamos mapa en el fragment
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL); //Mapa básico con carreteras
-        mMap.setMyLocationEnabled(true); //Mi localización
+        mMap=mMapView.getMap(); // Cargamos mapa en el fragment
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL); // Mapa básico con carreteras
+        mMap.setMyLocationEnabled(true); // Mi localización
         // Configuramos la posición inicial
         comenzarLocalizacion();
     }
@@ -193,7 +171,7 @@ public class BuscarFragment extends Fragment
     private void comenzarLocalizacion() {
         LocationManager locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        //Checkear los permisos
+        // Checkear los permisos
         if (Build.VERSION.SDK_INT >= 23 &&
                 ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -201,16 +179,16 @@ public class BuscarFragment extends Fragment
         }
 
         try {
-            //Se obtiene la última localización GPS
+            // Se obtiene la última localización GPS
            final Location loc = getLastKnownLocation(locManager);
 
-            //Muestra la última posición o si no la encuentra, una por defecto
+            // Muestra la última posición o si no la encuentra, una por defecto
             mostrarPosicion(loc);
 
-            //Nos registramos para recibir actualizaciones de la posición
+            // Nos registramos para recibir actualizaciones de la posición
             LocationListener locListener=new LocationListener(){
                 public void onLocationChanged(Location location){
-                    mostrarPosicion(loc); //Va actualizando posición
+                    mostrarPosicion(loc); // Va actualizando posición
                 }
 
                 @Override
@@ -227,7 +205,7 @@ public class BuscarFragment extends Fragment
                 }
             };
 
-            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,20000, locListener); //Se actualiza la posición cada 20km
+            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,20000, locListener); // Se actualiza la posición cada 20km
 
         }catch(Exception ex){
             Log.e("Error: ", ex.getMessage());
@@ -252,7 +230,6 @@ public class BuscarFragment extends Fragment
                     continue;
                 }
                 if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                    // Found best last known location: %s", l);
                     bestLocation = l;
                 }
             }
@@ -272,7 +249,7 @@ public class BuscarFragment extends Fragment
 
         if(loc==null)
         {
-            latLng=new LatLng(40.43,-3.683); // Coordenadas Madrid
+            latLng=new LatLng(40.43,-3.683); // Coordenadas de Madrid
             zoom=5;
         }
         else
@@ -338,14 +315,12 @@ public class BuscarFragment extends Fragment
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        //mGoogleApiClient.connect();
     }
 
     @Override
     // Estado al salir de la aplicación sin cerrarla (botón home)
     public void onPause() {
         super.onPause();
-        //mGoogleApiClient.disconnect(); //Para ahorrar batería
     }
 
     @Override
@@ -390,22 +365,6 @@ public class BuscarFragment extends Fragment
         // Pasamos el parking_clickado a la actividad
         intent.putParcelableArrayListExtra("parking_clickado", parking_clickado_list);
 
-
-
-/*
-        //Le pasamos datos (el nombre del parking) a la actividad
-        intent.putExtra(ParkingDetalle.NOMBRE,parking.getNombre());
-        //Sobreescribe las coordenadas (Longitud y latitud) en el fichero de preferencias general
-        SharedPreferences sp_general=getActivity().getSharedPreferences("PREFS_GENERAL", 0);
-        //boolean aparcado=sp_general.getBoolean("aparcado",false);//Segundo parámetro=Valor por defecto
-        //if(!aparcado) {
-            SharedPreferences.Editor editor = sp_general.edit();
-            String longitud=Double.toString(parking.getLongitud());
-            String latitud=Double.toString(parking.getLatitud());
-            editor.putString("longitud", longitud);
-            editor.putString("latitud", latitud);
-            editor.commit(); //Se guardan los cambios en el fichero
-        //}´*/
         return intent;
     }
 
@@ -457,7 +416,7 @@ public class BuscarFragment extends Fragment
                             if(response.get(1).toString().equals("true"))
                             {
                                 conectado = true;
-                                Log.e(" Estado Conexión", "Fue OK");
+                                Log.e("Estado Conexión", "Fue OK");
                             }
                         }
                         catch (Exception e)
@@ -622,7 +581,7 @@ public class BuscarFragment extends Fragment
                                     parking_array.put(jsObjectParking);
                                     // Pasamos el JSONObject a String
                                     String Parking_final=raiz.toString();
-                                    // Se sobreescribe el historial con la nueva tarjeta al anterior
+                                    // Se sobreescribe el fichero de parkings con el nuevo parking al anterior
                                     OutputStreamWriter osw = new OutputStreamWriter(getActivity().openFileOutput("parkings.json", Context.MODE_PRIVATE));
                                     osw.write(Parking_final);
                                     osw.close();
@@ -693,7 +652,7 @@ public class BuscarFragment extends Fragment
             string="";
         }
 
-        // Creamos el fichero JSON del historial
+        // Creamos el fichero JSON de parkings
         try{
             fos=getActivity().openFileOutput("parkings.json", Context.MODE_PRIVATE);
             fos.write(string.getBytes());

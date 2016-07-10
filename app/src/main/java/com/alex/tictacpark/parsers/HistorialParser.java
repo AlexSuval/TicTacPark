@@ -12,8 +12,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.io.FileInputStream;
 
 /**
  * Created by Alex on 12/01/2016.
@@ -36,10 +34,8 @@ public class HistorialParser {
         ArrayList<Historial> historial=new ArrayList<>();
         // Cargamos el documento JSON en un String
         String json=cargar(c);
-        if(json!=null){
-            /* TODO COMPILAR CON ESTO
-            Log.e("Ya hay un JSON", "OK");
-            */
+        if(json!=null)
+        {
             JSONObject jsonObject;
             try{
                 jsonObject=new JSONObject(json); // Recuperamos el JSON en un JSONObject
@@ -48,7 +44,6 @@ public class HistorialParser {
                 e.printStackTrace();
                 jsonObject=new JSONObject();
             }
-
 
             try{
                 JSONArray array = jsonObject.getJSONArray("historial");    // Array que contiene todos nuestros objetos historial

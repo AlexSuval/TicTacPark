@@ -3,7 +3,6 @@ package com.alex.tictacpark.parsers;
 import android.content.Context;
 import android.util.Log;
 
-import com.alex.tictacpark.models.Historial;
 import com.alex.tictacpark.models.Parking;
 
 import org.json.JSONArray;

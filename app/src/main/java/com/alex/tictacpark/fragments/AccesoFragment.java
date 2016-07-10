@@ -51,7 +51,7 @@ public class AccesoFragment extends Fragment {
     // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
     // nuestro dispositivo Android
     String ip = "192.168.0.12";
-    // Con el móvil en mi casa funciona "192.168.0.11";
+    // Con el móvil en mi casa funciona "192.168.0.12";
     // Con el móvil como punto de acceso "192.168.43.192";
     // Con el móvil con anclaje de USB "192.168.42.173";
     // Con el emulador funciona: "10.0.2.2" (local apache server)
@@ -71,7 +71,6 @@ public class AccesoFragment extends Fragment {
      * @param SectionNumber Indica el número de la sección pulsada.
      * @return A new instance of fragment AccesoFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static AccesoFragment newInstance(int SectionNumber) {
         AccesoFragment fragment = new AccesoFragment();
         Bundle args = new Bundle();
@@ -276,8 +275,6 @@ public class AccesoFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
-
 }

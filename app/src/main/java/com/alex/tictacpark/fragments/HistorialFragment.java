@@ -1,6 +1,5 @@
 package com.alex.tictacpark.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +29,6 @@ import com.alex.tictacpark.models.Historial;
 import com.alex.tictacpark.models.Parking;
 import com.alex.tictacpark.parsers.HistorialParser;
 import com.alex.tictacpark.parsers.ParkingsParser;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,7 +70,6 @@ public class HistorialFragment extends Fragment {
      * @param SectionNumber Indica el número de la sección pulsada.
      * @return A new instance of fragment HistorialFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static HistorialFragment newInstance(int SectionNumber) {
         HistorialFragment fragment = new HistorialFragment();
         Bundle args = new Bundle();
@@ -121,7 +117,6 @@ public class HistorialFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
 
@@ -197,7 +192,6 @@ public class HistorialFragment extends Fragment {
         Log.e("JSON", string);
     }
 
-
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         final int index=adapter.getPosicion();
@@ -271,7 +265,6 @@ public class HistorialFragment extends Fragment {
         return null;
     }
 
-
     // Método para borrar la entrada del historial seleccionada.
     private void borrarEntrada(int posicion){
         HistorialParser parser = new HistorialParser();
@@ -328,5 +321,4 @@ public class HistorialFragment extends Fragment {
             pb.setVisibility(View.GONE);
         }
     }
-
 }

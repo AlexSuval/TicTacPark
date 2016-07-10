@@ -1,12 +1,9 @@
 package com.alex.tictacpark.fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,15 +23,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,7 +51,7 @@ public class RegistroParkingFragment extends Fragment {
     // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
     // nuestro dispositivo Android
     String ip = "192.168.0.12";
-    // Con el móvil en mi casa funciona "192.168.0.11";
+    // Con el móvil en mi casa funciona "192.168.0.12";
     // Con el móvil como punto de acceso "192.168.43.192";
     // Con el móvil con anclaje de USB "192.168.42.173";
     // Con el emulador funciona: "10.0.2.2" (local apache server)
@@ -219,6 +209,8 @@ public class RegistroParkingFragment extends Fragment {
         String nuevo_latitud = edLatitud.getText().toString();
         String nuevo_longitud = edLongitud.getText().toString();
         String nuevo_telefono = edTelefono.getText().toString();
+        if(nuevo_telefono.equals("0")) // Conversión para que no salte el mensaje de error "El teléfono debe constar de 9 dígitos"
+            nuevo_telefono = "";
         String nuevo_imagen = edImagen.getText().toString().replace(" ", "%20"); // Reemplazamos los espacios en blanco para que la ruta funcione correctamente
         String nuevo_precio = edPrecio.getText().toString();
         String nuevo_apertura = edHorarioApertura.getText().toString();
@@ -288,7 +280,7 @@ public class RegistroParkingFragment extends Fragment {
                 || nuevo_precio.equals("") || nuevo_apertura.equals("") || nuevo_cierre.equals("")
                 || nuevo_plazas.equals(""))
         {
-            Toast.makeText(getActivity(), "Debe completar los campos obligatorios para añadir un nuevo parking.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Debe completar los campos obligatorios para actualizar un parking.", Toast.LENGTH_LONG).show();
         }
         else if(nuevo_telefono.length()>0 & nuevo_telefono.length()!=9)
         {
@@ -611,8 +603,6 @@ public class RegistroParkingFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
-
 }

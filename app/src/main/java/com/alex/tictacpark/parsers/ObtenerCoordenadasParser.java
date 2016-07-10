@@ -25,7 +25,6 @@ package com.alex.tictacpark.parsers;
         import java.io.InputStreamReader;
         import java.io.UnsupportedEncodingException;
         import java.util.ArrayList;
-        import java.util.HashMap;
 
 /**
  * Parseador de Obtener coordenadas a partir de la dirección completa

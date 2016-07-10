@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.alex.tictacpark.R;
-import com.alex.tictacpark.fragments.PropietarioFragment;
 import com.alex.tictacpark.fragments.RegistroFragment;
 
 public class AreaUsuario extends AppCompatActivity {

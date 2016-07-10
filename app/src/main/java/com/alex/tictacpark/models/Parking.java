@@ -3,8 +3,6 @@ package com.alex.tictacpark.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-
 /**
  * Created by Alex on 29/12/2015.
  */
@@ -93,7 +91,6 @@ public class Parking implements Parcelable {
     }
 
     // Constructor completo, salvo Id_Usuario
-    // TODO PRUEBAS: Constructor con información de servicios
     public Parking(int Id, String Nombre, String Direccion, String Localidad, String Provincia,
                    double Latitud, double Longitud, String Telefono, String Imagen, String Tipo,
                    String Estado, double Precio, String Horario_Apertura, String Horario_Cierre,
@@ -129,7 +126,7 @@ public class Parking implements Parcelable {
         this.Descripcion = Descripcion;
     }
 
-    // TODO PRUEBAS: Constructor con información de servicios
+    // Constructor con información de servicios
     public Parking(int Id, String Nombre, double Latitud, double Longitud, String Telefono, String Tipo, double Precio, String Estado,
                    byte Adaptado_Discapacidad, byte Plazas_Discapacidad, byte Motos, byte Aseos, byte Tarjeta, byte Seguridad,
                    byte Coches_Electricos, byte Lavado, byte Servicio_24h){
@@ -414,12 +411,8 @@ public class Parking implements Parcelable {
         dest.writeInt(Id_Usuario);
     }
 
-    // Parcelable protocol requires a Parcelable.Creator object called CREATOR
+    // El protocolo Parcelable requiere un objeto Parcelable.Creator llamado CREATOR
 
-    // Following is a sample implementation of Parcelable.Creator<ParcelData> interface for my class ParcelData.java-
-    /**
-     * It will be required during un-marshaling data stored in a Parcel
-     */
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Parking createFromParcel(Parcel source) {
             return new Parking(source);
@@ -431,13 +424,11 @@ public class Parking implements Parcelable {
     };
 
     /**
-     * This will be used only by the MyCreator
+     * Será usado sólo por el MyCreator
      * @param source
      */
-    public Parking(Parcel source){
-            /*
-             * Reconstruct from the Parcel
-             */
+    public Parking(Parcel source)
+    {
         Id=source.readInt();
         Nombre=source.readString();
         Direccion=source.readString();

@@ -2,20 +2,16 @@ package com.alex.tictacpark.fragments;
 
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.alex.tictacpark.R;
 import com.alex.tictacpark.adapters.GeoAutoCompleteAdapter;
@@ -50,7 +46,6 @@ public class GeocoderFragment extends Fragment {
         return fragment;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -64,7 +59,7 @@ public class GeocoderFragment extends Fragment {
 
         geo_autocomplete = (DelayAutoCompleteTextView) rootView.findViewById(R.id.geo_autocomplete);
         geo_autocomplete.setThreshold(THRESHOLD);
-        geo_autocomplete.setAdapter(new GeoAutoCompleteAdapter(getActivity())); // 'this' is Activity instance
+        geo_autocomplete.setAdapter(new GeoAutoCompleteAdapter(getActivity()));
 
         geo_autocomplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -105,7 +100,6 @@ public class GeocoderFragment extends Fragment {
         geo_autocomplete_clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 geo_autocomplete.setText("");
             }
         });
@@ -113,12 +107,9 @@ public class GeocoderFragment extends Fragment {
         return rootView;
     }
 
-
-
     //Tarea asíncrona para descargar el JSON de la API de Google Maps Places
     private class descargarJSON extends AsyncTask<String, Void, Void>
     {
-        String destino="";
         String LATITUD="";
         String LONGITUD="";
         LatLng coordenadas;
@@ -162,7 +153,6 @@ public class GeocoderFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onFragmentInteraction(LatLng coordenadas);
     }
 
@@ -177,5 +167,4 @@ public class GeocoderFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
-
 }

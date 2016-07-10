@@ -10,8 +10,6 @@ package com.alex.tictacpark.adapters;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
-        import android.widget.AdapterView;
-        import android.widget.ImageView;
         import android.widget.TextView;
 
         import com.alex.tictacpark.R;
@@ -106,11 +104,6 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
         public TextView duracion;
         public TextView precio;
         public TextView precio_hora;
-        //private int posicion;
-
-        /*public int getPosicion() {
-            return posicion;
-        }*/
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -128,8 +121,6 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
             menu.setHeaderTitle("Seleccione la acción que desee realizar: ");
             menu.add(0, R.id.acceder_parking, 0, "Ir al parking");
             menu.add(0, R.id.borrar_entrada, 0, "Borrar entrada");
-            //AdapterView.AdapterContextMenuInfo info=(AdapterView.AdapterContextMenuInfo)menuInfo;
-            //posicion=info.position;
         }
     }
 }

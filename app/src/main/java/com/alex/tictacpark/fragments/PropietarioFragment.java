@@ -1,20 +1,13 @@
 package com.alex.tictacpark.fragments;
 
-import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,9 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -48,22 +38,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -88,7 +67,7 @@ public class PropietarioFragment extends Fragment
     // la dirección IP "127.0.0.1" es internamente usada por el emulador de android o por
     // nuestro dispositivo Android
     String ip = "192.168.0.12";
-    // Con el móvil en mi casa funciona "192.168.0.11";
+    // Con el móvil en mi casa funciona "192.168.0.12";
     // Con el móvil como punto de acceso "192.168.43.192";
     // Con el emulador funciona: "10.0.2.2" (local apache server)
     // Con el emulador (red eduroam) funciona: "10.38.32.149"
@@ -112,7 +91,6 @@ public class PropietarioFragment extends Fragment
      * @param SectionNumber Indica el número de la sección pulsada.
      * @return A new instance of fragment PropietarioFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static PropietarioFragment newInstance(int SectionNumber) {
         PropietarioFragment fragment = new PropietarioFragment();
         Bundle args = new Bundle();
@@ -515,7 +493,6 @@ public class PropietarioFragment extends Fragment
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
 

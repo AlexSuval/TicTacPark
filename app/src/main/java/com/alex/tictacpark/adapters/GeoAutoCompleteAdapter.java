@@ -22,7 +22,7 @@ import java.util.List;
  * Created by Alex on 21/01/2016.
  */
 
-// Implement a custom Adapter to add results to the AutocompleteTextView
+// Implementa un adaptador personalizado para añadir los resultados a la AutoCompleteTextView
 
 public class GeoAutoCompleteAdapter extends BaseAdapter implements Filterable {
 
@@ -71,7 +71,7 @@ public class GeoAutoCompleteAdapter extends BaseAdapter implements Filterable {
                 if (constraint != null) {
                     List locations = findLocations(mContext, constraint.toString());
 
-                    // Assign the data to the FilterResults
+                    // Asignamos los datos a los FilterResults
                     filterResults.values = locations;
                     filterResults.count = locations.size();
                 }
@@ -99,7 +99,7 @@ public class GeoAutoCompleteAdapter extends BaseAdapter implements Filterable {
         List<Address> addresses = null;
 
         try {
-            // Getting a maximum of 15 Address that matches the input text
+            // Se obtienen un máximo de 15 coincidencias con el texto de entrada
             addresses = geocoder.getFromLocationName(query_text, 15);
 
             for(int i=0;i<addresses.size();i++){
